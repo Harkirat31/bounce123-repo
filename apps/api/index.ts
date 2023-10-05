@@ -1,9 +1,14 @@
-import expres from "express"
+import express from "express"
+import dotenv from "dotenv"
+dotenv.config();
 
-const app = expres()
+import adminRouter from './routes/user'
 
-const port =3000
+const app = express()
 
-app.use(expres.json())
+const port = process.env.PORT
+
+app.use(express.json())
+app.use("/admin", adminRouter)
 
 app.listen(port,()=>console.log(`Running at port ${port}`))
