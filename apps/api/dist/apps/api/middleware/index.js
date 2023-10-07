@@ -4,6 +4,7 @@ exports.authenticateJwt = void 0;
 const secretKey = process.env.JWT_SECRET;
 const authenticateJwt = (req, res, next) => {
     console.log("Hello Jwt");
+    console.log(secretKey);
     next();
 };
 exports.authenticateJwt = authenticateJwt;

@@ -32,6 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -44,4 +45,22 @@ function getData() {
         console.log(x);
     });
 }
-getData();
+const signIn = (username, password) => __awaiter(void 0, void 0, void 0, function* () {
+    yield fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAqhTnwk7mkiABKb1onJDVJI8wNmhJbe80', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "email": "harkratsingh.tu@gmail.com", "password": "password", "returnSecureToken": true })
+    }).then(response => {
+        response.json().then((responseData) => {
+            console.log(responseData);
+        }).catch((error) => {
+            console.log("JSON Parsing Error");
+        });
+    })
+        .catch((error) => {
+        console.log(error);
+    });
+    // console.log(data.localId)
+});
+exports.signIn = signIn;
+(0, exports.signIn)("", "");

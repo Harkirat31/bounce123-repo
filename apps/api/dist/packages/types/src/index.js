@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.user = exports.userSignIn = exports.order = exports.location = exports.driver = exports.sideItem = exports.rentingItem = void 0;
+exports.userSignIn = exports.order = exports.location = exports.driver = exports.sideItem = exports.rentingItem = void 0;
 const zod_1 = require("zod");
 exports.rentingItem = zod_1.z.object({
     rentingItemId: zod_1.z.number(),
@@ -34,15 +34,6 @@ exports.order = zod_1.z.object({
     deliveryDate: zod_1.z.string().datetime()
 });
 exports.userSignIn = zod_1.z.object({
-    email: zod_1.z.string().email(),
+    username: zod_1.z.string().email(),
     password: zod_1.z.string().min(1)
-});
-exports.user = zod_1.z.object({
-    email: zod_1.z.string(),
-    name: zod_1.z.string(),
-    uid: zod_1.z.string(),
-    role: zod_1.z.string(),
-    phone: zod_1.z.string(),
-    vehicleStyle: zod_1.z.string(),
-    vehicleCapacity: zod_1.z.number(),
 });

@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "firebase-admin": "^11.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.2"
   }
 }

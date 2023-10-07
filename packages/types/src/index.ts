@@ -7,7 +7,7 @@ export const rentingItem =z.object({
     capacity:z.number()
 })
 
-export type rentingItemType = z.infer<typeof rentingItem>
+export type RentingItemType = z.infer<typeof rentingItem>
 
 export const sideItem = z.object({
     sideItemId:z.number(),
@@ -15,7 +15,7 @@ export const sideItem = z.object({
     capacity:z.number()
 })
 
-export type sideItemType = z.infer<typeof sideItem>
+export type SideItemType = z.infer<typeof sideItem>
 
 export const driver = z.object({
     driverId:z.number(),
@@ -23,7 +23,7 @@ export const driver = z.object({
     contact:z.string(),
     email:z.string().email()
 })
-export type driverType = z.infer<typeof driver>
+export type DriverType = z.infer<typeof driver>
 
 
 export const location = z.object({
@@ -31,6 +31,8 @@ export const location = z.object({
     lat:z.string(),
     long:z.string()
 })
+
+export type LocationType=z.infer<typeof location>
 
 export const order = z.object({
     orderId: z.number(),
@@ -42,5 +44,23 @@ export const order = z.object({
     deliveryDate:z.string().datetime()
 })
 
-export type orderType = z.infer<typeof order>
+export type OrderType = z.infer<typeof order>
 
+export const userSignIn = z.object({
+    email: z.string().email(),
+    password:z.string().min(1)
+})
+
+export type UserSignInType = z.infer<typeof userSignIn>
+
+export const user = z.object({
+    email: z.string(),
+    name:z.string(),
+    uid:z.string(),
+    role:z.string(),
+    phone:z.string(),
+    vehicleStyle:z.string(),
+    vehicleCapacity:z.number(),
+})
+
+export type UserType = z.infer<typeof user>
