@@ -4,11 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const middleware_1 = require("../middleware");
+const types_1 = require("types");
+const db_1 = require("db");
 const router = express_1.default.Router();
-router.get("/getOrders", middleware_1.authenticateJwt, (req, res) => {
-    res.json({
-        "hello": "hello"
+router.post("/getOrders", (req, res) => {
+    console.log(req.body);
+    let parsedDriverId = types_1.userId.safeParse(req.body);
+    if (!parsedDriverId.success) {
+        console.log("here");
+        return res.status(403).json({
+            msg: "Error in Driver Id"
+        });
+    }
+    (0, db_1.getOrders)(parsedDriverId.data.uid).then((orders) => {
+        res.json({ orders: orders });
+    }).catch(() => {
+        res.status(403).json({
+            msg: "Error fetching from firestore"
+        });
     });
 });
 exports.default = router;

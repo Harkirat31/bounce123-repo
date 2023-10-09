@@ -1,13 +1,16 @@
 import {z} from "zod"
 
+export const userId =z.object({uid:z.string()}) 
+
 export const rentingItem =z.object({
     rentingItemId:z.number(),
     title:z.string(),
+    category:z.string(),
     deliveryPrice:z.number(),
     capacity:z.number()
 })
 
-export type RentingItemType = z.infer<typeof rentingItem>
+export type RentingItemType = Partial<z.infer<typeof rentingItem>>
 
 export const sideItem = z.object({
     sideItemId:z.number(),
@@ -15,36 +18,15 @@ export const sideItem = z.object({
     capacity:z.number()
 })
 
-export type SideItemType = z.infer<typeof sideItem>
-
-export const driver = z.object({
-    driverId:z.number(),
-    driverName:z.string(),
-    contact:z.string(),
-    email:z.string().email()
-})
-export type DriverType = z.infer<typeof driver>
-
+export type SideItemType = Partial<z.infer<typeof sideItem>>
 
 export const location = z.object({
-    address:z.string(),
     lat:z.string(),
     long:z.string()
 })
 
-export type LocationType=z.infer<typeof location>
+export type LocationType=Partial<z.infer<typeof location>>
 
-export const order = z.object({
-    orderId: z.number(),
-    rentingItem:rentingItem,
-    //order contains array of side items with their respective count, for example bounce castle may need two blowers, two tarps underneath
-    sideItems:z.array(z.object({sideItem:sideItem,count:z.number()})),
-    location:location,
-    driver:driver,
-    deliveryDate:z.string().datetime()
-})
-
-export type OrderType = z.infer<typeof order>
 
 export const userSignIn = z.object({
     email: z.string().email(),
@@ -61,6 +43,24 @@ export const user = z.object({
     phone:z.string(),
     vehicleStyle:z.string(),
     vehicleCapacity:z.number(),
+    currentLocation:location,
+    isAutomaticallyTracked:z.boolean() 
 })
 
-export type UserType = z.infer<typeof user>
+export type UserType = Partial<z.infer<typeof user>>
+
+
+export const order = z.object({
+    orderId: z.number(),
+    rentingItemId:z.string(),
+    //order contains array of side items with their respective count, for example bounce castle may need two blowers, two tarps underneath
+    sideItems:z.array(z.object({sideItemId:z.string(),count:z.number()})),
+    address:z.string(),
+    location:location,
+    driverId:z.string(),
+    currentStatus:z.string(), //weather deliverd, picked, pending to deliver, pending to pick
+    deliveryDate:z.string().datetime()
+
+})
+
+export type OrderType = Partial<z.infer<typeof order>>

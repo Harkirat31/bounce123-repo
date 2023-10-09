@@ -11,6 +11,9 @@
       "types": [
         "../../packages/types/src/index.ts"
       ],
+      "db": [
+        "../../packages/db/index.ts"
+      ],
     }                               /* Skip type checking all .d.ts files. */
   }
 }
