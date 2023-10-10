@@ -11,7 +11,6 @@ router.post("/getOrders", (req, res) => {
     console.log(req.body);
     let parsedDriverId = types_1.userId.safeParse(req.body);
     if (!parsedDriverId.success) {
-        console.log("here");
         return res.status(403).json({
             msg: "Error in Driver Id"
         });
@@ -21,6 +20,20 @@ router.post("/getOrders", (req, res) => {
     }).catch(() => {
         res.status(403).json({
             msg: "Error fetching from firestore"
+        });
+    });
+});
+router.post("/updateCurrentLocation", (req, res) => {
+    let parsedData = types_1.updateLocation.safeParse(req.body);
+    if (!parsedData.success) {
+        return res.status(403).json({
+            isUpdated: false,
+            msg: "Error in Parameters"
+        });
+    }
+    (0, db_1.updateCurrentLocation)(parsedData.data.driverId, parsedData.data.currentLocation).then((result) => {
+        return res.json({
+            isUpdated: true
         });
     });
 });
