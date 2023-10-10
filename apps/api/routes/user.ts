@@ -2,11 +2,11 @@ import express,{ Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import {authenticateJwt} from "../middleware"
-import { userId, updateLocation} from "types";
-import {getOrders,updateCurrentLocation} from "db"
+import { userId, updateLocation,updateStatusOfOrder} from "types";
+import {getOrders,updateCurrentLocation,updateOrderStatus} from "db"
 
 const router = express.Router();
-router.post("/getOrders",(req:Request,res:Response)=>{
+router.post("/getOrders",authenticateJwt,(req:Request,res:Response)=>{
     console.log(req.body)
     let parsedDriverId = userId.safeParse(req.body)
     if (!parsedDriverId.success) {
@@ -23,7 +23,7 @@ router.post("/getOrders",(req:Request,res:Response)=>{
     })
 })
 
-router.post("/updateCurrentLocation",(req:Request,res:Response)=>{
+router.post("/updateCurrentLocation",authenticateJwt,(req:Request,res:Response)=>{
     let parsedData = updateLocation.safeParse(req.body)
     if (!parsedData.success) {
         return res.status(403).json({
@@ -37,4 +37,21 @@ router.post("/updateCurrentLocation",(req:Request,res:Response)=>{
         })
     })
 })
+
+router.post("/updateOrderStatus",authenticateJwt,(req:Request,res:Response)=>{
+    let parsedData = updateStatusOfOrder.safeParse(req.body)
+    if (!parsedData.success) {
+        return res.status(403).json({
+            isUpdated:false,
+            msg: "Error in Parameters"
+        });
+    }
+    updateOrderStatus(parsedData.data.orderId,parsedData.data.currentStatus).then((result)=>{
+        return res.json({
+            isUpdated:true
+        })
+    })
+
+})
+
 export default router

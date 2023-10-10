@@ -9,7 +9,7 @@ import {signIn,signUp,createUser,assignOrderToDriver,createSideItem, createRenti
 
 const router = express.Router();
 
-router.post("/createUser",(req:Request,res:Response)=>{
+router.post("/createUser",authenticateJwt,(req:Request,res:Response)=>{
     let parsedUserData = user.safeParse(req.body)
     if (!parsedUserData.success) {
         return res.status(403).json({
@@ -22,7 +22,7 @@ router.post("/createUser",(req:Request,res:Response)=>{
    
   })
 
-  router.post('/createSideItem',(req:Request,res:Response)=>{
+  router.post('/createSideItem',authenticateJwt,(req:Request,res:Response)=>{
     let parsedData = sideItem.safeParse(req.body)
     if (!parsedData.success) {
         return res.status(403).json({
@@ -35,7 +35,7 @@ router.post("/createUser",(req:Request,res:Response)=>{
   
     })
 
-router.post("/createUser",(req:Request,res:Response)=>{
+router.post("/createUser",authenticateJwt,(req:Request,res:Response)=>{
     let parsedUserData = user.safeParse(req.body)
     if (!parsedUserData.success) {
         return res.status(403).json({
@@ -48,7 +48,7 @@ router.post("/createUser",(req:Request,res:Response)=>{
    
   })
 
-router.post("/createOrder",(req:Request,res:Response)=>{
+router.post("/createOrder",authenticateJwt,(req:Request,res:Response)=>{
   let parsedData = order.safeParse(req.body)
   if (!parsedData.success) {
     console.log(parsedData.error)
@@ -63,7 +63,7 @@ router.post("/createOrder",(req:Request,res:Response)=>{
   })
 
 
-router.post('/createRentingItem',(req:Request,res:Response)=>{
+router.post('/createRentingItem',authenticateJwt,(req:Request,res:Response)=>{
   let parsedData = rentingItem.safeParse(req.body)
   if (!parsedData.success) {
       return res.status(403).json({
@@ -76,7 +76,7 @@ router.post('/createRentingItem',(req:Request,res:Response)=>{
 
   })
 
-  router.post('/assignOrder',(req:Request,res:Response)=>{
+  router.post('/assignOrder',authenticateJwt,(req:Request,res:Response)=>{
     let assignOrderParams = assignOrder.safeParse(req.body)
     if(!assignOrderParams.success){
         return res.status(403).json({

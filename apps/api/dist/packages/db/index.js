@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assignOrderToDriver = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
+exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -136,6 +136,14 @@ const updateCurrentLocation = (driverId, location) => {
     });
 };
 exports.updateCurrentLocation = updateCurrentLocation;
+const updateOrderStatus = (orderId, currentStatus) => {
+    return new Promise((resolve, reject) => {
+        db.collection('orders').doc(orderId).update({
+            currentStatus: currentStatus
+        }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")));
+    });
+};
+exports.updateOrderStatus = updateOrderStatus;
 const assignOrderToDriver = (driverId, orderId) => {
     return new Promise((resolve, reject) => {
         db.collection('orders').doc(orderId).update({

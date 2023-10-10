@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateLocation = exports.assignOrder = exports.order = exports.user = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItem = exports.userId = void 0;
+exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.user = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
@@ -38,14 +38,14 @@ exports.user = zod_1.z.object({
 });
 exports.order = zod_1.z.object({
     orderId: zod_1.z.number().optional(),
-    rentingItemId: zod_1.z.string(),
-    rentingItemTitle: zod_1.z.string(),
+    rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),
     location: exports.location,
     driverId: zod_1.z.string(),
     driverName: zod_1.z.string(),
     currentStatus: zod_1.z.string(),
-    deliveryDate: zod_1.z.string()
+    deliveryDate: zod_1.z.string(),
+    extraItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })).optional(),
 });
 exports.assignOrder = zod_1.z.object({
     driverId: zod_1.z.string(),
@@ -54,5 +54,9 @@ exports.assignOrder = zod_1.z.object({
 exports.updateLocation = zod_1.z.object({
     driverId: zod_1.z.string(),
     currentLocation: exports.location
+});
+exports.updateStatusOfOrder = zod_1.z.object({
+    orderId: zod_1.z.string(),
+    currentStatus: zod_1.z.string()
 });
 //export const 
