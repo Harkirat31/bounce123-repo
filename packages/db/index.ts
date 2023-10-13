@@ -1,7 +1,7 @@
 //import path from 'path';
 
 import * as admin from 'firebase-admin';
-import {UserType,UserSignInType,RentingItemType, SideItemType, OrderType} from "types"
+import {UserType,UserSignInType,RentingItemType, SideItemType, OrderType,LocationType} from "types"
 // Initialize Firebase Admin SDK
 
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -107,11 +107,53 @@ export const getOrders=(driverId:string):Promise<OrderType[]>=>{
   })
 }
 
+export const updateCurrentLocation=(driverId:string,location:LocationType)=>{
+  return new Promise((resolve,reject)=>{
+    db.collection('users').doc(driverId).update({
+      currentLocation:location
+    }).then((result)=> resolve(result)).catch((error)=>reject(new Error("Error")))
+  })
+}
+
+export const updateOrderStatus=(orderId:string,currentStatus:string)=>{
+  return new Promise((resolve,reject)=>{
+    db.collection('orders').doc(orderId).update({
+      currentStatus:currentStatus
+    }).then((result)=> resolve(result)).catch((error)=>reject(new Error("Error")))
+  })
+}
+
+
+export const assignOrderToDriver=(driverId:string,orderId:string)=>{
+  return new Promise((resolve,reject)=>{
+    db.collection('orders').doc(orderId).update({
+      driverId:driverId
+    })
+  })
+}
+
+
+
 
 
 const test = async ()=>{
 
-  await getOrders("driverId").then((result)=>console.log(result))
+  //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
+  //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
+
+  // createUser({
+  //   uid:"7GnMyRNWRzMU2cShccm4JkrRuEu1",
+  //   currentLocation:{lat:"3.44",long:"5.99"},
+  //   isAutomaticallyTracked:true,
+  //   name:"Dexter",
+  //   phone:"4165678099",
+  //   role:"driver",
+  //   vehicleCapacity:20,
+  //   vehicleStyle:"Pick Up",
+  //   email:"harry@gmail.com"
+  // }).then((r)=>console.log(r))
+
+ // await getOrders("driverId").then((result)=>console.log(result))
   //await createUser({email:"harry@gmail.com",password:"password"},{email:"harry@gmail.com"}).then((r)=>console.log(r)).catch((s)=>console.log("error"))
   //await signIn("harry@gmail.com","password").then((x)=>console.log(x)).catch((e)=>console.log(e))
   // createRentingItem(  {
@@ -124,9 +166,9 @@ const test = async ()=>{
   //createSideItem(  {   title:"Blower",capacity:1, } ).then((result)=>console.log(result))
 
   // createOrder({
-  //   rentingItemId:"rId",
+  //   rentingItemId:"aKzczHh3fPQFS3tXlzJM",
   //   location:{lat:"3.4545",long:"7.766"},
-  //   sideItems:[{sideItemId:"1stid",count:2},{sideItemId:"2nd Id",count:4}],
+  //   sideItems:[{sideItemId:"GKWF3lfHwv47JW87x41U",count:2}],
   //   address:"19 simmons blvd",
   //   currentStatus:"Pending to deliver",
   //   deliveryDate:Date.now().toString(),
@@ -134,7 +176,7 @@ const test = async ()=>{
   // }).then((result)=>console.log(result)).catch((error)=>console.log(error))
 }
 
-test()
+//test()
 //getUser("6JwbGWEL1DUWSv11GlLAdMm9EQn2").then((result)=>console.log(result))
 
 //createUser({email:"harry1@gmail.com",password:"password"},{email:"harry1@gmail.com"}).then((r)=>console.log(r)).catch((s)=>console.log("error"))
