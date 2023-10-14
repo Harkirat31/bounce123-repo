@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrderStatus = exports.updateLocation = exports.assignOrder = exports.order = exports.user = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItem = exports.userId = void 0;
+exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.user = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
@@ -12,6 +12,7 @@ exports.rentingItem = zod_1.z.object({
     //order contains array of side items with their respective count, for example bounce castle may need two blowers, two tarps underneath
     sideItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })),
 });
+exports.rentingItems = zod_1.z.array(exports.rentingItem);
 exports.sideItem = zod_1.z.object({
     sideItemId: zod_1.z.number().optional(),
     title: zod_1.z.string(),
@@ -55,7 +56,7 @@ exports.updateLocation = zod_1.z.object({
     driverId: zod_1.z.string(),
     currentLocation: exports.location
 });
-exports.updateOrderStatus = zod_1.z.object({
+exports.updateStatusOfOrder = zod_1.z.object({
     orderId: zod_1.z.string(),
     currentStatus: zod_1.z.string()
 });

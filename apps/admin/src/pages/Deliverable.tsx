@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useRecoilValue } from "recoil"
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
+import { RentingItemType } from "types"
 
 
 
@@ -8,11 +9,11 @@ const Deliverable = () => {
   const [whichItem, setWhichItem] = useState(0)
   return (
     <>
-      <div className="md:grid md:grid-cols-12 md:ml-10">
-        <div className="md:col-span-9">
-          <div className="flex items-start flex-col p-4">
+      <div className="mt-4 pt-4 lg:grid md:grid-cols-12 md:ml-10">
+        <div className="md:col-span-8">
+          <div className="flex items-center flex-col">
 
-            <div className="flex">
+            <div className="flex ">
               <p className="text-blue-900">Select Item Type :</p>
               <select className="ml-2  border-2 border-blue-900" onChange={(event) => { setWhichItem(parseInt(event.target.value)) }}>
                 <option value={0}>Renting Items</option>
@@ -32,10 +33,10 @@ const Deliverable = () => {
             }
           </div>
         </div>
-        <div className="md:col-span-3 ">
+        <div className="md:col-span-4 ">
           {whichItem == 0 &&
             <div>
-              Renting Item
+              <CreateRentingItem></CreateRentingItem>
             </div>
           }
           {whichItem == 1 &&
@@ -61,7 +62,7 @@ const RentingItemsTable = () => {
   const rentingItems = useRecoilValue(getRentingItems)
   if (rentingItems != null && (rentingItems as []).length > 0) {
     return <>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+      <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -78,25 +79,36 @@ const RentingItemsTable = () => {
                 Delivery Price
               </th>
               <th scope="col" className="px-6 py-3">
+                Side Items
+              </th>
+
+              <th scope="col" className="px-6 py-3">
                 <span className="sr-only">Edit</span>
               </th>
             </tr>
           </thead>
           <tbody>
-            {(rentingItems as []).map((item) => {
+            {(rentingItems as []).map((item: RentingItemType) => {
               return <>
                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Magic Mouse 2
+                    {item.title}
                   </th>
                   <td className="px-6 py-4">
-                    Black
+                    {item.category}
                   </td>
                   <td className="px-6 py-4">
-                    Accessories
+                    {item.capacity}
                   </td>
                   <td className="px-6 py-4">
-                    $99
+                    {item.deliveryPrice}
+                  </td>
+                  <td className="px-6 py-4">
+                    {item.sideItems.map((sideItem) => {
+                      return <>{
+                        <p>{sideItem.count + " " + sideItem.sideItemTitle}</p>
+                      }</>
+                    })}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
@@ -117,6 +129,20 @@ const RentingItemsTable = () => {
     </div>
   }
 
+}
+
+const CreateRentingItem = () => {
+  return <>
+    <div className="mr-4">
+      <p className="text-blue-900 text-center" >Create New Renting</p>
+      <div className="mt-4">
+        <input placeholder="Title" type="text" id="small-input" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        <input placeholder="Category" type="text" id="small-input" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+
+
+      </div>
+    </div>
+  </>
 }
 
 const SideItemsTable = () => {

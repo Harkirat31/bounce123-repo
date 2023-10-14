@@ -76,4 +76,7 @@ router.post('/assignOrder', middleware_1.authenticateJwt, (req, res) => {
         return res.json({ isAdded: true });
     });
 });
+router.get('/getRentingItems', middleware_1.authenticateJwt, (req, res) => {
+    (0, db_1.getRentingItems)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
+});
 exports.default = router;

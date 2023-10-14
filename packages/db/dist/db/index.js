@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
+exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -109,7 +109,7 @@ const createRentingItem = (rentingItemData) => {
 exports.createRentingItem = createRentingItem;
 const createSideItem = (sideItemData) => {
     return new Promise((resolve, reject) => {
-        db.collection("side_items").add(sideItemData).then(() => resolve("Success")).catch(() => new Error("Error"));
+        db.collection("side_items").add(sideItemData).then(() => resolve("Success")).catch(() => reject(new Error("Error")));
     });
 };
 exports.createSideItem = createSideItem;
@@ -124,7 +124,7 @@ const getOrders = (driverId) => {
         db.collection('orders').where("driverId", "==", driverId).get().then((result) => {
             let orders = result.docs.map((doc) => doc.data());
             resolve(orders);
-        }).catch((error) => new Error("Error fetching orders of driver"));
+        }).catch((error) => reject(new Error("Error fetching orders of driver")));
     });
 };
 exports.getOrders = getOrders;
@@ -152,6 +152,20 @@ const assignOrderToDriver = (driverId, orderId) => {
     });
 };
 exports.assignOrderToDriver = assignOrderToDriver;
+const getRentingItems = () => {
+    return new Promise((resolve, reject) => {
+        db.collection("renting_items").get().then((result) => {
+            let rentingItems = result.docs.map((doc) => doc.data());
+            if (rentingItems.length > 0) {
+                resolve(rentingItems);
+            }
+            else {
+                reject(new Error("No Renting Item"));
+            }
+        }).catch((error) => reject(new Error("Error Fetching Data")));
+    });
+};
+exports.getRentingItems = getRentingItems;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
     //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
     //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
