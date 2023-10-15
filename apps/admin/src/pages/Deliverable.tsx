@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useRecoilValue } from "recoil"
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
-import { RentingItemType } from "types"
+import { RentingItemType, SideItemType } from "types"
 
 
 
@@ -132,13 +132,47 @@ const RentingItemsTable = () => {
 }
 
 const CreateRentingItem = () => {
+
+  const [sideItems, setSideItems] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }[]>([])
   return <>
-    <div className="mr-4">
+    <div className="mr-4 justify-center">
       <p className="text-blue-900 text-center" >Create New Renting</p>
       <div className="mt-4">
-        <input placeholder="Title" type="text" id="small-input" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-        <input placeholder="Category" type="text" id="small-input" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        <input placeholder="Title" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        <input placeholder="Category" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        <input placeholder="Capacity" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        <input placeholder="Delivery Price" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+        {sideItems.length > 0 && <div className="grid grid-cols-3">
+          {sideItems.map((sideItem) => {
+            return <div className="relative">
+              <p className=" hover:text-blue-700 cursor-pointer absolute right-1 -top-2 text-lg" >x</p>
+              <p className="mx-1 my-1 p-2 bg-blue-100 text-center rounded-lg">{sideItem.count + "-" + sideItem.sideItemTitle}</p>
+            </div>
+          })}
+        </div>}
+        <div className="flex flex-row">
+          <div className="flex ">
+            <p className="text-blue-900">Side Item:</p>
+            <select className="ml-2  border-2 border-blue-900" >
+              <option value={0}>Blower</option>
+              <option value={1}>Tarp</option>
+            </select>
+          </div>
+          <div className="ml-2 flex ">
+            <p className="text-blue-900">Count:</p>
+            <select className="ml-2  border-2 border-blue-900" >
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" onClick={() => {
+              setSideItems([{ sideItemId: "id", count: 2, sideItemTitle: "Blower" }, ...sideItems])
+            }} className="ml-2 p-0.5 px-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center mr-3 md:mr-0">Add</button>
+          </div>
+        </div>
 
+        <button type="button" className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Submit</button>
 
       </div>
     </div>
