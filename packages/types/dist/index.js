@@ -5,8 +5,8 @@ const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
     rentingItemId: zod_1.z.string().optional(),
-    title: zod_1.z.string(),
-    category: zod_1.z.string(),
+    title: zod_1.z.string().min(1),
+    category: zod_1.z.string().min(1),
     deliveryPrice: zod_1.z.number(),
     capacity: zod_1.z.number(),
     //order contains array of side items with their respective count, for example bounce castle may need two blowers, two tarps underneath

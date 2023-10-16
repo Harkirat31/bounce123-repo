@@ -4,8 +4,8 @@ export const userId = z.object({ uid: z.string() })
 
 export const rentingItem = z.object({
     rentingItemId: z.string().optional(),
-    title: z.string(),
-    category: z.string(),
+    title: z.string().min(1),
+    category: z.string().min(1),
     deliveryPrice: z.number(),
     capacity: z.number(),
     //order contains array of side items with their respective count, for example bounce castle may need two blowers, two tarps underneath
