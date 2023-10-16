@@ -18,7 +18,7 @@ export const rentingItems = z.array(rentingItem)
 export type RentingItemsType = z.infer<typeof rentingItems>
 
 export const sideItem = z.object({
-    sideItemId: z.number().optional(),
+    sideItemId: z.string().optional(),
     title: z.string(),
     capacity: z.number()
 })

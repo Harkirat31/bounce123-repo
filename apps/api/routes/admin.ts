@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { user, assignOrder, rentingItem, sideItem, order } from "types";
-import { signIn, signUp, createUser, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems } from "db"
+import { signIn, signUp, createUser, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems } from "db"
 
 
 
@@ -92,6 +92,11 @@ router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
 
 router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {
   getRentingItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+  )
+})
+
+router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
+  getSideItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })
 

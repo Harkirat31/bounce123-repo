@@ -79,4 +79,7 @@ router.post('/assignOrder', middleware_1.authenticateJwt, (req, res) => {
 router.get('/getRentingItems', middleware_1.authenticateJwt, (req, res) => {
     (0, db_1.getRentingItems)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
 });
+router.get('/getSideItems', middleware_1.authenticateJwt, (req, res) => {
+    (0, db_1.getSideItems)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
+});
 exports.default = router;

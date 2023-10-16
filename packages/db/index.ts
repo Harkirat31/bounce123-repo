@@ -148,6 +148,27 @@ export const getRentingItems = () => {
   })
 }
 
+export const getSideItems = () => {
+  return new Promise((resolve, reject) => {
+    db.collection("side_items").get().then(
+      (result) => {
+        let sideItems = result.docs.map((doc) => {
+          let sideItem = doc.data() as SideItemType
+          sideItem.sideItemId = doc.id
+          return sideItem
+        })
+        if (sideItems.length > 0) {
+          resolve(sideItems)
+        }
+        else {
+          reject(new Error("No Side Item"))
+        }
+      }
+    ).catch((error) => reject(new Error("Error Fetching Data")))
+  })
+}
+
+
 
 
 

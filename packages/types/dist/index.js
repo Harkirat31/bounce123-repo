@@ -14,7 +14,7 @@ exports.rentingItem = zod_1.z.object({
 });
 exports.rentingItems = zod_1.z.array(exports.rentingItem);
 exports.sideItem = zod_1.z.object({
-    sideItemId: zod_1.z.number().optional(),
+    sideItemId: zod_1.z.string().optional(),
     title: zod_1.z.string(),
     capacity: zod_1.z.number()
 });

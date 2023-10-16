@@ -16,3 +16,4 @@ export const isRentingItemsLoading = selector({
         return state.isLoading
     }
 })
+

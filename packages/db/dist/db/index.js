@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
+exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -166,6 +166,24 @@ const getRentingItems = () => {
     });
 };
 exports.getRentingItems = getRentingItems;
+const getSideItems = () => {
+    return new Promise((resolve, reject) => {
+        db.collection("side_items").get().then((result) => {
+            let sideItems = result.docs.map((doc) => {
+                let sideItem = doc.data();
+                sideItem.sideItemId = doc.id;
+                return sideItem;
+            });
+            if (sideItems.length > 0) {
+                resolve(sideItems);
+            }
+            else {
+                reject(new Error("No Side Item"));
+            }
+        }).catch((error) => reject(new Error("Error Fetching Data")));
+    });
+};
+exports.getSideItems = getSideItems;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
     //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
     //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
