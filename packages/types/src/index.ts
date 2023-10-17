@@ -43,13 +43,13 @@ export type UserSignInType = z.infer<typeof userSignIn>
 export const user = z.object({
     email: z.string(),
     name: z.string(),
-    uid: z.string(),
-    role: z.string(),
+    uid: z.string().optional(),
+    role: z.string().optional(),
     phone: z.string(),
     vehicleStyle: z.string(),
     vehicleCapacity: z.number(),
-    currentLocation: location,
-    isAutomaticallyTracked: z.boolean()
+    currentLocation: location.optional(),
+    isAutomaticallyTracked: z.boolean().default(false)
 })
 
 export type UserType = z.infer<typeof user>

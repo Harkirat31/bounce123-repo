@@ -58,7 +58,7 @@ const NavMenu = (props: any) => {
       <button onClick={() => { navigate("/delerables"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Deliverables</button>
     </li>
     <li>
-      <button onClick={() => { navigate("/employees"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Employees</button>
+      <button onClick={() => { navigate("/drivers"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Drivers</button>
     </li>
   </ul>
 }

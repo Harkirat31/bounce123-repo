@@ -4,7 +4,7 @@ import AppBar from './components/AppBar'
 import Home from './pages/Home'
 import Order from './pages/Order'
 import Deliverable from './pages/Deliverable'
-import Employee from './pages/Employee'
+import Driver from './pages/Driver'
 import Init from './components/Init'
 
 
@@ -18,7 +18,7 @@ function App() {
           <Route path='/*' element={<Home></Home>} />
           <Route path='/orders' element={<Order />} />
           <Route path='/delerables' element={<Deliverable />} />
-          <Route path='/employees' element={<Employee />} />
+          <Route path='/drivers' element={<Driver />} />
         </Routes>
       </Router>
 

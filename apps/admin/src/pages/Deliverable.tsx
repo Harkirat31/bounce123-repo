@@ -2,6 +2,8 @@ import { useState } from "react"
 
 import RentingItemsTable from "../components/RentingItemsTable.tsx";
 import CreateRentingItem from "../components/CreateRentingItem.tsx";
+import CreateSideItem from "../components/CreateSideItem.tsx";
+import SideItemsTable from "../components/SideItemsTable.tsx";
 
 
 
@@ -41,7 +43,7 @@ const Deliverable = () => {
           }
           {whichItem == 1 &&
             <div>
-              Side Item
+              <CreateSideItem></CreateSideItem>
             </div>
           }
         </div>
@@ -56,8 +58,3 @@ const Deliverable = () => {
 export default Deliverable
 
 
-const SideItemsTable = () => {
-  return <>
-    Side Item
-  </>
-}

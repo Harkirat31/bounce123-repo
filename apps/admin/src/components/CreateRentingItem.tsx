@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { useRecoilValue } from "recoil"
 import { getSideItems } from "../store/selectors/sideItemsSelector"
-import { SideItemType, rentingItem } from "types"
+import { SideItemType, rentingItem } from "types/src/index"
 import { BASE_URL } from "../../config"
 import { TiDelete } from "react-icons/ti"
 
@@ -60,7 +60,7 @@ const CreateRentingItem = () => {
 
     return <>
         <div className="mr-4 justify-center">
-            <p className="text-blue-900 text-center" >Create New Renting</p>
+            <p className="text-blue-900 text-center" >Create New Renting Item</p>
             <div className="mt-4">
                 <input onChange={(event) => setTitle(event.target.value)} placeholder="Title" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input onChange={(event) => setCategory(event.target.value)} placeholder="Category" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>

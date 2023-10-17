@@ -29,13 +29,13 @@ exports.userSignIn = zod_1.z.object({
 exports.user = zod_1.z.object({
     email: zod_1.z.string(),
     name: zod_1.z.string(),
-    uid: zod_1.z.string(),
-    role: zod_1.z.string(),
+    uid: zod_1.z.string().optional(),
+    role: zod_1.z.string().optional(),
     phone: zod_1.z.string(),
     vehicleStyle: zod_1.z.string(),
     vehicleCapacity: zod_1.z.number(),
-    currentLocation: exports.location,
-    isAutomaticallyTracked: zod_1.z.boolean()
+    currentLocation: exports.location.optional(),
+    isAutomaticallyTracked: zod_1.z.boolean().default(false)
 });
 exports.order = zod_1.z.object({
     orderId: zod_1.z.number().optional(),
