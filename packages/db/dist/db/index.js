@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
+exports.getDrivers = exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -89,15 +89,23 @@ const signUp = (authUser) => __awaiter(void 0, void 0, void 0, function* () {
         admin.auth().createUser({
             email: authUser.email,
             password: authUser.password
-        }).then((firebaseUser) => resolve(firebaseUser.uid)).catch((error) => reject(new Error("Error creating Firebase Auth User")));
+        }).then((firebaseUser) => resolve(firebaseUser.uid)).catch((error) => reject(error));
     });
 });
 exports.signUp = signUp;
-const createDriver = (newUserDetail) => __awaiter(void 0, void 0, void 0, function* () {
+const createDriver = (newDriverDetail) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        db.collection('drivers').doc(newUserDetail.uid).set(newUserDetail).then((result) => {
-            resolve(newUserDetail);
-        }).catch(() => reject(new Error("Error creating driver in firebase db")));
+        // first new sign up is created for driver
+        // default password is password, reset email would be sent
+        (0, exports.signUp)({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
+            newDriverDetail.isAutomaticallyTracked = false; // set tracking false during creation of driver
+            newDriverDetail.uid = uidNewDriver;
+            db.collection('drivers').doc(uidNewDriver).set(newDriverDetail).then((result) => {
+                resolve(newDriverDetail);
+            }).catch(() => reject(new Error("Error creating driver in firestore db")));
+        }).catch((error) => {
+            reject(error);
+        });
     });
 });
 exports.createDriver = createDriver;
@@ -184,6 +192,24 @@ const getSideItems = () => {
     });
 };
 exports.getSideItems = getSideItems;
+const getDrivers = () => {
+    return new Promise((resolve, reject) => {
+        db.collection("drivers").get().then((result) => {
+            let drivers = result.docs.map((doc) => {
+                let driver = doc.data();
+                driver.uid = doc.id;
+                return driver;
+            });
+            if (drivers.length > 0) {
+                resolve(drivers);
+            }
+            else {
+                resolve([]);
+            }
+        }).catch((error) => reject(new Error("Error Fetching Data")));
+    });
+};
+exports.getDrivers = getDrivers;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, exports.getRentingItems)().then((result) => console.log(result));
     //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")

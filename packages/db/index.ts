@@ -60,17 +60,27 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
     admin.auth().createUser({
       email: authUser.email,
       password: authUser.password
-    }).then((firebaseUser) => resolve(firebaseUser.uid)).catch((error) => reject(new Error("Error creating Firebase Auth User")))
+    }).then((firebaseUser) => resolve(firebaseUser.uid)).catch((error: admin.FirebaseError) => reject(error))
   })
 }
 
-export const createDriver = async (newUserDetail: DriverType): Promise<DriverType> => {
+export const createDriver = async (newDriverDetail: DriverType): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
-    db.collection('drivers').doc(newUserDetail.uid!).set(
-      newUserDetail
-    ).then((result) => {
-      resolve(newUserDetail)
-    }).catch(() => reject(new Error("Error creating driver in firebase db")))
+    // first new sign up is created for driver
+    // default password is password, reset email would be sent
+    signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
+      newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+      newDriverDetail.uid = uidNewDriver
+      db.collection('drivers').doc(uidNewDriver).set(
+        newDriverDetail
+      ).then((result) => {
+        resolve(newDriverDetail)
+      }).catch(() => reject(new Error("Error creating driver in firestore db")))
+    }
+    ).catch((error: admin.FirebaseError) => {
+      reject(error)
+    })
+
   })
 }
 
@@ -159,6 +169,26 @@ export const getSideItems = () => {
         })
         if (sideItems.length > 0) {
           resolve(sideItems)
+        }
+        else {
+          resolve([])
+        }
+      }
+    ).catch((error) => reject(new Error("Error Fetching Data")))
+  })
+}
+
+export const getDrivers = () => {
+  return new Promise((resolve, reject) => {
+    db.collection("drivers").get().then(
+      (result) => {
+        let drivers = result.docs.map((doc) => {
+          let driver = doc.data() as DriverType
+          driver.uid = doc.id
+          return driver
+        })
+        if (drivers.length > 0) {
+          resolve(drivers)
         }
         else {
           resolve([])

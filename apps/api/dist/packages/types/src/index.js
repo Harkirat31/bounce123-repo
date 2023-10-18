@@ -30,13 +30,13 @@ exports.userSignIn = zod_1.z.object({
 });
 exports.driver = zod_1.z.object({
     companyId: zod_1.z.string().optional(),
-    email: zod_1.z.string(),
+    email: zod_1.z.string().email().min(8),
     name: zod_1.z.string(),
     uid: zod_1.z.string().optional(),
     role: zod_1.z.string().optional(),
     phone: zod_1.z.string(),
     vehicleStyle: zod_1.z.string(),
-    vehicleCapacity: zod_1.z.number(),
+    vehicleCapacity: zod_1.z.number().min(1),
     currentLocation: exports.location.optional(),
     isAutomaticallyTracked: zod_1.z.boolean().default(false)
 });
@@ -45,11 +45,15 @@ exports.order = zod_1.z.object({
     orderId: zod_1.z.number().optional(),
     rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),
-    location: exports.location,
-    driverId: zod_1.z.string(),
-    driverName: zod_1.z.string(),
-    currentStatus: zod_1.z.string(),
-    deliveryDate: zod_1.z.string(),
+    cname: zod_1.z.string().min(1),
+    cphone: zod_1.z.string().min(10),
+    location: exports.location.optional(),
+    driverId: zod_1.z.string().optional(),
+    driverName: zod_1.z.string().optional(),
+    currentStatus: zod_1.z.string().optional(),
+    deliveryDate: zod_1.z.string().datetime(),
+    deliverTimeRangeStart: zod_1.z.number().min(1).max(24),
+    deliverTimeRangeEnd: zod_1.z.string().min(1).max(24),
     extraItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })).optional(),
 });
 exports.assignOrder = zod_1.z.object({

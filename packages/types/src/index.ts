@@ -44,13 +44,13 @@ export type UserSignInType = z.infer<typeof userSignIn>
 
 export const driver = z.object({
     companyId: z.string().optional(),
-    email: z.string(),
+    email: z.string().email().min(8),
     name: z.string(),
     uid: z.string().optional(),
     role: z.string().optional(),
     phone: z.string(),
     vehicleStyle: z.string(),
-    vehicleCapacity: z.number(),
+    vehicleCapacity: z.number().min(1),
     currentLocation: location.optional(),
     isAutomaticallyTracked: z.boolean().default(false)
 })
@@ -62,11 +62,15 @@ export const order = z.object({
     orderId: z.number().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })),
     address: z.string(),
-    location: location,
-    driverId: z.string(),
-    driverName: z.string(),
-    currentStatus: z.string(), //weather deliverd, picked, pending to deliver, pending to pick
-    deliveryDate: z.string(),
+    cname: z.string().min(1),
+    cphone: z.string().min(10),
+    location: location.optional(),
+    driverId: z.string().optional(),
+    driverName: z.string().optional(),
+    currentStatus: z.string().optional(), //weather deliverd, picked, pending to deliver, pending to pick
+    deliveryDate: z.string().datetime(),
+    deliverTimeRangeStart: z.number().min(1).max(24),
+    deliverTimeRangeEnd: z.string().min(1).max(24),
     extraItems: z.array(z.object({ sideItemId: z.string(), sideItemTitle: z.string(), count: z.number() })).optional(),
 })
 

@@ -39,6 +39,11 @@ router.post("/createDriver", middleware_1.authenticateJwt, (req, res) => {
     }
     (0, db_1.createDriver)(parsedUserData.data).then((driver) => {
         res.json({ message: 'Sign Up successfully', driver });
+    }).catch((error) => {
+        return res.status(403).json({
+            msg: "Error in User Details",
+            err: error
+        });
     });
 });
 router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => {
@@ -82,5 +87,8 @@ router.get('/getRentingItems', middleware_1.authenticateJwt, (req, res) => {
 });
 router.get('/getSideItems', middleware_1.authenticateJwt, (req, res) => {
     (0, db_1.getSideItems)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
+});
+router.get('/getDrivers', middleware_1.authenticateJwt, (req, res) => {
+    (0, db_1.getDrivers)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
 });
 exports.default = router;

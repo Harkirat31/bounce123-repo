@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers } from "db"
 
 
 
@@ -44,6 +44,11 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
   }
   createDriver(parsedUserData.data).then((driver) => {
     res.json({ message: 'Sign Up successfully', driver });
+  }).catch((error) => {
+    return res.status(403).json({
+      msg: "Error in User Details",
+      err: error
+    });
   })
 
 })
@@ -99,6 +104,11 @@ router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) =>
 
 router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
   getSideItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+  )
+})
+
+router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
+  getDrivers().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })
 

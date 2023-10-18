@@ -1,9 +1,7 @@
 import { useRef, useState } from "react"
-import { useRecoilValue } from "recoil"
-import { getSideItems } from "../store/selectors/sideItemsSelector"
+
 import { driver } from "types/src/index"
 import { BASE_URL } from "../../config"
-import { TiDelete } from "react-icons/ti"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")
@@ -44,7 +42,7 @@ const CreateDriver = () => {
 
     return <>
         <div className="mr-4 justify-center">
-            <p className="text-blue-900 text-center" >Create New Renting Item</p>
+            <p className="text-blue-900 text-center" >Create New Order</p>
             <div className="mt-4">
                 <input onChange={(event) => setName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input onChange={(event) => setEmail(event.target.value)} placeholder="Email" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
