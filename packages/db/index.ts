@@ -1,7 +1,7 @@
 //import path from 'path';
 
 import * as admin from 'firebase-admin';
-import { UserType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType } from "types"
 // Initialize Firebase Admin SDK
 
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -17,7 +17,7 @@ async function getData() {
   console.log(x);
 }
 
-export const signIn = async (email: string, password: string): Promise<UserType> => {
+export const signIn = async (email: string, password: string): Promise<DriverType> => {
   return new Promise(async (resolve, reject) => {
     fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAqhTnwk7mkiABKb1onJDVJI8wNmhJbe80', {
       method: 'POST',
@@ -31,8 +31,8 @@ export const signIn = async (email: string, password: string): Promise<UserType>
         if (!responseData.localId) {
           return reject(new Error("Error Parsing response from google SignIn Api"))
         }
-        await getUser(responseData.localId).then((user) => {
-          resolve(user)
+        await getDriver(responseData.localId).then((driver) => {
+          resolve(driver)
         }).catch((error) => {
           return reject(new Error("Error Fetching User from getUser Method"))
         })
@@ -47,9 +47,9 @@ export const signIn = async (email: string, password: string): Promise<UserType>
 }
 
 
-export const getUser = async (uid: string): Promise<UserType> => {
+export const getDriver = async (uid: string): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
-    db.collection("users").doc(uid).get().then((documentSnapshot) => {
+    db.collection("drivers").doc(uid).get().then((documentSnapshot) => {
       resolve(Object(documentSnapshot.data()))
     })
   })
@@ -64,13 +64,13 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
   })
 }
 
-export const createUser = async (newUserDetail: UserType): Promise<UserType> => {
+export const createDriver = async (newUserDetail: DriverType): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
-    db.collection('users').doc(newUserDetail.uid!).set(
+    db.collection('drivers').doc(newUserDetail.uid!).set(
       newUserDetail
     ).then((result) => {
       resolve(newUserDetail)
-    }).catch(() => reject(new Error("Error creating user in firebase db")))
+    }).catch(() => reject(new Error("Error creating driver in firebase db")))
   })
 }
 
@@ -109,7 +109,7 @@ export const getOrders = (driverId: string): Promise<OrderType[]> => {
 
 export const updateCurrentLocation = (driverId: string, location: LocationType) => {
   return new Promise((resolve, reject) => {
-    db.collection('users').doc(driverId).update({
+    db.collection('drivers').doc(driverId).update({
       currentLocation: location
     }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
   })
@@ -141,7 +141,7 @@ export const getRentingItems = () => {
           resolve(rentingItems)
         }
         else {
-          reject(new Error("No Renting Item"))
+          resolve([])
         }
       }
     ).catch((error) => reject(new Error("Error Fetching Data")))
@@ -161,7 +161,7 @@ export const getSideItems = () => {
           resolve(sideItems)
         }
         else {
-          reject(new Error("No Side Item"))
+          resolve([])
         }
       }
     ).catch((error) => reject(new Error("Error Fetching Data")))
@@ -175,6 +175,7 @@ export const getSideItems = () => {
 
 const test = async () => {
 
+  getRentingItems().then((result) => console.log(result))
   //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
   //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
 

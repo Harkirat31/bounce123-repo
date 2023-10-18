@@ -1,6 +1,5 @@
 
 import CreateDriver from "../components/CreateDriver.tsx";
-import CreateRentingItem from "../components/CreateRentingItem.tsx";
 import DriversTable from "../components/DriversTable.tsx";
 
 const Driver = () => {

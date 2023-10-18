@@ -1,22 +1,20 @@
 import { useRef, useState } from "react"
 import { useRecoilValue } from "recoil"
 import { getSideItems } from "../store/selectors/sideItemsSelector"
-import { user } from "types/src/index"
+import { driver } from "types/src/index"
 import { BASE_URL } from "../../config"
 import { TiDelete } from "react-icons/ti"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
-    const [vehiclCapacity, setVehicleCapacity] = useState(0)
+    const [vehicleCapacity, setVehicleCapacity] = useState(0)
     const [phone, setPhone] = useState("")
     const [vehicleStyle, setVehicleStyle] = useState("Pick Up")
 
-    const selectRef = useRef<HTMLSelectElement | null>(null);
-
     function saveDriver() {
 
-        let parsedDriverData = user.safeParse({ name, email, vehiclCapacity, vehicleStyle, phone })
+        let parsedDriverData = driver.safeParse({ name, email, vehicleCapacity, vehicleStyle, phone })
 
         if (!parsedDriverData.success) {
             console.log(parsedDriverData.error)
@@ -24,7 +22,7 @@ const CreateDriver = () => {
             return
         }
 
-        fetch(BASE_URL + '/admin/createUser', {
+        fetch(BASE_URL + '/admin/createDriver', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(parsedDriverData.data)

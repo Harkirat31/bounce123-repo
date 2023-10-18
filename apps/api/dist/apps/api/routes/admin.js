@@ -9,14 +9,14 @@ const types_1 = require("types");
 const db_1 = require("db");
 const router = express_1.default.Router();
 router.post("/createUser", middleware_1.authenticateJwt, (req, res) => {
-    let parsedUserData = types_1.user.safeParse(req.body);
+    let parsedUserData = types_1.driver.safeParse(req.body);
     if (!parsedUserData.success) {
         return res.status(403).json({
             msg: "Error in User Details"
         });
     }
-    (0, db_1.createUser)(parsedUserData.data).then((user) => {
-        res.json({ message: 'Sign Up successfully', user });
+    (0, db_1.createDriver)(parsedUserData.data).then((driver) => {
+        res.json({ message: 'Sign Up successfully', driver });
     });
 });
 router.post('/createSideItem', middleware_1.authenticateJwt, (req, res) => {
@@ -30,15 +30,15 @@ router.post('/createSideItem', middleware_1.authenticateJwt, (req, res) => {
         res.json({ isAdded: true });
     }).catch((error) => res.json({ isAdded: false }));
 });
-router.post("/createUser", middleware_1.authenticateJwt, (req, res) => {
-    let parsedUserData = types_1.user.safeParse(req.body);
+router.post("/createDriver", middleware_1.authenticateJwt, (req, res) => {
+    let parsedUserData = types_1.driver.safeParse(req.body);
     if (!parsedUserData.success) {
         return res.status(403).json({
             msg: "Error in User Details"
         });
     }
-    (0, db_1.createUser)(parsedUserData.data).then((user) => {
-        res.json({ message: 'Sign Up successfully', user });
+    (0, db_1.createDriver)(parsedUserData.data).then((driver) => {
+        res.json({ message: 'Sign Up successfully', driver });
     });
 });
 router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => {
@@ -77,6 +77,7 @@ router.post('/assignOrder', middleware_1.authenticateJwt, (req, res) => {
     });
 });
 router.get('/getRentingItems', middleware_1.authenticateJwt, (req, res) => {
+    console.log(req.body.userId);
     (0, db_1.getRentingItems)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
 });
 router.get('/getSideItems', middleware_1.authenticateJwt, (req, res) => {

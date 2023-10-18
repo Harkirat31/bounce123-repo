@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 dotenv.config();
 
 
-import userRouter from './routes/user'
+import driverRouter from './routes/driver'
 import adminRouter from './routes/admin'
 import authRouter from "./routes/auth"
 import cors from "cors"
@@ -16,7 +16,7 @@ app.use(cors());
 const port = process.env.PORT
 
 app.use(express.json())
-app.use("/user", userRouter)
+app.use("/driver", driverRouter)
 app.use("/auth", authRouter)
 app.use("/admin", adminRouter)
 

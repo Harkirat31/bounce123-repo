@@ -1,12 +1,12 @@
 import { useRecoilValue } from "recoil"
-import { getRentingItems } from "../store/selectors/rentingItemsSelector"
-import { RentingItemType } from "types"
+import { DriverType } from "types"
+import { getDrivers } from "../store/selectors/driversSelector"
 
 const DrivingTable = () => {
 
     // let items: number[] = [1, 2, 3];
-    const rentingItems = useRecoilValue(getRentingItems)
-    if (rentingItems != null && (rentingItems as []).length > 0) {
+    const drivers = useRecoilValue(getDrivers)
+    if (drivers != null && (drivers as []).length > 0) {
         return <>
             <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -34,28 +34,25 @@ const DrivingTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {(rentingItems as []).map((item: RentingItemType) => {
+                        {(drivers as []).map((driver: DriverType) => {
                             return <>
                                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {item.title}
+                                        {driver.name}
                                     </th>
                                     <td className="px-6 py-4">
-                                        {item.category}
+                                        {driver.email}
                                     </td>
                                     <td className="px-6 py-4">
-                                        {item.capacity}
+                                        {driver.phone}
                                     </td>
                                     <td className="px-6 py-4">
-                                        {item.deliveryPrice}
+                                        {driver.vehicleCapacity}
                                     </td>
                                     <td className="px-6 py-4">
-                                        {item.sideItems.map((sideItem) => {
-                                            return <>{
-                                                <p>{sideItem.count + " " + sideItem.sideItemTitle}</p>
-                                            }</>
-                                        })}
+                                        {driver.vehicleStyle}
                                     </td>
+
                                     <td className="px-6 py-4 text-right">
                                         <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                                     </td>
@@ -70,8 +67,8 @@ const DrivingTable = () => {
 
     }
     else {
-        return <div className="mt-10 w-full bg-slate-50 shadow-md">
-            <p className="p-10">No Renting Item is created</p>
+        return <div className="mt-10  bg-slate-50 shadow-md">
+            <p className="p-10">No Driver is created</p>
         </div>
     }
 

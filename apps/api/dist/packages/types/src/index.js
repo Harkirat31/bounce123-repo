@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.user = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
+exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
+    companyId: zod_1.z.string().optional(),
     rentingItemId: zod_1.z.string().optional(),
     title: zod_1.z.string().min(1),
     category: zod_1.z.string().min(1),
@@ -14,6 +15,7 @@ exports.rentingItem = zod_1.z.object({
 });
 exports.rentingItems = zod_1.z.array(exports.rentingItem);
 exports.sideItem = zod_1.z.object({
+    companyId: zod_1.z.string().optional(),
     sideItemId: zod_1.z.string().optional(),
     title: zod_1.z.string(),
     capacity: zod_1.z.number()
@@ -24,13 +26,14 @@ exports.location = zod_1.z.object({
 });
 exports.userSignIn = zod_1.z.object({
     email: zod_1.z.string().email(),
-    password: zod_1.z.string().min(1)
+    password: zod_1.z.string().min(1),
 });
-exports.user = zod_1.z.object({
+exports.driver = zod_1.z.object({
+    companyId: zod_1.z.string().optional(),
     email: zod_1.z.string(),
     name: zod_1.z.string(),
     uid: zod_1.z.string().optional(),
-    role: zod_1.z.string(),
+    role: zod_1.z.string().optional(),
     phone: zod_1.z.string(),
     vehicleStyle: zod_1.z.string(),
     vehicleCapacity: zod_1.z.number(),
@@ -38,6 +41,7 @@ exports.user = zod_1.z.object({
     isAutomaticallyTracked: zod_1.z.boolean().default(false)
 });
 exports.order = zod_1.z.object({
+    companyId: zod_1.z.string().optional(),
     orderId: zod_1.z.number().optional(),
     rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),

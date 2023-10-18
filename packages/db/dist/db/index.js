@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createUser = exports.signUp = exports.getUser = exports.signIn = void 0;
+exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -61,8 +61,8 @@ const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* 
                 if (!responseData.localId) {
                     return reject(new Error("Error Parsing response from google SignIn Api"));
                 }
-                yield (0, exports.getUser)(responseData.localId).then((user) => {
-                    resolve(user);
+                yield (0, exports.getDriver)(responseData.localId).then((driver) => {
+                    resolve(driver);
                 }).catch((error) => {
                     return reject(new Error("Error Fetching User from getUser Method"));
                 });
@@ -76,14 +76,14 @@ const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* 
     }));
 });
 exports.signIn = signIn;
-const getUser = (uid) => __awaiter(void 0, void 0, void 0, function* () {
+const getDriver = (uid) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        db.collection("users").doc(uid).get().then((documentSnapshot) => {
+        db.collection("drivers").doc(uid).get().then((documentSnapshot) => {
             resolve(Object(documentSnapshot.data()));
         });
     });
 });
-exports.getUser = getUser;
+exports.getDriver = getDriver;
 const signUp = (authUser) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         admin.auth().createUser({
@@ -93,14 +93,14 @@ const signUp = (authUser) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.signUp = signUp;
-const createUser = (newUserDetail) => __awaiter(void 0, void 0, void 0, function* () {
+const createDriver = (newUserDetail) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        db.collection('users').doc(newUserDetail.uid).set(newUserDetail).then((result) => {
+        db.collection('drivers').doc(newUserDetail.uid).set(newUserDetail).then((result) => {
             resolve(newUserDetail);
-        }).catch(() => reject(new Error("Error creating user in firebase db")));
+        }).catch(() => reject(new Error("Error creating driver in firebase db")));
     });
 });
-exports.createUser = createUser;
+exports.createDriver = createDriver;
 const createRentingItem = (rentingItemData) => {
     return new Promise((resolve, reject) => {
         db.collection("renting_items").add(rentingItemData).then(() => resolve("Success")).catch(() => new Error("Error"));
@@ -130,7 +130,7 @@ const getOrders = (driverId) => {
 exports.getOrders = getOrders;
 const updateCurrentLocation = (driverId, location) => {
     return new Promise((resolve, reject) => {
-        db.collection('users').doc(driverId).update({
+        db.collection('drivers').doc(driverId).update({
             currentLocation: location
         }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")));
     });
@@ -160,7 +160,7 @@ const getRentingItems = () => {
                 resolve(rentingItems);
             }
             else {
-                reject(new Error("No Renting Item"));
+                resolve([]);
             }
         }).catch((error) => reject(new Error("Error Fetching Data")));
     });
@@ -178,13 +178,14 @@ const getSideItems = () => {
                 resolve(sideItems);
             }
             else {
-                reject(new Error("No Side Item"));
+                resolve([]);
             }
         }).catch((error) => reject(new Error("Error Fetching Data")));
     });
 };
 exports.getSideItems = getSideItems;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
+    (0, exports.getRentingItems)().then((result) => console.log(result));
     //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
     //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
     // createUser({

@@ -2,22 +2,22 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
-import { user, assignOrder, rentingItem, sideItem, order } from "types";
-import { signIn, signUp, createUser, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems } from "db"
+import { driver, assignOrder, rentingItem, sideItem, order } from "types";
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems } from "db"
 
 
 
 const router = express.Router();
 
 router.post("/createUser", authenticateJwt, (req: Request, res: Response) => {
-  let parsedUserData = user.safeParse(req.body)
+  let parsedUserData = driver.safeParse(req.body)
   if (!parsedUserData.success) {
     return res.status(403).json({
       msg: "Error in User Details"
     });
   }
-  createUser(parsedUserData.data).then((user) => {
-    res.json({ message: 'Sign Up successfully', user });
+  createDriver(parsedUserData.data).then((driver) => {
+    res.json({ message: 'Sign Up successfully', driver });
   })
 
 })
@@ -35,15 +35,15 @@ router.post('/createSideItem', authenticateJwt, (req: Request, res: Response) =>
 
 })
 
-router.post("/createUser", authenticateJwt, (req: Request, res: Response) => {
-  let parsedUserData = user.safeParse(req.body)
+router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
+  let parsedUserData = driver.safeParse(req.body)
   if (!parsedUserData.success) {
     return res.status(403).json({
       msg: "Error in User Details"
     });
   }
-  createUser(parsedUserData.data).then((user) => {
-    res.json({ message: 'Sign Up successfully', user });
+  createDriver(parsedUserData.data).then((driver) => {
+    res.json({ message: 'Sign Up successfully', driver });
   })
 
 })
@@ -70,6 +70,7 @@ router.post('/createRentingItem', authenticateJwt, (req: Request, res: Response)
       msg: "Error in  Details"
     });
   }
+
   createRentingItem(parsedData.data).then((result) => {
     res.json({ isAdded: true });
   }).catch((error) => res.json({ isAdded: false }))
@@ -91,6 +92,7 @@ router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
 
 
 router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {
+  console.log(req.body.userId)
   getRentingItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })

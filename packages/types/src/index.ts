@@ -3,6 +3,7 @@ import { z } from "zod"
 export const userId = z.object({ uid: z.string() })
 
 export const rentingItem = z.object({
+    companyId: z.string().optional(),
     rentingItemId: z.string().optional(),
     title: z.string().min(1),
     category: z.string().min(1),
@@ -18,6 +19,7 @@ export const rentingItems = z.array(rentingItem)
 export type RentingItemsType = z.infer<typeof rentingItems>
 
 export const sideItem = z.object({
+    companyId: z.string().optional(),
     sideItemId: z.string().optional(),
     title: z.string(),
     capacity: z.number()
@@ -35,12 +37,13 @@ export type LocationType = z.infer<typeof location>
 
 export const userSignIn = z.object({
     email: z.string().email(),
-    password: z.string().min(1)
+    password: z.string().min(1),
 })
 
 export type UserSignInType = z.infer<typeof userSignIn>
 
-export const user = z.object({
+export const driver = z.object({
+    companyId: z.string().optional(),
     email: z.string(),
     name: z.string(),
     uid: z.string().optional(),
@@ -52,9 +55,10 @@ export const user = z.object({
     isAutomaticallyTracked: z.boolean().default(false)
 })
 
-export type UserType = z.infer<typeof user>
+export type DriverType = z.infer<typeof driver>
 
 export const order = z.object({
+    companyId: z.string().optional(),
     orderId: z.number().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })),
     address: z.string(),
