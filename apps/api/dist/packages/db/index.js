@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDrivers = exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
+exports.getDrivers = exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrderswithDate = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -136,6 +136,15 @@ const getOrders = (driverId) => {
     });
 };
 exports.getOrders = getOrders;
+const getOrderswithDate = (date) => {
+    return new Promise((resolve, reject) => {
+        db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
+            let orders = result.docs.map((doc) => doc.data());
+            resolve(orders);
+        }).catch((error) => reject(new Error("Error fetching orders of driver")));
+    });
+};
+exports.getOrderswithDate = getOrderswithDate;
 const updateCurrentLocation = (driverId, location) => {
     return new Promise((resolve, reject) => {
         db.collection('drivers').doc(driverId).update({

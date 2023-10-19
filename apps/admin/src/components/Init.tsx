@@ -67,15 +67,20 @@ const Init = () => {
 
 
         const urlGetOrders = `${BASE_URL}/admin/getOrders`
+        let dateNow = new Date().setHours(0, 0, 0, 0)
+        console.log(dateNow)
         fetch(urlGetOrders, {
-            method: "GET"
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: dateNow })
         }).then(result => {
             result.json().then(
                 (jsonData) => {
                     console.log(jsonData)
                     setOrders({
                         isLoading: false,
-                        value: jsonData
+                        value: jsonData,
+                        date: dateNow
                     })
                 }
             ).catch((error) => {

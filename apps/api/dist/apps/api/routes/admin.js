@@ -92,4 +92,20 @@ router.get('/getSideItems', middleware_1.authenticateJwt, (req, res) => {
 router.get('/getDrivers', middleware_1.authenticateJwt, (req, res) => {
     (0, db_1.getDrivers)().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" }));
 });
+router.post("/getOrders", middleware_1.authenticateJwt, (req, res) => {
+    console.log(req.body);
+    let parsedDate = req.body.date;
+    if (!parsedDate) {
+        return res.status(403).json({
+            msg: "Error in Driver Id"
+        });
+    }
+    (0, db_1.getOrderswithDate)(new Date(parsedDate)).then((orders) => {
+        res.json({ orders: orders });
+    }).catch(() => {
+        res.status(403).json({
+            msg: "Error fetching from firestore"
+        });
+    });
+});
 exports.default = router;

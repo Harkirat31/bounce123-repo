@@ -117,6 +117,15 @@ export const getOrders = (driverId: string): Promise<OrderType[]> => {
   })
 }
 
+export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
+  return new Promise((resolve, reject) => {
+    db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
+      let orders = result.docs.map((doc) => doc.data() as OrderType)
+      resolve(orders)
+    }).catch((error) => reject(new Error("Error fetching orders of driver")))
+  })
+}
+
 export const updateCurrentLocation = (driverId: string, location: LocationType) => {
   return new Promise((resolve, reject) => {
     db.collection('drivers').doc(driverId).update({

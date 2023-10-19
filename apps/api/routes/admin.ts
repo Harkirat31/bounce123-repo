@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate } from "db"
 
 
 
@@ -111,6 +111,24 @@ router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
 router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
   getDrivers().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
+})
+
+
+router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
+  console.log(req.body)
+  let parsedDate = req.body.date
+  if (!parsedDate) {
+    return res.status(403).json({
+      msg: "Error in Driver Id"
+    });
+  }
+  getOrderswithDate(new Date(parsedDate)).then((orders) => {
+    res.json({ orders: orders });
+  }).catch(() => {
+    res.status(403).json({
+      msg: "Error fetching from firestore"
+    })
+  })
 })
 
 export default router
