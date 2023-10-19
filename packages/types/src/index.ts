@@ -68,9 +68,10 @@ export const order = z.object({
     driverId: z.string().optional(),
     driverName: z.string().optional(),
     currentStatus: z.string().optional(), //weather deliverd, picked, pending to deliver, pending to pick
-    deliveryDate: z.string().datetime(),
+    deliveryDate: z.date(),
+    specialInstructions: z.string().optional(),
     deliverTimeRangeStart: z.number().min(1).max(24),
-    deliverTimeRangeEnd: z.string().min(1).max(24),
+    deliverTimeRangeEnd: z.number().min(1).max(24),
     extraItems: z.array(z.object({ sideItemId: z.string(), sideItemTitle: z.string(), count: z.number() })).optional(),
 })
 

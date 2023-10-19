@@ -51,9 +51,10 @@ exports.order = zod_1.z.object({
     driverId: zod_1.z.string().optional(),
     driverName: zod_1.z.string().optional(),
     currentStatus: zod_1.z.string().optional(),
-    deliveryDate: zod_1.z.string().datetime(),
+    deliveryDate: zod_1.z.date(),
+    specialInstructions: zod_1.z.string().optional(),
     deliverTimeRangeStart: zod_1.z.number().min(1).max(24),
-    deliverTimeRangeEnd: zod_1.z.string().min(1).max(24),
+    deliverTimeRangeEnd: zod_1.z.number().min(1).max(24),
     extraItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })).optional(),
 });
 exports.assignOrder = zod_1.z.object({

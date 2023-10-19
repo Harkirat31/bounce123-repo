@@ -163,7 +163,11 @@ exports.assignOrderToDriver = assignOrderToDriver;
 const getRentingItems = () => {
     return new Promise((resolve, reject) => {
         db.collection("renting_items").get().then((result) => {
-            let rentingItems = result.docs.map((doc) => doc.data());
+            let rentingItems = result.docs.map((doc) => {
+                let rentingItem = doc.data();
+                rentingItem.rentingItemId = doc.id;
+                return rentingItem;
+            });
             if (rentingItems.length > 0) {
                 resolve(rentingItems);
             }
@@ -211,7 +215,8 @@ const getDrivers = () => {
 };
 exports.getDrivers = getDrivers;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
-    (0, exports.getRentingItems)().then((result) => console.log(result));
+    const c = new Date().getMilliseconds();
+    //getRentingItems().then((result) => console.log(result))
     //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
     //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
     // createUser({

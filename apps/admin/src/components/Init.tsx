@@ -4,12 +4,14 @@ import { sideItemsState } from "../store/atoms/sideItemsAtom"
 import { useEffect } from "react"
 import { BASE_URL } from "../../config"
 import { driversState } from "../store/atoms/driversAtom"
+import { ordersState } from "../store/atoms/orderAtom"
 
 const Init = () => {
 
     const setRentingItems = useSetRecoilState(rentItemsState)
     const setSideItems = useSetRecoilState(sideItemsState)
     const setDrivers = useSetRecoilState(driversState)
+    const setOrders = useSetRecoilState(ordersState)
 
     useEffect(() => {
         const urlGetRentingItems = `${BASE_URL}/admin/getRentingItems`
@@ -18,6 +20,7 @@ const Init = () => {
         }).then(result => {
             result.json().then(
                 (jsonData) => {
+                    console.log(jsonData)
                     setRentingItems({
                         isLoading: false,
                         value: jsonData
@@ -53,6 +56,24 @@ const Init = () => {
                 (jsonData) => {
                     console.log(jsonData)
                     setDrivers({
+                        isLoading: false,
+                        value: jsonData
+                    })
+                }
+            ).catch((error) => {
+                console.log(error)
+            })
+        }).catch((error) => console.log("error"))
+
+
+        const urlGetOrders = `${BASE_URL}/admin/getOrders`
+        fetch(urlGetOrders, {
+            method: "GET"
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    console.log(jsonData)
+                    setOrders({
                         isLoading: false,
                         value: jsonData
                     })

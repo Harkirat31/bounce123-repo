@@ -47,6 +47,7 @@ router.post("/createDriver", middleware_1.authenticateJwt, (req, res) => {
     });
 });
 router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => {
+    req.body.deliveryDate = new Date(req.body.deliveryDate);
     let parsedData = types_1.order.safeParse(req.body);
     if (!parsedData.success) {
         console.log(parsedData.error);

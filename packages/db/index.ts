@@ -146,7 +146,11 @@ export const getRentingItems = () => {
   return new Promise((resolve, reject) => {
     db.collection("renting_items").get().then(
       (result) => {
-        let rentingItems = result.docs.map((doc) => doc.data() as RentingItemType)
+        let rentingItems = result.docs.map((doc) => {
+          let rentingItem = doc.data() as RentingItemType
+          rentingItem.rentingItemId = doc.id
+          return rentingItem
+        })
         if (rentingItems.length > 0) {
           resolve(rentingItems)
         }
@@ -204,8 +208,9 @@ export const getDrivers = () => {
 
 
 const test = async () => {
+  const c = new Date().getMilliseconds()
 
-  getRentingItems().then((result) => console.log(result))
+  //getRentingItems().then((result) => console.log(result))
   //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
   //updateCurrentLocation("7GnMyRNWRzMU2cShccm4JkrRuEu1",{lat:"1",long:"2"})
 

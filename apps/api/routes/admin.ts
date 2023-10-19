@@ -54,6 +54,7 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
 })
 
 router.post("/createOrder", authenticateJwt, (req: Request, res: Response) => {
+  req.body.deliveryDate = new Date(req.body.deliveryDate)
   let parsedData = order.safeParse(req.body)
   if (!parsedData.success) {
     console.log(parsedData.error)
