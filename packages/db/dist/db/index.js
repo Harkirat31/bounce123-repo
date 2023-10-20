@@ -139,7 +139,12 @@ exports.getOrders = getOrders;
 const getOrderswithDate = (date) => {
     return new Promise((resolve, reject) => {
         db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
-            let orders = result.docs.map((doc) => doc.data());
+            let orders = result.docs.map((doc) => {
+                // console.log(new Date(doc.data().doc.data().deliveryDate))
+                let order = doc.data();
+                order.deliveryDate = doc.data().deliveryDate.toDate();
+                return order;
+            });
             resolve(orders);
         }).catch((error) => reject(new Error("Error fetching orders of driver")));
     });

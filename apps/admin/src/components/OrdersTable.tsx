@@ -1,63 +1,99 @@
 import { useRecoilValue } from "recoil"
-import { getRentingItems } from "../store/selectors/rentingItemsSelector"
-import { RentingItemType } from "types"
+import { OrderType } from "types"
+import { getOrders } from "../store/selectors/orderSelector"
 
 const OrdersTable = () => {
 
     // let items: number[] = [1, 2, 3];
-    const rentingItems = useRecoilValue(getRentingItems)
-    if (rentingItems != null && (rentingItems as []).length > 0) {
+    const orders = useRecoilValue(getOrders)
+    if (orders != null && orders.length > 0) {
         return <>
-            <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <div className="mt-4 shadow-md sm:rounded-lg">
+                <table className="text-sm text-left text-gray-500 ">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-6 py-3">
-                                Product title
+                            <th scope="col" className="px-3 py-3 w-10">
+                                Name
                             </th>
-                            <th scope="col" className="px-6 py-3">
-                                Category
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Address
                             </th>
-                            <th scope="col" className="px-6 py-3">
-                                Capacity
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Phone
                             </th>
-                            <th scope="col" className="px-6 py-3">
-                                Delivery Price
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Date
                             </th>
-                            <th scope="col" className="px-6 py-3">
-                                Side Items
+                            <th scope="col" className="px-1 py-3 w-10" >
+                                Time (Between)
                             </th>
 
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Renting Items
+                            </th>
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Extras
+                            </th>
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Instructions
+                            </th>
+                            <th scope="col" className="px-2 py-3">
+                                Asign To
+                            </th>
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Status
+                            </th>
+
+                            <th scope="col" className="px-1 py-3">
                                 <span className="sr-only">Edit</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {(rentingItems as []).map((item: RentingItemType) => {
+                        {orders.map((order: OrderType) => {
                             return <>
                                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {item.title}
-                                    </th>
-                                    <td className="px-6 py-4">
-                                        {item.category}
+                                    <td className="px-3 py-4">
+                                        <p>{order.cname}</p>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {item.capacity}
+                                    <td className="px-1 py-4">
+                                        <p>{order.address}</p>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {item.deliveryPrice}
+                                    <td className="px-1 py-4">
+                                        {order.cphone}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        {item.sideItems.map((sideItem) => {
+                                    <td className="px-1 py-4">
+                                        {new Date(order.deliveryDate).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-1 py-4">
+                                        {order.deliverTimeRangeStart + "Hrs to " + order.deliverTimeRangeEnd + "Hrs"}
+                                    </td>
+
+                                    <td className="px-1 py-4">
+                                        {order.rentingItems.map((item) => {
                                             return <>{
-                                                <p>{sideItem.count + " " + sideItem.sideItemTitle}</p>
+                                                <p>{item.rentingItemTitle}</p>
                                             }</>
                                         })}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <td className="px-1 py-4">
+                                        {order.extraItems && order.extraItems.map((item) => {
+                                            return <>{
+                                                <p>{item.sideItemTitle}</p>
+                                            }</>
+                                        })}
+                                    </td>
+                                    <td className="px-1 py-4">
+                                        {order.specialInstructions}
+                                    </td>
+                                    <td className="px-1 py-4">
+                                        {order.driverName}
+                                    </td>
+                                    <td className="px-1 py-4">
+                                        {order.currentStatus}
+                                    </td>
+                                    <td className="px-3 py-4 text-right">
+                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
                                     </td>
                                 </tr>
                             </>
@@ -70,8 +106,8 @@ const OrdersTable = () => {
 
     }
     else {
-        return <div className="mt-10 w-full bg-slate-50 shadow-md">
-            <p className="p-10">No Renting Item is created</p>
+        return <div className="mt-10 w-1/2 bg-slate-50 shadow-md">
+            <p className="p-10">No Order</p>
         </div>
     }
 

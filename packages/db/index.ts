@@ -1,6 +1,7 @@
 //import path from 'path';
 
 import * as admin from 'firebase-admin';
+
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType } from "types"
 // Initialize Firebase Admin SDK
 
@@ -11,6 +12,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+
 
 async function getData() {
   const x = await db.collection('test').doc("1").get()
@@ -118,9 +120,16 @@ export const getOrders = (driverId: string): Promise<OrderType[]> => {
 }
 
 export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
+
   return new Promise((resolve, reject) => {
     db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
-      let orders = result.docs.map((doc) => doc.data() as OrderType)
+      let orders = result.docs.map(
+        (doc) => {
+          let order = doc.data() as OrderType
+          order.deliveryDate = doc.data().deliveryDate.toDate()
+          return order
+        }
+      )
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
   })

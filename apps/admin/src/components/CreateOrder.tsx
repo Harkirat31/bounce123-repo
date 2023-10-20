@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { useRecoilValue } from "recoil"
 import { getSideItems } from "../store/selectors/sideItemsSelector"
-import { RentingItemType, SideItemType, rentingItem, order } from "types/src/index"
+import { RentingItemType, SideItemType, order } from "types/src/index"
 import { BASE_URL } from "../../config"
 import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
 
 
-const CreateDriver = () => {
+const CreateOrder = () => {
     const [cName, setCName] = useState("")
     const [cphone, setCPhone] = useState("")
     const [address, setAddress] = useState("")
@@ -39,21 +39,21 @@ const CreateDriver = () => {
         }
 
         console.log({ cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, deliverTimeRangeStart, deliverTimeRangeEnd })
-        let parsedRentingItem = order.safeParse({ cname: cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, deliverTimeRangeStart, deliverTimeRangeEnd, specialInstructions })
+        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, deliverTimeRangeStart, deliverTimeRangeEnd, specialInstructions })
 
 
-        if (!parsedRentingItem.success) {
-            console.log(parsedRentingItem.error)
+        if (!parsedOrder.success) {
+            console.log(parsedOrder.error)
             alert("Error in Data")
             return
         }
 
-        console.log(parsedRentingItem.data)
+        console.log(parsedOrder.data)
 
         fetch(BASE_URL + '/admin/createOrder', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(parsedRentingItem.data)
+            body: JSON.stringify(parsedOrder.data)
         }).then((response) => response.json().then((jsonData) => {
             console.log(jsonData)
         }))
@@ -84,20 +84,21 @@ const CreateDriver = () => {
 
 
     return <>
-        <div className="mr-4 justify-center">
+        <div className="mr-2 justify-center">
             <p className="text-blue-900 text-center" >Create New Order</p>
-            <div className="mt-4">
+            <div className="text-xs mt-4">
                 <input onChange={(event) => setCName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input onChange={(event) => setCPhone(event.target.value)} placeholder="Phone" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input onChange={(event) => setAddress(event.target.value)} placeholder="Address" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <div className="flex mb-2">
-                    <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date) => setDate(date)} />
-                    <p className="ml-2 text-blue-900">Time:</p>
-                    <select value={time} onChange={(event) => setTime(parseInt(event.target.value))} className="border-2 border-blue-900" >
-                        <option value={1}>Before 10AM</option>
-                        <option value={2}>Between 10AM-12PM</option>
-                        <option value={3}>After 12PM</option>
-                    </select>
+                <div className="flex grid-cols-8 mb-2">
+                    <DatePicker className="col-span-2  text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date) => setDate(date)} />
+                    <div className="col-span-6 flex flex-row">
+                        <select value={time} onChange={(event) => setTime(parseInt(event.target.value))} className="border-2 border-blue-900" >
+                            <option value={1}>Before 10AM</option>
+                            <option value={2}>Between 10AM-12PM</option>
+                            <option value={3}>After 12PM</option>
+                        </select>
+                    </div>
 
 
                 </div>
@@ -196,4 +197,4 @@ const CreateDriver = () => {
     </>
 }
 
-export default CreateDriver
+export default CreateOrder

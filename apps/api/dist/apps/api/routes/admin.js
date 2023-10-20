@@ -101,7 +101,7 @@ router.post("/getOrders", middleware_1.authenticateJwt, (req, res) => {
         });
     }
     (0, db_1.getOrderswithDate)(new Date(parsedDate)).then((orders) => {
-        res.json({ orders: orders });
+        res.json(orders);
     }).catch(() => {
         res.status(403).json({
             msg: "Error fetching from firestore"
