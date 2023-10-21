@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import './App.css'
 import AppBar from './components/AppBar'
-import Home from './pages/Home'
+import Home from './pages/Maps'
 import Order from './pages/Order'
 import Deliverable from './pages/Deliverable'
 import Driver from './pages/Driver'

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
+exports.deliveryStatus = exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
@@ -50,7 +50,7 @@ exports.order = zod_1.z.object({
     location: exports.location.optional(),
     driverId: zod_1.z.string().optional(),
     driverName: zod_1.z.string().optional(),
-    currentStatus: zod_1.z.string().optional(),
+    currentStatus: zod_1.z.enum(["Created", "Assigned", "OnTheWay", "Delivered", "Picked", "Returned"]).default("Created"),
     deliveryDate: zod_1.z.date(),
     specialInstructions: zod_1.z.string().optional(),
     deliverTimeRangeStart: zod_1.z.number().min(1).max(24),
@@ -69,4 +69,13 @@ exports.updateStatusOfOrder = zod_1.z.object({
     orderId: zod_1.z.string(),
     currentStatus: zod_1.z.string()
 });
+var deliveryStatus;
+(function (deliveryStatus) {
+    deliveryStatus[deliveryStatus["Created"] = 0] = "Created";
+    deliveryStatus[deliveryStatus["Assigned"] = 1] = "Assigned";
+    deliveryStatus[deliveryStatus["OnTheWay"] = 2] = "OnTheWay";
+    deliveryStatus[deliveryStatus["Delivered"] = 3] = "Delivered";
+    deliveryStatus[deliveryStatus["Picked"] = 4] = "Picked";
+    deliveryStatus[deliveryStatus["Returned"] = 5] = "Returned";
+})(deliveryStatus || (exports.deliveryStatus = deliveryStatus = {}));
 //export const 

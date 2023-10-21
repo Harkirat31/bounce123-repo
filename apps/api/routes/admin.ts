@@ -62,6 +62,23 @@ router.post("/createOrder", authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in  Details"
     });
   }
+  const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+  const address = '1600 Amphitheatre Parkway, Mountain View, CA';
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`, {
+    method: "GET"
+  }).then(result => {
+    result.json().then(
+      (jsonData) => {
+        console.log(jsonData)
+        setRentingItems({
+          isLoading: false,
+          value: jsonData
+        })
+      }
+    ).catch((error) => {
+      console.log(error)
+    })
+  }).catch((error) => console.log("error"))
   createOrder(parsedData.data).then((user) => {
     res.json({ isAdded: true })
   }).catch((error) => res.json({ isAdded: false }))

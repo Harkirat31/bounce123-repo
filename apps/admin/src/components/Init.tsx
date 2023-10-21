@@ -80,7 +80,7 @@ const Init = () => {
                     setOrders({
                         isLoading: false,
                         value: jsonData,
-                        date: dateNow
+                        date: new Date(dateNow)
                     })
                 }
             ).catch((error) => {
