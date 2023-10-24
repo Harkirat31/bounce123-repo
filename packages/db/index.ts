@@ -159,7 +159,7 @@ export const assignOrderToDriver = (driverId: string, driverName: string, orderI
       driverId: driverId,
       driverName: driverName,
       currentStatus: "Assigned"
-    })
+    }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
   })
 }
 

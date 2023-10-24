@@ -4,7 +4,7 @@ import { sideItemsState } from "../store/atoms/sideItemsAtom"
 import { useEffect } from "react"
 import { BASE_URL } from "../../config"
 import { driversState } from "../store/atoms/driversAtom"
-import { ordersState } from "../store/atoms/orderAtom"
+import { ordersAtom, ordersState } from "../store/atoms/orderAtom"
 
 const Init = () => {
 
@@ -12,6 +12,7 @@ const Init = () => {
     const setSideItems = useSetRecoilState(sideItemsState)
     const setDrivers = useSetRecoilState(driversState)
     const setOrders = useSetRecoilState(ordersState)
+    const setOrdersMap = useSetRecoilState(ordersAtom)
 
     useEffect(() => {
         const urlGetRentingItems = `${BASE_URL}/admin/getRentingItems`
@@ -82,6 +83,7 @@ const Init = () => {
                         value: jsonData,
                         date: new Date(dateNow)
                     })
+                    setOrdersMap(jsonData)
                 }
             ).catch((error) => {
                 console.log(error)

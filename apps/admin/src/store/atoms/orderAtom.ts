@@ -17,3 +17,9 @@ export const ordersState = atom<ordersStateType>({
     }
 })
 
+
+export const ordersAtom = atom<OrderType[]>({
+    key: "orderState",
+    default: []
+})
+

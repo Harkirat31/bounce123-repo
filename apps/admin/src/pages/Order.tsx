@@ -13,6 +13,8 @@ const Order = () => {
   const setOrders = useSetRecoilState(ordersState)
 
   const OnDateChangeHandler = (date: Date) => {
+    console.log(new Date(date.setUTCHours(0, 0, 0, 0)))
+
     const urlGetOrders = `${BASE_URL}/admin/getOrders`
 
     fetch(urlGetOrders, {

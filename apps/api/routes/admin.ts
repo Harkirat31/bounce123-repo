@@ -115,8 +115,8 @@ router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
     })
   }
   assignOrderToDriver(assignOrderParams.data.driverId, assignOrderParams.data.driverName, assignOrderParams.data.orderId).then((result) => {
-    return res.json({ isAdded: true })
-  })
+    res.json({ isAdded: true })
+  }).catch((errro) => res.json({ isAdded: false }))
 })
 
 

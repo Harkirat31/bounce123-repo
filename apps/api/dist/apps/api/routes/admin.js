@@ -109,8 +109,8 @@ router.post('/assignOrder', middleware_1.authenticateJwt, (req, res) => {
         });
     }
     (0, db_1.assignOrderToDriver)(assignOrderParams.data.driverId, assignOrderParams.data.driverName, assignOrderParams.data.orderId).then((result) => {
-        return res.json({ isAdded: true });
-    });
+        res.json({ isAdded: true });
+    }).catch((errro) => res.json({ isAdded: false }));
 });
 router.get('/getRentingItems', middleware_1.authenticateJwt, (req, res) => {
     console.log(req.body.userId);
