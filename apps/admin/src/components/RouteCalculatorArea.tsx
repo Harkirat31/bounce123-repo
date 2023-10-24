@@ -1,6 +1,9 @@
 import { useRecoilValue } from "recoil"
-import { OrderType } from "types"
+import { DriverType, OrderType, order } from "types"
 import { getOrders } from "../store/selectors/orderSelector"
+import { useRef, useState } from "react"
+import { getDrivers } from "../store/selectors/driversSelector"
+import { BASE_URL } from "../../config"
 
 const RouteCalculatorArea = () => {
     const orders = useRecoilValue(getOrders)
@@ -10,15 +13,14 @@ const RouteCalculatorArea = () => {
                 <table className="text-sm text-left text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-3 py-3 w-5">
+                            <th scope="col" className="px-3 py-3">
                                 Sr. No
                             </th>
-
-                            <th scope="col" className="px-2 py-3 w-10">
-                                Asign To
-                            </th>
-                            <th scope="col" className="px-1 py-3 w-full">
+                            <th scope="col" className="px-1 py-3">
                                 Status
+                            </th>
+                            <th scope="col" className="px-2 py-3 w-full">
+                                Asign To
                             </th>
                         </tr>
                     </thead>
@@ -30,10 +32,10 @@ const RouteCalculatorArea = () => {
                                         <p>1</p>
                                     </td>
                                     <td className="px-1 py-4">
-                                        <p>{order.driverName}</p>
+                                        {order.currentStatus}
                                     </td>
                                     <td className="px-1 py-4">
-                                        {order.currentStatus}
+                                        <DriverDropDownForOrder order={order}></DriverDropDownForOrder>
                                     </td>
                                 </tr>
                             </>
@@ -48,3 +50,46 @@ const RouteCalculatorArea = () => {
 }
 
 export default RouteCalculatorArea
+
+
+
+const DriverDropDownForOrder = (props: { order: OrderType }) => {
+    const selectRef = useRef<HTMLSelectElement | null>(null);
+    const drivers: any = useRecoilValue(getDrivers)
+    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
+
+    const handleDropdownChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
+        const urlGetOrders = `${BASE_URL}/admin/assignOrder`
+        if (dropDownItem == "Select") {
+            return
+        }
+        let params = { orderId: props.order.orderId, driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text }
+        console.log(params)
+        fetch(urlGetOrders, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    console.log(jsonData)
+                }
+            ).catch((error) => {
+                console.log(error)
+            })
+        }).catch((error) => console.log("error"))
+
+    }
+
+    return <>
+        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
+            <option value={"Select"}>Select</option>
+            {drivers.map((driver: DriverType) => {
+                return <>
+                    <option value={driver.uid}>{driver.name}</option>
+                </>
+            })}
+        </select>
+    </>
+}

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,7 +55,7 @@ router.post("/createDriver", middleware_1.authenticateJwt, (req, res) => {
         });
     });
 });
-router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => {
+router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     req.body.deliveryDate = new Date(req.body.deliveryDate);
     let parsedData = types_1.order.safeParse(req.body);
     if (!parsedData.success) {
@@ -55,10 +64,31 @@ router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => {
             msg: "Error in  Details"
         });
     }
+    const apiKey = 'AIzaSyANu4rP79yzZDjyHT3ExDgGb_6gh9IxbwE';
+    let location = { lat: 0, lng: 0 };
+    let placeId = "";
+    try {
+        const resp = yield fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(parsedData.data.address)}&key=${apiKey}`, {
+            method: "GET"
+        });
+        const jsonData = yield resp.json();
+        const results = jsonData.results;
+        if (results.length > 0) {
+            location = results[0].geometry.location;
+            placeId = results[0].place_id;
+        }
+        else {
+            console.log('No results found for the given address.');
+        }
+    }
+    catch (e) {
+    }
+    parsedData.data.location = location;
+    parsedData.data.placeId = placeId;
     (0, db_1.createOrder)(parsedData.data).then((user) => {
         res.json({ isAdded: true });
     }).catch((error) => res.json({ isAdded: false }));
-});
+}));
 router.post('/createRentingItem', middleware_1.authenticateJwt, (req, res) => {
     let parsedData = types_1.rentingItem.safeParse(req.body);
     if (!parsedData.success) {
@@ -78,7 +108,7 @@ router.post('/assignOrder', middleware_1.authenticateJwt, (req, res) => {
             msg: "Error in Parameters"
         });
     }
-    (0, db_1.assignOrderToDriver)(assignOrderParams.data.driverId, assignOrderParams.data.orderId).then((result) => {
+    (0, db_1.assignOrderToDriver)(assignOrderParams.data.driverId, assignOrderParams.data.driverName, assignOrderParams.data.orderId).then((result) => {
         return res.json({ isAdded: true });
     });
 });

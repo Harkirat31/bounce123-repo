@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deliveryStatus = exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
+exports.path = exports.deliveryStatus = exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
@@ -21,8 +21,8 @@ exports.sideItem = zod_1.z.object({
     capacity: zod_1.z.number()
 });
 exports.location = zod_1.z.object({
-    lat: zod_1.z.string(),
-    long: zod_1.z.string()
+    lat: zod_1.z.number(),
+    lng: zod_1.z.number()
 });
 exports.userSignIn = zod_1.z.object({
     email: zod_1.z.string().email(),
@@ -42,15 +42,16 @@ exports.driver = zod_1.z.object({
 });
 exports.order = zod_1.z.object({
     companyId: zod_1.z.string().optional(),
-    orderId: zod_1.z.number().optional(),
+    orderId: zod_1.z.string().optional(),
     rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),
     cname: zod_1.z.string().min(1),
     cphone: zod_1.z.string().min(10),
     location: exports.location.optional(),
+    placeId: zod_1.z.string().optional(),
     driverId: zod_1.z.string().optional(),
     driverName: zod_1.z.string().optional(),
-    currentStatus: zod_1.z.enum(["Created", "Assigned", "OnTheWay", "Delivered", "Picked", "Returned"]).default("Created"),
+    currentStatus: zod_1.z.enum(["NotAssigned", "Assigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"),
     deliveryDate: zod_1.z.date(),
     specialInstructions: zod_1.z.string().optional(),
     deliverTimeRangeStart: zod_1.z.number().min(1).max(24),
@@ -58,6 +59,7 @@ exports.order = zod_1.z.object({
     extraItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })).optional(),
 });
 exports.assignOrder = zod_1.z.object({
+    driverName: zod_1.z.string(),
     driverId: zod_1.z.string(),
     orderId: zod_1.z.string()
 });
@@ -71,11 +73,14 @@ exports.updateStatusOfOrder = zod_1.z.object({
 });
 var deliveryStatus;
 (function (deliveryStatus) {
-    deliveryStatus[deliveryStatus["Created"] = 0] = "Created";
+    deliveryStatus[deliveryStatus["NotAssigned"] = 0] = "NotAssigned";
     deliveryStatus[deliveryStatus["Assigned"] = 1] = "Assigned";
     deliveryStatus[deliveryStatus["OnTheWay"] = 2] = "OnTheWay";
     deliveryStatus[deliveryStatus["Delivered"] = 3] = "Delivered";
     deliveryStatus[deliveryStatus["Picked"] = 4] = "Picked";
     deliveryStatus[deliveryStatus["Returned"] = 5] = "Returned";
 })(deliveryStatus || (exports.deliveryStatus = deliveryStatus = {}));
-//export const 
+exports.path = zod_1.z.object({
+    driverId: zod_1.z.string().optional(),
+    orders: zod_1.z.map(zod_1.z.number(), zod_1.z.string())
+});

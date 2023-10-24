@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { number, z } from "zod"
 
 export const userId = z.object({ uid: z.string() })
 
@@ -28,8 +28,8 @@ export const sideItem = z.object({
 export type SideItemType = z.infer<typeof sideItem>
 
 export const location = z.object({
-    lat: z.string(),
-    long: z.string()
+    lat: z.number(),
+    lng: z.number()
 })
 
 export type LocationType = z.infer<typeof location>
@@ -59,15 +59,16 @@ export type DriverType = z.infer<typeof driver>
 
 export const order = z.object({
     companyId: z.string().optional(),
-    orderId: z.number().optional(),
+    orderId: z.string().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })),
     address: z.string(),
     cname: z.string().min(1),
     cphone: z.string().min(10),
     location: location.optional(),
+    placeId: z.string().optional(),
     driverId: z.string().optional(),
     driverName: z.string().optional(),
-    currentStatus: z.enum(["Created", "Assigned", "OnTheWay", "Delivered", "Picked", "Returned"]).default("Created"), //weather deliverd, picked, pending to deliver, pending to pick
+    currentStatus: z.enum(["NotAssigned", "Assigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
     deliveryDate: z.date(),
     specialInstructions: z.string().optional(),
     deliverTimeRangeStart: z.number().min(1).max(24),
@@ -79,6 +80,7 @@ export type OrderType = z.infer<typeof order>
 
 
 export const assignOrder = z.object({
+    driverName: z.string(),
     driverId: z.string(),
     orderId: z.string()
 })
@@ -94,11 +96,18 @@ export const updateStatusOfOrder = z.object({
 })
 
 export enum deliveryStatus {
-    Created,
+    NotAssigned,
     Assigned,
     OnTheWay,
     Delivered,
     Picked,
     Returned
 }
-//export const 
+
+
+export const path = z.object({
+    driverId: z.string().optional(),
+    orders: z.map(z.number(), z.string())
+})
+
+export type PathType = z.infer<typeof path>

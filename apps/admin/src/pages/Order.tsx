@@ -23,6 +23,7 @@ const Order = () => {
       result.json().then(
         (jsonData) => {
           console.log(jsonData)
+          setDate(date)
           setOrders({
             isLoading: false,
             value: jsonData,

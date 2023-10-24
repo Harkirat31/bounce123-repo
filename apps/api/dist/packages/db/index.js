@@ -141,7 +141,8 @@ const getOrderswithDate = (date) => {
         db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
             let orders = result.docs.map((doc) => {
                 let order = doc.data();
-                order.deliveryDate = doc.data().deliveryDate.toDate();
+                order.deliveryDate = doc.data().deliveryDate.toDate(),
+                    order.orderId = doc.id;
                 return order;
             });
             resolve(orders);
@@ -165,10 +166,12 @@ const updateOrderStatus = (orderId, currentStatus) => {
     });
 };
 exports.updateOrderStatus = updateOrderStatus;
-const assignOrderToDriver = (driverId, orderId) => {
+const assignOrderToDriver = (driverId, driverName, orderId) => {
     return new Promise((resolve, reject) => {
         db.collection('orders').doc(orderId).update({
-            driverId: driverId
+            driverId: driverId,
+            driverName: driverName,
+            currentStatus: "Assigned"
         });
     });
 };

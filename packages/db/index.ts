@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin';
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order } from "types"
 // Initialize Firebase Admin SDK
 
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -126,7 +126,8 @@ export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
       let orders = result.docs.map(
         (doc) => {
           let order = doc.data() as OrderType
-          order.deliveryDate = doc.data().deliveryDate.toDate()
+          order.deliveryDate = doc.data().deliveryDate.toDate(),
+            order.orderId = doc.id
           return order
         }
       )
@@ -152,10 +153,12 @@ export const updateOrderStatus = (orderId: string, currentStatus: string) => {
 }
 
 
-export const assignOrderToDriver = (driverId: string, orderId: string) => {
+export const assignOrderToDriver = (driverId: string, driverName: string, orderId: string) => {
   return new Promise((resolve, reject) => {
     db.collection('orders').doc(orderId).update({
-      driverId: driverId
+      driverId: driverId,
+      driverName: driverName,
+      currentStatus: "Assigned"
     })
   })
 }

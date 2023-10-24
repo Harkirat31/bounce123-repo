@@ -53,7 +53,7 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
 
 })
 
-router.post("/createOrder", authenticateJwt, (req: Request, res: Response) => {
+router.post("/createOrder", authenticateJwt, async (req: Request, res: Response) => {
   req.body.deliveryDate = new Date(req.body.deliveryDate)
   let parsedData = order.safeParse(req.body)
   if (!parsedData.success) {
@@ -62,23 +62,29 @@ router.post("/createOrder", authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in  Details"
     });
   }
-  const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
-  const address = '1600 Amphitheatre Parkway, Mountain View, CA';
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`, {
-    method: "GET"
-  }).then(result => {
-    result.json().then(
-      (jsonData) => {
-        console.log(jsonData)
-        setRentingItems({
-          isLoading: false,
-          value: jsonData
-        })
-      }
-    ).catch((error) => {
-      console.log(error)
+  const apiKey = 'AIzaSyANu4rP79yzZDjyHT3ExDgGb_6gh9IxbwE';
+  let location = { lat: 0, lng: 0 }
+  let placeId = ""
+
+  try {
+    const resp = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(parsedData.data.address)}&key=${apiKey}`, {
+      method: "GET"
     })
-  }).catch((error) => console.log("error"))
+    const jsonData = await resp.json()
+    const results = jsonData.results;
+
+    if (results.length > 0) {
+      location = results[0].geometry.location;
+      placeId = results[0].place_id;
+    } else {
+      console.log('No results found for the given address.');
+    }
+  }
+  catch (e) {
+  }
+
+  parsedData.data.location = location
+  parsedData.data.placeId = placeId
   createOrder(parsedData.data).then((user) => {
     res.json({ isAdded: true })
   }).catch((error) => res.json({ isAdded: false }))
@@ -108,7 +114,7 @@ router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in Parameters"
     })
   }
-  assignOrderToDriver(assignOrderParams.data.driverId, assignOrderParams.data.orderId).then((result) => {
+  assignOrderToDriver(assignOrderParams.data.driverId, assignOrderParams.data.driverName, assignOrderParams.data.orderId).then((result) => {
     return res.json({ isAdded: true })
   })
 })
