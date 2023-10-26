@@ -1,12 +1,12 @@
 import { useRecoilState, useRecoilValue } from "recoil"
 import { DriverType, OrderType } from "types"
-import { getOrderById, getOrders } from "../store/selectors/orderSelector"
 import { useRef, useState } from "react"
 import { getDrivers } from "../store/selectors/driversSelector"
 import { BASE_URL } from "../../config"
+import { getOrderById, ordersAtom } from "../store/atoms/orderAtom"
 
 const RouteCalculatorArea = () => {
-    const orders = useRecoilValue(getOrders)
+    const orders = useRecoilValue(ordersAtom)
     return (
         <div className="grid grid-rows-2 h-full">
             <div className="overflow-y-scroll">

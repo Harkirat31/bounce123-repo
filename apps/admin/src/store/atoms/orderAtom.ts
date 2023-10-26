@@ -1,4 +1,4 @@
-import { atom } from "recoil"
+import { atom, useRecoilState } from "recoil"
 import { OrderType } from "types"
 
 type ordersStateType = {
@@ -22,4 +22,13 @@ export const ordersAtom = atom<OrderType[]>({
     key: "orderState",
     default: []
 })
+
+export const getOrderById = (id: string) => {
+    const [orders] = useRecoilState(ordersAtom)
+    let order = orders.find((order) => id === order.orderId)
+    return atom({
+        key: `order${id}`,
+        default: order
+    })
+}
 
