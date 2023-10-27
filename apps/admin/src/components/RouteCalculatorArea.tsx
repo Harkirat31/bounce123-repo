@@ -3,13 +3,39 @@ import { DriverType, OrderType } from "types"
 import { useRef, useState } from "react"
 import { getDrivers } from "../store/selectors/driversSelector"
 import { BASE_URL } from "../../config"
-import { getOrderById, ordersAtom } from "../store/atoms/orderAtom"
+import DatePicker from "react-datepicker"
+import { getOrderById, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 
 const RouteCalculatorArea = () => {
-    const orders = useRecoilValue(ordersAtom)
+    const [orders, setOrders] = useRecoilState(ordersAtom)
+    const [date, setDate] = useRecoilState(ordersSearchDate)
+    const OnDateChangeHandler = (date: Date) => {
+
+        const urlGetOrders = `${BASE_URL}/admin/getOrders`
+
+        fetch(urlGetOrders, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    console.log(jsonData)
+                    setDate(new Date(date.setHours(0, 0, 0, 0)))
+                    setOrders(jsonData)
+                }
+            ).catch((error) => {
+                console.log(error)
+            })
+        }).catch((error) => console.log("error"))
+    }
     return (
         <div className="grid grid-rows-2 h-full">
             <div className="overflow-y-scroll">
+                <div className="flex justify-center m-2">
+                    <p className="text-blue-900">Date</p>
+                    <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date: Date) => OnDateChangeHandler(date)} />
+                </div>
                 <table className="text-sm text-left text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
@@ -56,7 +82,7 @@ const OrderRow = (props: { order: OrderType, index: number }) => {
         </tr>
     )
 }
-let x = 1;
+
 
 const DriverDropDownForOrder = (props: { order: OrderType }) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
@@ -65,11 +91,15 @@ const DriverDropDownForOrder = (props: { order: OrderType }) => {
     const [order, setOrder] = useRecoilState(getOrderById(props.order.orderId!))
     const handleDropdownChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
         event.preventDefault();
-        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-        const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
+        if (event.target.value == "Select") {
+            return
+        }
         if (dropDownItem == "Select") {
             return
         }
+        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
+        const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
+
         let params = { orderId: order!.orderId, driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text }
         fetch(urlAssignOrder, {
             method: "POST",
@@ -86,8 +116,7 @@ const DriverDropDownForOrder = (props: { order: OrderType }) => {
         }))
 
     }
-    console.log("Rerender  " + x)
-    x = x + 1
+
     return <>
         <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
             <option value={"Select"}>Select</option>

@@ -1,0 +1,22 @@
+.home-tag {
+    background-color: #4285F4;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 12px;
+    padding: 5px 10px;
+    position: relative;
+  }
+
+  .home-tag::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, 0);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #4285F4;
+  }
+  

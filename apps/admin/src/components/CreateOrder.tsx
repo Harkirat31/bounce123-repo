@@ -7,6 +7,8 @@ import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css';
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
+import ParseCSVOrders from "../parse/ParseCSVOrders"
+import UploadOrdersCSV from "./UploadOrdersCSV"
 
 
 const CreateOrder = () => {
@@ -85,7 +87,8 @@ const CreateOrder = () => {
 
     return <>
         <div className="mr-2 justify-center">
-            <p className="text-blue-900 text-center" >Create New Order</p>
+            <UploadOrdersCSV></UploadOrdersCSV>
+            <p className="text-blue-900 mt-5 " >New Order</p>
             <div className="text-xs mt-4">
                 <input onChange={(event) => setCName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input onChange={(event) => setCPhone(event.target.value)} placeholder="Phone" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>

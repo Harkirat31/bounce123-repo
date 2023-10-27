@@ -1,36 +1,29 @@
-
-import { useState } from "react";
 import CreateOrder from "../components/CreateOrder.tsx";
 import OrdersTable from "../components/OrdersTable.tsx";
 import DatePicker from "react-datepicker"
-import { ordersState } from "../store/atoms/orderAtom.ts";
+import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom.ts";
 import { BASE_URL } from "../../config.ts";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 
 const Order = () => {
-  const [date, setDate] = useState<Date | null>(new Date())
-  const setOrders = useSetRecoilState(ordersState)
+  const [date, setDate] = useRecoilState(ordersSearchDate)
+  const setOrders = useSetRecoilState(ordersAtom)
 
   const OnDateChangeHandler = (date: Date) => {
-    console.log(new Date(date.setUTCHours(0, 0, 0, 0)))
 
     const urlGetOrders = `${BASE_URL}/admin/getOrders`
 
     fetch(urlGetOrders, {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: date.setUTCHours(0, 0, 0, 0) })
+      body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
     }).then(result => {
       result.json().then(
         (jsonData) => {
           console.log(jsonData)
-          setDate(date)
-          setOrders({
-            isLoading: false,
-            value: jsonData,
-            date: date
-          })
+          setDate(new Date(date.setHours(0, 0, 0, 0)))
+          setOrders(jsonData)
         }
       ).catch((error) => {
         console.log(error)

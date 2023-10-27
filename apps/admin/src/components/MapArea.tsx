@@ -63,28 +63,28 @@ const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: n
                 //label: srNo.toString()
             }
         )
-        // let contentString = orderData!.driverName;
-        // const InfoWindow = new window.google.maps.InfoWindow({
-        //     content: contentString,
-        //     ariaLabel: "Bounce123",
-        // });
-        // marker.addListener("click", () => {
-        //     InfoWindow.open({
-        //         anchor: marker,
-        //         map
-        //     })
-        // })
-        // InfoWindow.open({
-        //     anchor: marker,
-        //     map
-        // })
-        // return () => {
-        //     marker.setMap(null)
-        //     InfoWindow.close()
-        // }
+        let contentString = getInfoWindowContent(orderData!);
+        const InfoWindow = new window.google.maps.InfoWindow({
+            content: contentString,
+            ariaLabel: "Bounce123",
+        });
+
+        InfoWindow.open({
+            anchor: marker,
+            map
+        })
+
+        marker.addListener("click", () => {
+            InfoWindow.open({
+                anchor: marker,
+                map
+            })
+        })
         return () => {
-            // content.remove()
+            marker.map = null
+            InfoWindow.close()
         }
+
     }, [orderData])
 
     return <></>
@@ -92,16 +92,50 @@ const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: n
 
 const PickUpMarker = ({ map }: any) => {
     useEffect(() => {
-        new window.google.maps.Marker(
+        const pin = new window.google.maps.marker.PinElement({
+            glyphColor: 'white',
+            scale: 1.5,
+            background: 'green',
+            borderColor: 'green'
+        });
+
+        const bounce123Info = document.createElement("div");
+
+        bounce123Info.className = "home-tag";
+        bounce123Info.textContent = "Bounce 123";
+
+        new window.google.maps.marker.AdvancedMarkerElement(
             {
-                position: { lat: 43.6811345, lng: -79.58786719999999 },
-                title: "Bounce123",
-                map: map
+                position: mapOptions.center,
+                map: map,
+                content: bounce123Info
+                //label: srNo.toString()
             }
         )
     }, [])
     return <>
     </>
+}
+
+
+
+function getInfoWindowContent(order: OrderType) {
+    let rentingItems = ''
+    order.rentingItems.forEach((item) => {
+        rentingItems = rentingItems + item.rentingItemTitle
+    })
+    let extraItems = ''
+    if (order.extraItems) {
+        order.extraItems.forEach((item) => {
+            extraItems = extraItems + item.sideItemTitle
+        })
+    }
+    return `<p>Name : ${order.cname}</p>
+    <p>Address : ${order.address}</p>
+    <p>Status : ${order.currentStatus}</p>
+    <p>Assigned To : ${order.driverName ? order.driverName : "No Driver Assigned"}</p>
+    <p>Rent Items : ${rentingItems} </p>
+    <p>Extra Items : ${extraItems === '' ? "No Extra Items" : extraItems} </p>`
 }
 
 export default MapArea
