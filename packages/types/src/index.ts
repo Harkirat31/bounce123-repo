@@ -60,6 +60,7 @@ export type DriverType = z.infer<typeof driver>
 export const order = z.object({
     companyId: z.string().optional(),
     orderId: z.string().optional(),
+    orderNumber: z.string().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })),
     address: z.string(),
     cname: z.string().min(1),

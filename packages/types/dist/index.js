@@ -43,6 +43,7 @@ exports.driver = zod_1.z.object({
 exports.order = zod_1.z.object({
     companyId: zod_1.z.string().optional(),
     orderId: zod_1.z.string().optional(),
+    orderNumber: zod_1.z.string().optional(),
     rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),
     cname: zod_1.z.string().min(1),
