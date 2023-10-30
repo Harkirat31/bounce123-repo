@@ -7,7 +7,6 @@ import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css';
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
-import ParseCSVOrders from "../parse/ParseCSVOrders"
 import UploadOrdersCSV from "./UploadOrdersCSV"
 
 

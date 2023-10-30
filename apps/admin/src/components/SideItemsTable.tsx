@@ -1,6 +1,5 @@
 import { useRecoilValue } from "recoil"
-import { getRentingItems } from "../store/selectors/rentingItemsSelector"
-import { RentingItemType, SideItemType } from "types"
+import { SideItemType } from "types"
 import { getSideItems } from "../store/selectors/sideItemsSelector"
 
 const SideItemsTable = () => {
