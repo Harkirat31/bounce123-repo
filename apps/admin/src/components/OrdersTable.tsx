@@ -25,11 +25,11 @@ const OrdersTable = () => {
                                 Date
                             </th>
                             <th scope="col" className="px-1 py-3 w-10" >
-                                Time (Between)
+                                Priority
                             </th>
 
                             <th scope="col" className="px-1 py-3 w-10">
-                                Renting Items
+                                Main Items
                             </th>
                             <th scope="col" className="px-1 py-3 w-10">
                                 Extras
@@ -66,7 +66,7 @@ const OrdersTable = () => {
                                         {new Date(order.deliveryDate).toLocaleDateString()}
                                     </td>
                                     <td className="px-1 py-4">
-                                        {order.deliverTimeRangeStart + "Hrs to " + order.deliverTimeRangeEnd + "Hrs"}
+                                        {order.priority}
                                     </td>
 
                                     <td className="px-1 py-4">

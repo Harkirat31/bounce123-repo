@@ -18,7 +18,7 @@ const Deliverable = () => {
             <div className="flex ">
               <p className="text-blue-900">Select Item Type :</p>
               <select className="ml-2  border-2 border-blue-900" onChange={(event) => { setWhichItem(parseInt(event.target.value)) }}>
-                <option value={0}>Renting Items</option>
+                <option value={0}>Main Items</option>
                 <option value={1}>Side Item</option>
               </select>
             </div>

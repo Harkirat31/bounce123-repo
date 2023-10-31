@@ -72,8 +72,9 @@ export const order = z.object({
     currentStatus: z.enum(["NotAssigned", "Assigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
     deliveryDate: z.date(),
     specialInstructions: z.string().optional(),
-    deliverTimeRangeStart: z.number().min(1).max(24),
-    deliverTimeRangeEnd: z.number().min(1).max(24),
+    deliverTimeRangeStart: z.number().min(1).max(24).optional(),
+    deliverTimeRangeEnd: z.number().min(1).max(24).optional(),
+    priority: z.enum(["High", "Medium", "Low"]).default("Medium"),
     extraItems: z.array(z.object({ sideItemId: z.string(), sideItemTitle: z.string(), count: z.number() })).optional(),
 })
 

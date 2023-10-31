@@ -43,6 +43,7 @@ exports.driver = zod_1.z.object({
 exports.order = zod_1.z.object({
     companyId: zod_1.z.string().optional(),
     orderId: zod_1.z.string().optional(),
+    orderNumber: zod_1.z.string().optional(),
     rentingItems: zod_1.z.array(zod_1.z.object({ rentingItemId: zod_1.z.string(), rentingItemTitle: zod_1.z.string() })),
     address: zod_1.z.string(),
     cname: zod_1.z.string().min(1),
@@ -54,8 +55,9 @@ exports.order = zod_1.z.object({
     currentStatus: zod_1.z.enum(["NotAssigned", "Assigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"),
     deliveryDate: zod_1.z.date(),
     specialInstructions: zod_1.z.string().optional(),
-    deliverTimeRangeStart: zod_1.z.number().min(1).max(24),
-    deliverTimeRangeEnd: zod_1.z.number().min(1).max(24),
+    deliverTimeRangeStart: zod_1.z.number().min(1).max(24).optional(),
+    deliverTimeRangeEnd: zod_1.z.number().min(1).max(24).optional(),
+    priority: zod_1.z.enum(["High", "Medium", "Low"]).default("Medium"),
     extraItems: zod_1.z.array(zod_1.z.object({ sideItemId: zod_1.z.string(), sideItemTitle: zod_1.z.string(), count: zod_1.z.number() })).optional(),
 });
 exports.assignOrder = zod_1.z.object({

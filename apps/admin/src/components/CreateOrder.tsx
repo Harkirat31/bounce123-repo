@@ -1,13 +1,14 @@
 import { useRef, useState } from "react"
-import { useRecoilValue } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import { getSideItems } from "../store/selectors/sideItemsSelector"
 import { RentingItemType, SideItemType, order } from "types/src/index"
-import { BASE_URL } from "../../config"
 import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css';
 import { getRentingItems } from "../store/selectors/rentingItemsSelector"
 import UploadOrdersCSV from "./UploadOrdersCSV"
+import { createOrder, getOrdersAPI } from "../services/ApiService"
+import { ordersAtom } from "../store/atoms/orderAtom"
 
 
 const CreateOrder = () => {
@@ -21,44 +22,27 @@ const CreateOrder = () => {
     const [specialInstructions, setSpecialInstructions] = useState("")
     const rentingItemsFromDB: any = useRecoilValue(getRentingItems)
     const [rentingItems, setRentingItems] = useState<{ rentingItemId: string, rentingItemTitle: string, }[]>([])
-    const [time, setTime] = useState(2)
+    const [priority, setPriority] = useState("Medium")
     const [dropDownRentingItem, setDropDownRentingItem] = useState<{ rentingItemId: string, rentingItemTitle: string }>({ rentingItemId: '', rentingItemTitle: 'Select' })
-
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const selectRefExtras = useRef<HTMLSelectElement | null>(null);
+    const setOrders = useSetRecoilState(ordersAtom)
 
     function saveOrder() {
-        let deliverTimeRangeStart = 10
-        let deliverTimeRangeEnd = 12
-        if (time == 1) {
-            deliverTimeRangeStart = 8
-            deliverTimeRangeEnd = 10
-        }
-        else if (time == 3) {
-            deliverTimeRangeStart = 12
-            deliverTimeRangeEnd = 14
-        }
-
-        console.log({ cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, deliverTimeRangeStart, deliverTimeRangeEnd })
-        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, deliverTimeRangeStart, deliverTimeRangeEnd, specialInstructions })
-
-
+        console.log({ cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, priority })
+        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, priority, specialInstructions })
         if (!parsedOrder.success) {
             console.log(parsedOrder.error)
             alert("Error in Data")
             return
         }
-
-        console.log(parsedOrder.data)
-
-        fetch(BASE_URL + '/admin/createOrder', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(parsedOrder.data)
-        }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
-        }))
+        createOrder(parsedOrder.data).then(() => {
+            getOrdersAPI().then((orders: any) => {
+                setOrders(orders)
+            })
+        })
     }
+
 
     const handleRentingItemBoxDelete = (event: any) => {
         const button = event.currentTarget;
@@ -95,10 +79,11 @@ const CreateOrder = () => {
                 <div className="flex grid-cols-8 mb-2">
                     <DatePicker className="col-span-2  text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date) => setDate(date)} />
                     <div className="col-span-6 flex flex-row">
-                        <select value={time} onChange={(event) => setTime(parseInt(event.target.value))} className="border-2 border-blue-900" >
-                            <option value={1}>Before 10AM</option>
-                            <option value={2}>Between 10AM-12PM</option>
-                            <option value={3}>After 12PM</option>
+                        <p className="ml-2 flex items-center">Priority :</p>
+                        <select value={priority} onChange={(event) => setPriority(event.target.value)} className="border-2 border-blue-900" >
+                            <option value={"High"}>High</option>
+                            <option value={"Medium"}>Medium</option>
+                            <option value={"Low"}>Low</option>
                         </select>
                     </div>
 
@@ -107,7 +92,7 @@ const CreateOrder = () => {
 
                 <div className="mb-2 flex flex-row">
                     <div className="flex ">
-                        <p className="text-blue-900">Renting Item:</p>
+                        <p className="flex text-blue-900 items-center">Main Item:</p>
                         <select ref={selectRef} value={dropDownRentingItem.rentingItemId} onChange={(event) => { setDropDownRentingItem({ rentingItemId: event.target.value, rentingItemTitle: selectRef.current!.options[selectRef.current!.selectedIndex].text, }) }} className="ml-2  border-2 border-blue-900" >
                             <option value={""}>Select</option>
                             {rentingItemsFromDB.map((rentingItem: RentingItemType) => {
@@ -153,7 +138,7 @@ const CreateOrder = () => {
 
                 <div className="flex flex-row">
                     <div className="flex ">
-                        <p className="text-blue-900">Extras:</p>
+                        <p className="flex items-center text-blue-900">Extras:</p>
                         <select ref={selectRefExtras} value={dropDownItem.sideItemId} onChange={(event) => { setDropDownItem({ sideItemId: event.target.value, sideItemTitle: selectRefExtras.current!.options[selectRefExtras.current!.selectedIndex].text, count: 1 }) }} className="ml-2  border-2 border-blue-900" >
                             <option value={""}>Select</option>
                             {sideItemsFromDb.map((sideItem: SideItemType) => {
@@ -164,7 +149,7 @@ const CreateOrder = () => {
                         </select>
                     </div>
                     <div className="ml-2 flex ">
-                        <p className="text-blue-900">Count:</p>
+                        <p className="flex items-center text-blue-900">Count:</p>
                         <select value={dropDownItem.count} onChange={(event) => { setDropDownItem({ sideItemId: dropDownItem.sideItemId, sideItemTitle: dropDownItem.sideItemTitle, count: parseInt(event.target.value) }) }} className="ml-2  border-2 border-blue-900" >
                             <option value={1}>1</option>
                             <option value={2}>2</option>

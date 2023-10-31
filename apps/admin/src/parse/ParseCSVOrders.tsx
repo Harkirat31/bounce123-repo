@@ -2,18 +2,21 @@ import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import DownloadButton from '../components/DownloadButton';
 import { order } from 'types/src/index';
-import { createOrdersApi } from '../services/ApiService';
+import { createOrdersApi, getOrdersAPI } from '../services/ApiService';
+import { useSetRecoilState } from 'recoil';
+import { ordersAtom } from '../store/atoms/orderAtom';
 
 const ParseCSVOrders = () => {
   const [csvData, setCSVData] = useState<any[]>([]);
   const [createOrderStatus, setCreateOrdersStatus] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const uploadInputButtonRef = useRef<any>(null);
+  const setOrders = useSetRecoilState(ordersAtom)
 
 
   const handleSubmitCSV = () => {
 
-    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'deliverTimeRangeStart', 'deliverTimeRangeEnd', 'specialInstructions', 'rentingItems', 'extraItems']
+    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'rentingItems', 'extraItems']
     setIsLoading(true)
     let orders: any = []
     csvData.map(async (row) => {
@@ -23,10 +26,8 @@ const ParseCSVOrders = () => {
       })
       //console.log(orderobject)
       orderobject[orderAttributes[5]] = new Date(orderobject[orderAttributes[5]])
-      orderobject[orderAttributes[6]] = parseInt(orderobject[orderAttributes[6]])
-      orderobject[orderAttributes[7]] = parseInt(orderobject[orderAttributes[7]])
+      orderobject[orderAttributes[8]] = []
       orderobject[orderAttributes[9]] = []
-      orderobject[orderAttributes[10]] = []
       try {
         let parse = order.safeParse(orderobject)
         if (parse.success) {
@@ -45,7 +46,9 @@ const ParseCSVOrders = () => {
     )
 
     createOrdersApi(orders).then((result: any) => {
-      console.log(result.length)
+      getOrdersAPI().then((orders: any) => {
+        setOrders(orders)
+      })
       setCreateOrdersStatus(result)
       setIsLoading(false)
       setCSVData([])
