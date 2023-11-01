@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrders } from "../store/selectors/orderSelector";
 import { OrderType } from "types";
 import { getOrderById } from "../store/atoms/orderAtom";
+import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
 
 
 const mapOptions = {
@@ -49,10 +50,13 @@ const MapComponent = () => {
 
 const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: number }) => {
     const [orderData, setOrderData] = useRecoilState(getOrderById(order.orderId!))
+    const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({
             glyph: srNo.toString(),
             glyphColor: 'white',
+            background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : LOW_PRIORITY_COLOR,
+            borderColor: "DarkSlateGrey"
         });
 
         const marker = new window.google.maps.marker.AdvancedMarkerElement(
@@ -69,17 +73,20 @@ const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: n
             ariaLabel: "Bounce123",
         });
 
-        InfoWindow.open({
-            anchor: marker,
-            map
-        })
 
         marker.addListener("click", () => {
+            setIsOpenOnMap(true)
             InfoWindow.open({
                 anchor: marker,
                 map
             })
         })
+        if (isOpenOnMap) {
+            InfoWindow.open({
+                anchor: marker,
+                map
+            })
+        }
         return () => {
             marker.map = null
             InfoWindow.close()
