@@ -5,6 +5,8 @@ import { getDrivers } from "../store/selectors/driversSelector"
 import { BASE_URL } from "../../config"
 import DatePicker from "react-datepicker"
 import { getOrderById, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import PathArea from "./PathArea"
+import DriverDropDownForOrder from "./DriverDropDownForOrder"
 
 const RouteCalculatorArea = () => {
     const [orders, setOrders] = useRecoilState(ordersAtom)
@@ -31,12 +33,12 @@ const RouteCalculatorArea = () => {
     }
     return (
         <div className="grid grid-rows-2 h-full">
-            <div className="overflow-y-scroll">
+            <div className="overflow-y-scroll flex flex-col justify-start items-center">
                 <div className="flex justify-center m-2">
                     <p className="text-blue-900">Date</p>
                     <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date: Date) => OnDateChangeHandler(date)} />
                 </div>
-                <table className="text-sm text-left text-gray-500 ">
+                <table className="text-sm text-center text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3">
@@ -45,7 +47,10 @@ const RouteCalculatorArea = () => {
                             <th scope="col" className="px-1 py-3">
                                 Status
                             </th>
-                            <th scope="col" className="px-2 py-3 w-full">
+                            <th scope="col" className="px-1 py-3">
+                                Priority
+                            </th>
+                            <th scope="col" className="px-2 py-3">
                                 Asign To
                             </th>
                         </tr>
@@ -57,7 +62,9 @@ const RouteCalculatorArea = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="">Paths</div>
+            <div className="">
+                <PathArea></PathArea>
+            </div>
 
         </div>
     )
@@ -77,54 +84,12 @@ const OrderRow = (props: { order: OrderType, index: number }) => {
                 {props.order.currentStatus}
             </td>
             <td className="px-1 py-4">
+                {props.order.priority}
+            </td>
+            <td className="px-1 py-4">
                 <DriverDropDownForOrder order={props.order}></DriverDropDownForOrder>
             </td>
         </tr>
     )
 }
 
-
-const DriverDropDownForOrder = (props: { order: OrderType }) => {
-    const selectRef = useRef<HTMLSelectElement | null>(null);
-    const drivers: any = useRecoilValue(getDrivers)
-    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
-    const [order, setOrder] = useRecoilState(getOrderById(props.order.orderId!))
-    const handleDropdownChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        event.preventDefault();
-        if (event.target.value == "Select") {
-            return
-        }
-        if (dropDownItem == "Select") {
-            return
-        }
-        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-        const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
-
-        let params = { orderId: order!.orderId, driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text }
-        fetch(urlAssignOrder, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params)
-        }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
-            if (jsonData.isAdded == true) {
-                setOrder((order) => ({ ...order, ...params }) as OrderType)
-            }
-            else {
-                console.log("Not updated Order")
-            }
-        }))
-
-    }
-
-    return <>
-        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
-            <option value={"Select"}>Select</option>
-            {drivers.map((driver: DriverType) => {
-                return <>
-                    <option value={driver.uid}>{driver.name}</option>
-                </>
-            })}
-        </select>
-    </>
-}
