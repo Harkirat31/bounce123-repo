@@ -107,9 +107,18 @@ export enum deliveryStatus {
 }
 
 
-export const path = z.object({
-    driverId: z.string().optional(),
-    orders: z.map(z.number(), z.string())
+export const pathOrder = z.object({
+    companyId: z.string().optional(),
+    show: z.boolean(),
+    path: z.array(z.string()),
+    dateOfPath: z.date(),
 })
 
-export type PathType = z.infer<typeof path>
+export type pathOrderType = z.infer<typeof pathOrder>
+
+// export const path = z.object({
+//     driverId: z.string().optional(),
+//     orders: z.map(z.number(), z.string())
+// })
+
+// export type PathType = z.infer<typeof path>

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { ordersAtom } from "../store/atoms/orderAtom"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { OrderType } from "types"
-import { createPathAtom } from "../store/atoms/createPathAtom"
+import { createPathAtom, savedPaths } from "../store/atoms/pathAtom"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -17,10 +17,16 @@ const PathArea = () => {
 export default PathArea
 
 const Paths = ({ setShowCreatePath }: any) => {
+    const paths = useRecoilValue(savedPaths)
+    const orders = useRecoilValue(ordersAtom)
+
+    const getSrNoFororderId = (orderId: string) => {
+        return orders.findIndex((order) => order.orderId === orderId) + 1
+    }
 
     return <div className="flex flex-col items-center  border-t-2 border-grey-600 ">
         <button onClick={() => setShowCreatePath(true)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Create Path</button>
-        <table className="w-full text-sm  text-center text-gray-500 ">
+        <table className="text-sm  text-center text-gray-500 ">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th scope="col" className="px-3 py-3 ">
@@ -38,33 +44,31 @@ const Paths = ({ setShowCreatePath }: any) => {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td> <input type="checkbox" value="" className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
-                    <td>
-                        <div className="grid grid-cols-6">
-                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">
-                                1
-                            </p>
-                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">
-                                1
-                            </p>
-                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">
-                                1
-                            </p>
-                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">
-                                1
-                            </p>
+                {paths.length > 0 &&
+                    paths.map((pathElement) => {
+                        return <>
+                            <tr>
+                                <td> <input type="checkbox" checked={pathElement.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
+                                <td>
+                                    <div className="grid grid-flow-col">
 
-                        </div>
+                                        {pathElement.path.map((node) => {
+                                            return <div>
+                                                <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{getSrNoFororderId(node)}</p>
+                                            </div>
+                                        })}
 
-                    </td>
-                    <td></td>
-                    <td className="px-6 py-4 text-right">
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                    </td>
-                </tr>
+                                    </div>
+                                </td>
+                                <td></td>
+                                <td className="px-6 py-4 text-right">
+                                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                </td>
 
-
+                            </tr>
+                        </>
+                    })
+                }
             </tbody>
         </table>
     </div>
@@ -76,6 +80,10 @@ const CreatePath = ({ setShowCreatePath }: any) => {
     const orders = useRecoilValue(ordersAtom)
     const [dropDownValue, setDropDownValue] = useState<number>(1)
     const [orderSetForPath, setorderSetForPath] = useState<OrderType[]>([])
+    const [reset, setReset] = useState(true)
+    const [paths, setSavedPaths] = useRecoilState(savedPaths)
+    const date = useRecoilValue(ordersSearchDate)
+
     useEffect(() => {
         setorderSetForPath([...orders])
         setPathOrders([])
@@ -83,7 +91,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
         return () => {
             setPathOrders([])
         };
-    }, [orders])
+    }, [orders, reset])
 
     const getSrNoFororderId = (orderId: string) => {
         return orders.findIndex((order) => order.orderId === orderId) + 1
@@ -92,37 +100,52 @@ const CreatePath = ({ setShowCreatePath }: any) => {
     return <div className="flex flex-col items-center  border-t-2 border-grey-600">
         <button onClick={() => setShowCreatePath(false)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Show All Paths</button>
 
-        <div className="flex justify-center items-center">
-            <div>
+        <div className="mx-2 flex flex-col justify-center items-center">
+            <div className="grid grid-cols-8 items-center justify-center">
                 {pathOrders.map((pathnode) => {
                     return <>
-                        {getSrNoFororderId(pathnode)}
+                        <p className="text-center w-6 h-6 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">
+                            {getSrNoFororderId(pathnode)}
+                        </p>
                     </>
                 })}
-            </div>
-            {orderSetForPath.length > 0 &&
-                <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
-                    {orderSetForPath.map((order: OrderType) => {
-                        return <>
-                            <option value={getSrNoFororderId(order.orderId!)}>{getSrNoFororderId(order.orderId!)}</option>
-                        </>
-                    })}
-                </select>}
-
-            {orderSetForPath.length > 0 && <button onClick={
-                () => {
-                    setPathOrders([...pathOrders, orders[dropDownValue - 1].orderId!])
-                    let newSet = orderSetForPath.filter((order: OrderType) => order.orderId != orders[dropDownValue - 1].orderId!)
-                    console.log(newSet)
-                    setorderSetForPath([...newSet])
-                    if (newSet.length > 0) {
-                        setDropDownValue(getSrNoFororderId(newSet[0].orderId!))
-                    }
-
+                {pathOrders.length > 0 &&
+                    <div className="flex flex-row">
+                        <button
+                            onClick={() => {
+                                setSavedPaths([...paths, { show: true, path: pathOrders, dateOfPath: date }]);
+                                reset ? setReset(false) : setReset(true)
+                            }}
+                            className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center md:mr-0">Save</button>
+                        <button onClick={() => { reset ? setReset(false) : setReset(true) }} className="ml-2 my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Reset</button>
+                    </div>
                 }
-            } className="ml-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-2 py-1 text-center" >
-                Add
-            </button>}
+            </div>
+            <div>
+                {orderSetForPath.length > 0 &&
+                    <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
+                        {orderSetForPath.map((order: OrderType) => {
+                            return <>
+                                <option value={getSrNoFororderId(order.orderId!)}>{getSrNoFororderId(order.orderId!)}</option>
+                            </>
+                        })}
+                    </select>}
+
+                {orderSetForPath.length > 0 && <button onClick={
+                    () => {
+                        setPathOrders([...pathOrders, orders[dropDownValue - 1].orderId!])
+                        let newSet = orderSetForPath.filter((order: OrderType) => order.orderId != orders[dropDownValue - 1].orderId!)
+                        console.log(newSet)
+                        setorderSetForPath([...newSet])
+                        if (newSet.length > 0) {
+                            setDropDownValue(getSrNoFororderId(newSet[0].orderId!))
+                        }
+
+                    }
+                } className="ml-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-2 py-1 text-center" >
+                    Add
+                </button>}
+            </div>
         </div>
     </div>
 }

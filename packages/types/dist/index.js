@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.path = exports.deliveryStatus = exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
+exports.pathOrder = exports.deliveryStatus = exports.updateStatusOfOrder = exports.updateLocation = exports.assignOrder = exports.order = exports.driver = exports.userSignIn = exports.location = exports.sideItem = exports.rentingItems = exports.rentingItem = exports.userId = void 0;
 const zod_1 = require("zod");
 exports.userId = zod_1.z.object({ uid: zod_1.z.string() });
 exports.rentingItem = zod_1.z.object({
@@ -82,7 +82,14 @@ var deliveryStatus;
     deliveryStatus[deliveryStatus["Picked"] = 4] = "Picked";
     deliveryStatus[deliveryStatus["Returned"] = 5] = "Returned";
 })(deliveryStatus || (exports.deliveryStatus = deliveryStatus = {}));
-exports.path = zod_1.z.object({
-    driverId: zod_1.z.string().optional(),
-    orders: zod_1.z.map(zod_1.z.number(), zod_1.z.string())
+exports.pathOrder = zod_1.z.object({
+    companyId: zod_1.z.string().optional(),
+    show: zod_1.z.boolean(),
+    path: zod_1.z.array(zod_1.z.string()),
+    dateOfPath: zod_1.z.date(),
 });
+// export const path = z.object({
+//     driverId: z.string().optional(),
+//     orders: z.map(z.number(), z.string())
+// })
+// export type PathType = z.infer<typeof path>
