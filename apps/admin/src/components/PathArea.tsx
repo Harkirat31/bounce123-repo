@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { ordersAtom } from "../store/atoms/orderAtom"
 import { OrderType } from "types"
 import { createPathAtom } from "../store/atoms/createPathAtom"
@@ -73,13 +73,16 @@ const Paths = ({ setShowCreatePath }: any) => {
 const CreatePath = ({ setShowCreatePath }: any) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
-    const [orders, setOrders] = useRecoilState(ordersAtom)
+    const orders = useRecoilValue(ordersAtom)
     const [dropDownValue, setDropDownValue] = useState<number>(1)
     const [orderSetForPath, setorderSetForPath] = useState<OrderType[]>([])
     useEffect(() => {
         setorderSetForPath([...orders])
         setPathOrders([])
         setDropDownValue(1)
+        return () => {
+            setPathOrders([])
+        };
     }, [orders])
 
     const getSrNoFororderId = (orderId: string) => {
