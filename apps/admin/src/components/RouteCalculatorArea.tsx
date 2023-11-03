@@ -1,10 +1,9 @@
-import { useRecoilState, useRecoilValue } from "recoil"
-import { DriverType, OrderType } from "types"
-import { useRef, useState } from "react"
-import { getDrivers } from "../store/selectors/driversSelector"
+import { useRecoilState } from "recoil"
+import { OrderType } from "types"
+
 import { BASE_URL } from "../../config"
 import DatePicker from "react-datepicker"
-import { getOrderById, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
 
@@ -35,10 +34,10 @@ const RouteCalculatorArea = () => {
         <div className="grid grid-rows-2 h-full">
             <div className="overflow-y-scroll flex flex-col justify-start items-center">
                 <div className="flex justify-center m-2">
-                    <p className="text-blue-900">Date</p>
+                    <p className="text-blue-900 mt-2">Date</p>
                     <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date: Date) => OnDateChangeHandler(date)} />
                 </div>
-                <table className="text-sm text-center text-gray-500 ">
+                <table className="w-full text-sm text-center text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3">

@@ -1,4 +1,8 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { useRecoilState } from "recoil"
+import { ordersAtom } from "../store/atoms/orderAtom"
+import { OrderType } from "types"
+import { createPathAtom } from "../store/atoms/createPathAtom"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -16,7 +20,7 @@ const Paths = ({ setShowCreatePath }: any) => {
 
     return <div className="flex flex-col items-center  border-t-2 border-grey-600 ">
         <button onClick={() => setShowCreatePath(true)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Create Path</button>
-        <table className="text-sm  text-center text-gray-500 ">
+        <table className="w-full text-sm  text-center text-gray-500 ">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th scope="col" className="px-3 py-3 ">
@@ -67,10 +71,55 @@ const Paths = ({ setShowCreatePath }: any) => {
 }
 
 const CreatePath = ({ setShowCreatePath }: any) => {
-    return <div className="lex flex-col items-center  border-t-2 border-grey-600">
+    const selectRef = useRef<HTMLSelectElement | null>(null);
+    const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
+    const [orders, setOrders] = useRecoilState(ordersAtom)
+    const [dropDownValue, setDropDownValue] = useState<number>(1)
+    const [orderSetForPath, setorderSetForPath] = useState<OrderType[]>([])
+    useEffect(() => {
+        setorderSetForPath([...orders])
+        setPathOrders([])
+        setDropDownValue(1)
+    }, [orders])
+
+    const getSrNoFororderId = (orderId: string) => {
+        return orders.findIndex((order) => order.orderId === orderId) + 1
+    }
+
+    return <div className="flex flex-col items-center  border-t-2 border-grey-600">
         <button onClick={() => setShowCreatePath(false)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Show All Paths</button>
-        <div>
-            Cr
+
+        <div className="flex justify-center items-center">
+            <div>
+                {pathOrders.map((pathnode) => {
+                    return <>
+                        {getSrNoFororderId(pathnode)}
+                    </>
+                })}
+            </div>
+            {orderSetForPath.length > 0 &&
+                <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
+                    {orderSetForPath.map((order: OrderType) => {
+                        return <>
+                            <option value={getSrNoFororderId(order.orderId!)}>{getSrNoFororderId(order.orderId!)}</option>
+                        </>
+                    })}
+                </select>}
+
+            {orderSetForPath.length > 0 && <button onClick={
+                () => {
+                    setPathOrders([...pathOrders, orders[dropDownValue - 1].orderId!])
+                    let newSet = orderSetForPath.filter((order: OrderType) => order.orderId != orders[dropDownValue - 1].orderId!)
+                    console.log(newSet)
+                    setorderSetForPath([...newSet])
+                    if (newSet.length > 0) {
+                        setDropDownValue(getSrNoFororderId(newSet[0].orderId!))
+                    }
+
+                }
+            } className="ml-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-2 py-1 text-center" >
+                Add
+            </button>}
         </div>
     </div>
 }

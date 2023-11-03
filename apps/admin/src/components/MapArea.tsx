@@ -6,6 +6,7 @@ import { getOrders } from "../store/selectors/orderSelector";
 import { OrderType } from "types";
 import { getOrderById } from "../store/atoms/orderAtom";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
+import { createPathAtom } from "../store/atoms/createPathAtom";
 
 
 const mapOptions = {
@@ -42,11 +43,42 @@ const MapComponent = () => {
                 {orders.map((order, index) => {
                     return <OrderMarker order={order} srNo={index + 1} map={map}></OrderMarker>
                 })}
+                <CreatePolygonWhileCreatingPath map={map}></CreatePolygonWhileCreatingPath>
             </div>}
         </div>
     );
 
 }
+
+const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
+    const createPathOrders = useRecoilValue(createPathAtom)
+    const orders = useRecoilValue(getOrders)
+    useEffect(() => {
+        if (createPathOrders.length > 0) {
+            let cordinates: any = [{ lat: 43.6811345, lng: -79.58786719999999 }]
+            createPathOrders.forEach((orderId) => {
+                let order = orders.find((order) => order.orderId === orderId)
+                cordinates.push(order?.location)
+            })
+            var lineSymbol = {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+            };
+            const flightPath = new window.google.maps.Polyline({
+                path: cordinates,
+                geodesic: true,
+                strokeColor: "#FF0000",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+                icons: [{ icon: lineSymbol, offset: "100%", }]
+            });
+            flightPath.setMap(map);
+        }
+
+    }, [createPathOrders])
+    return <>
+    </>
+}
+
 
 const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: number }) => {
     const [orderData, setOrderData] = useRecoilState(getOrderById(order.orderId!))
