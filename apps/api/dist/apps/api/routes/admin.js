@@ -55,6 +55,19 @@ router.post("/createDriver", middleware_1.authenticateJwt, (req, res) => {
         });
     });
 });
+router.post("/createPath", middleware_1.authenticateJwt, (req, res) => {
+    req.body.dateOfPath = new Date(req.body.dateOfPath);
+    let parsedData = types_1.pathOrder.safeParse(req.body);
+    if (!parsedData.success) {
+        console.log(parsedData.error);
+        return res.status(403).json({
+            msg: "Error in  Details"
+        });
+    }
+    (0, db_1.createPath)(parsedData.data).then((result) => {
+        res.json({ isAdded: true });
+    }).catch((error) => res.json({ isAdded: false }));
+});
 router.post("/createOrder", middleware_1.authenticateJwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     req.body.deliveryDate = new Date(req.body.deliveryDate);
     let parsedData = types_1.order.safeParse(req.body);
@@ -127,11 +140,27 @@ router.post("/getOrders", middleware_1.authenticateJwt, (req, res) => {
     let parsedDate = req.body.date;
     if (!parsedDate) {
         return res.status(403).json({
-            msg: "Error in Driver Id"
+            msg: "Error in  Details "
         });
     }
     (0, db_1.getOrderswithDate)(new Date(parsedDate)).then((orders) => {
         res.json(orders);
+    }).catch(() => {
+        res.status(403).json({
+            msg: "Error fetching from firestore"
+        });
+    });
+});
+router.post("/getPaths", middleware_1.authenticateJwt, (req, res) => {
+    console.log(req.body);
+    let parsedDate = req.body.date;
+    if (!parsedDate) {
+        return res.status(403).json({
+            msg: "Error in Details"
+        });
+    }
+    (0, db_1.getPathswithDate)(new Date(parsedDate)).then((paths) => {
+        res.json(paths);
     }).catch(() => {
         res.status(403).json({
             msg: "Error fetching from firestore"

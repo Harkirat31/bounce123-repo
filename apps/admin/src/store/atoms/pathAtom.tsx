@@ -1,12 +1,12 @@
 import { atom } from "recoil";
-import { pathOrderType } from "types";
+import { PathOrderType } from "types";
 
 export const createPathAtom = atom<string[]>({
     key: "createPathAtom",
     default: []
 })
 
-export const savedPaths = atom<pathOrderType[]>({
+export const savedPaths = atom<PathOrderType[]>({
     key: "getPaths",
     default: []
 })

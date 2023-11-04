@@ -83,6 +83,7 @@ var deliveryStatus;
     deliveryStatus[deliveryStatus["Returned"] = 5] = "Returned";
 })(deliveryStatus || (exports.deliveryStatus = deliveryStatus = {}));
 exports.pathOrder = zod_1.z.object({
+    pathId: zod_1.z.string().optional(),
     companyId: zod_1.z.string().optional(),
     show: zod_1.z.boolean(),
     path: zod_1.z.array(zod_1.z.string()),

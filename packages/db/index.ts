@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin';
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType } from "types"
 // Initialize Firebase Admin SDK
 
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -66,7 +66,7 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
   })
 }
 
-export const createDriver = async (newDriverDetail: DriverType): Promise<DriverType> => {
+export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver
     // default password is password, reset email would be sent
@@ -83,6 +83,12 @@ export const createDriver = async (newDriverDetail: DriverType): Promise<DriverT
       reject(error)
     })
 
+  })
+}
+
+export const createPath = (newPath: PathOrderType) => {
+  return new Promise((resolve, reject) => {
+    db.collection("paths").add(newPath).then(() => resolve("Success")).catch(() => reject("Error"))
   })
 }
 
@@ -133,6 +139,23 @@ export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
       )
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
+  })
+}
+
+export const getPathswithDate = (date: Date): Promise<PathOrderType[]> => {
+
+  return new Promise((resolve, reject) => {
+    db.collection('paths').where("dateOfPath", ">=", date).get().then((result) => {
+      let paths = result.docs.map(
+        (doc) => {
+          let path = doc.data() as PathOrderType
+          path.dateOfPath = doc.data().dateOfPath.toDate(),
+            path.pathId = doc.id
+          return path
+        }
+      )
+      resolve(paths)
+    }).catch((error) => reject(new Error("Error fetching paths")))
   })
 }
 

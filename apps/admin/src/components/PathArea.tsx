@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { OrderType } from "types"
 import { createPathAtom, savedPaths } from "../store/atoms/pathAtom"
+import { createPath } from "../services/ApiService"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -113,8 +114,12 @@ const CreatePath = ({ setShowCreatePath }: any) => {
                     <div className="flex flex-row">
                         <button
                             onClick={() => {
-                                setSavedPaths([...paths, { show: true, path: pathOrders, dateOfPath: date }]);
-                                reset ? setReset(false) : setReset(true)
+                                createPath({ show: true, path: pathOrders, dateOfPath: date }).then((result) => {
+                                    setSavedPaths([...paths, { show: true, path: pathOrders, dateOfPath: date }]);
+                                    reset ? setReset(false) : setReset(true)
+                                }).catch((error) => {
+                                    alert(error)
+                                })
                             }}
                             className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center md:mr-0">Save</button>
                         <button onClick={() => { reset ? setReset(false) : setReset(true) }} className="ml-2 my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Reset</button>

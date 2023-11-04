@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDrivers = exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getOrderswithDate = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
+exports.getDrivers = exports.getSideItems = exports.getRentingItems = exports.assignOrderToDriver = exports.updateOrderStatus = exports.updateCurrentLocation = exports.getPathswithDate = exports.getOrderswithDate = exports.getOrders = exports.createOrder = exports.createSideItem = exports.createRentingItem = exports.createPath = exports.createDriver = exports.signUp = exports.getDriver = exports.signIn = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin SDK
 //const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
@@ -93,7 +93,7 @@ const signUp = (authUser) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.signUp = signUp;
-const createDriver = (newDriverDetail) => __awaiter(void 0, void 0, void 0, function* () {
+const createDriver = (newDriverDetail) => {
     return new Promise((resolve, reject) => {
         // first new sign up is created for driver
         // default password is password, reset email would be sent
@@ -107,8 +107,14 @@ const createDriver = (newDriverDetail) => __awaiter(void 0, void 0, void 0, func
             reject(error);
         });
     });
-});
+};
 exports.createDriver = createDriver;
+const createPath = (newPath) => {
+    return new Promise((resolve, reject) => {
+        db.collection("paths").add(newPath).then(() => resolve("Success")).catch(() => reject("Error"));
+    });
+};
+exports.createPath = createPath;
 const createRentingItem = (rentingItemData) => {
     return new Promise((resolve, reject) => {
         db.collection("renting_items").add(rentingItemData).then(() => resolve("Success")).catch(() => new Error("Error"));
@@ -150,6 +156,20 @@ const getOrderswithDate = (date) => {
     });
 };
 exports.getOrderswithDate = getOrderswithDate;
+const getPathswithDate = (date) => {
+    return new Promise((resolve, reject) => {
+        db.collection('paths').where("dateOfPath", ">=", date).get().then((result) => {
+            let paths = result.docs.map((doc) => {
+                let path = doc.data();
+                path.dateOfPath = doc.data().dateOfPath.toDate(),
+                    path.pathId = doc.id;
+                return path;
+            });
+            resolve(paths);
+        }).catch((error) => reject(new Error("Error fetching paths")));
+    });
+};
+exports.getPathswithDate = getPathswithDate;
 const updateCurrentLocation = (driverId, location) => {
     return new Promise((resolve, reject) => {
         db.collection('drivers').doc(driverId).update({

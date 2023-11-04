@@ -1,4 +1,4 @@
-import { OrderType, RentingItemType } from "types";
+import { OrderType, PathOrderType, RentingItemType } from "types";
 import { BASE_URL } from "../../config";
 
 export const getRentingItemsAPI = () => {
@@ -72,6 +72,45 @@ export const getOrdersAPI = () => {
         }).catch((error) => reject(error))
     })
 }
+
+export const getPathsAPI = (date: Date) => {
+    return new Promise((resolve, reject) => {
+        const urlGetPaths = `${BASE_URL}/admin/getPaths`
+        fetch(urlGetPaths, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: date.setUTCHours(0, 0, 0, 0) })
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    resolve(jsonData)
+                }
+            ).catch((error) => {
+                reject(error)
+            })
+        }).catch((error) => reject(error))
+    })
+}
+
+export const createPath = (path: PathOrderType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/createPath', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(path)
+        }).then((response) => response.json().then((jsonData) => {
+            if (response.status == 200) {
+                resolve(jsonData)
+            }
+            else {
+                reject("error")
+            }
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 
 export const createOrder = (order: OrderType) => {
     return new Promise((resolve, reject) => {

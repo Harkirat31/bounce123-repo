@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
-import { driver, assignOrder, rentingItem, sideItem, order } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate } from "db"
+import { driver, assignOrder, rentingItem, sideItem, order, pathOrder } from "types";
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate } from "db"
 
 
 
@@ -51,6 +51,20 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
     });
   })
 
+})
+
+router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
+  req.body.dateOfPath = new Date(req.body.dateOfPath)
+  let parsedData = pathOrder.safeParse(req.body)
+  if (!parsedData.success) {
+    console.log(parsedData.error)
+    return res.status(403).json({
+      msg: "Error in  Details"
+    });
+  }
+  createPath(parsedData.data).then((result) => {
+    res.json({ isAdded: true });
+  }).catch((error) => res.json({ isAdded: false }))
 })
 
 router.post("/createOrder", authenticateJwt, async (req: Request, res: Response) => {
@@ -142,7 +156,7 @@ router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
   let parsedDate = req.body.date
   if (!parsedDate) {
     return res.status(403).json({
-      msg: "Error in Driver Id"
+      msg: "Error in  Details "
     });
   }
   getOrderswithDate(new Date(parsedDate)).then((orders) => {
@@ -153,5 +167,23 @@ router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
     })
   })
 })
+
+router.post("/getPaths", authenticateJwt, (req: Request, res: Response) => {
+  console.log(req.body)
+  let parsedDate = req.body.date
+  if (!parsedDate) {
+    return res.status(403).json({
+      msg: "Error in Details"
+    });
+  }
+  getPathswithDate(new Date(parsedDate)).then((paths) => {
+    res.json(paths);
+  }).catch(() => {
+    res.status(403).json({
+      msg: "Error fetching from firestore"
+    })
+  })
+})
+
 
 export default router
