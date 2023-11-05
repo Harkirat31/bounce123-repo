@@ -3,10 +3,10 @@ import { API_KEY } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrders } from "../store/selectors/orderSelector";
-import { OrderType } from "types";
+import { OrderType, PathOrderType } from "types";
 import { getOrderById } from "../store/atoms/orderAtom";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
-import { createPathAtom, savedPaths } from "../store/atoms/pathAtom";
+import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
 
 
 const mapOptions = {
@@ -54,32 +54,45 @@ const MapComponent = () => {
 const CreatePaths = ({ map }: { map: any }) => {
     const paths = useRecoilValue(savedPaths)
     const orders = useRecoilValue(getOrders)
-    useEffect(() => {
-        paths.forEach((pathElement) => {
-            if (!pathElement.show)
-                return
-            var lineSymbol = {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-            };
-            let flightPath = new window.google.maps.Polyline({
-                geodesic: true,
-                strokeColor: "Green",
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-                icons: [{ icon: lineSymbol, offset: "100%", }]
-            });
-            if (pathElement.path.length > 0) {
-                let cordinates: any = [{ lat: 43.6811345, lng: -79.58786719999999 }]
-                pathElement.path.forEach((orderId) => {
-                    let order = orders.find((order) => order.orderId === orderId)
-                    cordinates.push(order?.location)
-                })
-                flightPath.setPath(cordinates)
-                flightPath.setMap(map);
-            }
+    return <>
+        {paths.map((pathElement) => {
+            return <CreateSinglePath map={map} orders={orders} pathElement={pathElement} ></CreateSinglePath>
+        })}
+    </>
+}
 
-        })
-    }, [paths])
+const CreateSinglePath = ({ map, pathElement, orders }: { map: any, pathElement: PathOrderType, orders: OrderType[] }) => {
+    const pathData = useRecoilValue(getSavedPathById(pathElement.pathId))
+    useEffect(() => {
+        if (!pathData)
+            return
+        if (!pathData.show)
+            return
+        var lineSymbol = {
+            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+
+        };
+        let flightPath = new window.google.maps.Polyline({
+            geodesic: true,
+            strokeColor: "Green",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            icons: [{ icon: lineSymbol, offset: "100%", repeat: "20%" }]
+        });
+        if (pathData.path.length > 0) {
+            let cordinates: any = [{ lat: 43.6811345, lng: -79.58786719999999 }]
+            pathData.path.forEach((orderId) => {
+                let order = orders.find((order) => order.orderId === orderId)
+                cordinates.push(order?.location)
+            })
+            flightPath.setPath(cordinates)
+            flightPath.setMap(map);
+        }
+        return () => {
+            flightPath.setMap(null)
+        }
+
+    }, [pathData])
     return <></>
 }
 

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
-import { OrderType } from "types"
-import { createPathAtom, savedPaths } from "../store/atoms/pathAtom"
-import { createPath } from "../services/ApiService"
+import { OrderType, PathOrderType } from "types"
+import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom"
+import { createPath, getPathsAPI } from "../services/ApiService"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -47,27 +47,7 @@ const Paths = ({ setShowCreatePath }: any) => {
             <tbody>
                 {paths.length > 0 &&
                     paths.map((pathElement) => {
-                        return <>
-                            <tr>
-                                <td> <input type="checkbox" checked={pathElement.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
-                                <td>
-                                    <div className="grid grid-flow-col">
-
-                                        {pathElement.path.map((node) => {
-                                            return <div>
-                                                <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{getSrNoFororderId(node)}</p>
-                                            </div>
-                                        })}
-
-                                    </div>
-                                </td>
-                                <td></td>
-                                <td className="px-6 py-4 text-right">
-                                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                </td>
-
-                            </tr>
-                        </>
+                        return <PathRow path={pathElement} callbackToCalculateSrNo={getSrNoFororderId}></PathRow>
                     })
                 }
             </tbody>
@@ -114,9 +94,12 @@ const CreatePath = ({ setShowCreatePath }: any) => {
                     <div className="flex flex-row">
                         <button
                             onClick={() => {
-                                createPath({ show: true, path: pathOrders, dateOfPath: date }).then((result) => {
-                                    setSavedPaths([...paths, { show: true, path: pathOrders, dateOfPath: date }]);
-                                    reset ? setReset(false) : setReset(true)
+                                createPath({ show: true, path: pathOrders, dateOfPath: date }).then(async (result) => {
+                                    getPathsAPI(date).then((data: any) => {
+                                        setSavedPaths([...data]);
+                                        reset ? setReset(false) : setReset(true)
+                                    }).catch(() => alert("Error Saving Path"))
+
                                 }).catch((error) => {
                                     alert(error)
                                 })
@@ -153,4 +136,39 @@ const CreatePath = ({ setShowCreatePath }: any) => {
             </div>
         </div>
     </div>
+}
+
+
+const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number }) => {
+    const [pathData, setPathData] = useRecoilState(getSavedPathById(path.pathId))
+
+    const handleShowToggle = () => {
+        if (pathData!.show) {
+            setPathData({ ...pathData!, show: false })
+        }
+        else {
+            setPathData({ ...pathData!, show: true })
+        }
+    }
+    return <>
+        <tr>
+            <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
+            <td>
+                <div className="grid grid-flow-col">
+
+                    {path.path.map((node) => {
+                        return <div>
+                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
+                        </div>
+                    })}
+
+                </div>
+            </td>
+            <td></td>
+            <td className="px-6 py-4 text-right">
+                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+            </td>
+
+        </tr>
+    </>
 }

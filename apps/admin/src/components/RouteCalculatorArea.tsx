@@ -11,18 +11,18 @@ const RouteCalculatorArea = () => {
     const [orders, setOrders] = useRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
     const OnDateChangeHandler = (date: Date) => {
+        console.log(date)
 
         const urlGetOrders = `${BASE_URL}/admin/getOrders`
-
         fetch(urlGetOrders, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
+            body: JSON.stringify({ date: date })
         }).then(result => {
             result.json().then(
                 (jsonData) => {
                     console.log(jsonData)
-                    setDate(new Date(date.setHours(0, 0, 0, 0)))
+                    setDate(date)
                     setOrders(jsonData)
                 }
             ).catch((error) => {
@@ -61,7 +61,7 @@ const RouteCalculatorArea = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="">
+            <div className="h-full overflow-y-scroll">
                 <PathArea></PathArea>
             </div>
 
