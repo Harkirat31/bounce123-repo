@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 
 import { driver } from "types/src/index"
 import { BASE_URL } from "../../config"

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
-import { order, rentingItem } from 'types/src/index';
-import { createMainItemsApi, createOrdersApi } from '../services/ApiService';
+import { rentingItem } from 'types/src/index';
+import { createMainItemsApi } from '../services/ApiService';
 import DownloadButtonMainItems from '../components/DownloadButtonMainItems';
 
 const ParseMainItems = () => {

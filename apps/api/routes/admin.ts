@@ -76,7 +76,7 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
       msg: "Error in  Details"
     });
   }
-  const apiKey = 'AIzaSyANu4rP79yzZDjyHT3ExDgGb_6gh9IxbwE';
+  const apiKey = process.env.MAPS_API_KEY;
   let location = { lat: 0, lng: 0 }
   let placeId = ""
 

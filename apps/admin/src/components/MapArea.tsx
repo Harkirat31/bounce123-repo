@@ -1,4 +1,4 @@
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
+import { Wrapper } from "@googlemaps/react-wrapper";
 import { API_KEY } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -132,7 +132,7 @@ const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
 
 
 const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: number }) => {
-    const [orderData, setOrderData] = useRecoilState(getOrderById(order.orderId!))
+    const [orderData, _setOrderData] = useRecoilState(getOrderById(order.orderId!))
     const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({
@@ -182,12 +182,6 @@ const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: n
 
 const PickUpMarker = ({ map }: any) => {
     useEffect(() => {
-        const pin = new window.google.maps.marker.PinElement({
-            glyphColor: 'white',
-            scale: 1.5,
-            background: 'green',
-            borderColor: 'green'
-        });
 
         const bounce123Info = document.createElement("div");
 

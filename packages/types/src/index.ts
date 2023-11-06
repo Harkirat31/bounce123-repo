@@ -1,6 +1,11 @@
-import { number, z } from "zod"
+import { z } from "zod"
 
 export const userId = z.object({ uid: z.string() })
+
+
+export const x = z.object({
+    name: z.string()
+})
 
 export const rentingItem = z.object({
     companyId: z.string().optional(),
