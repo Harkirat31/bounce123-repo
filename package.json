@@ -4,7 +4,9 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "start:react": "cd apps/admin/dist && serve -p 3001",
+    "start:express": "cd apps/api && node dist/index.js"
   },
   "devDependencies": {
     "eslint": "^8.48.0",
