@@ -1,14 +1,15 @@
-//import path from 'path';
+import path from 'path';
 
 import * as admin from 'firebase-admin';
+import { homedir } from 'os'
 
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType } from "types"
 // Initialize Firebase Admin SDK
 
-//const serviceaccountPath = path.join(__dirname,'./','serviceAccount.json')
+const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
 
 admin.initializeApp({
-  credential: admin.credential.cert("/Users/harry/dev/projects/bounce123/packages/db/serviceAccount.json"),
+  credential: admin.credential.cert(serviceaccountPath),
 });
 
 const db = admin.firestore();
