@@ -4,5 +4,5 @@ cd /home/ubuntu/bounce123
 git pull origin main
 yarn install
 yarn build
-pm2 stop react
-pm2 start npm --name "react" -- run "start:express"
+pm2 stop express
+pm2 start npm --name "express" -- run "start:express"
