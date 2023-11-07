@@ -1,41 +1,29 @@
 import { useRecoilState } from "recoil"
 import { OrderType } from "types"
 
-import { BASE_URL } from "../../config"
 import DatePicker from "react-datepicker"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
+import { getOrdersAPI } from "../services/ApiService"
 
 const RouteCalculatorArea = () => {
     const [orders, setOrders] = useRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
-    const OnDateChangeHandler = (date: Date) => {
-        console.log(date)
-
-        const urlGetOrders = `${BASE_URL}/admin/getOrders`
-        fetch(urlGetOrders, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date: date })
-        }).then(result => {
-            result.json().then(
-                (jsonData) => {
-                    console.log(jsonData)
-                    setDate(date)
-                    setOrders(jsonData)
-                }
-            ).catch((error) => {
-                console.log(error)
-            })
-        }).catch((error) => console.log("error"))
+    const OnDateChangeHandler = (date1: Date) => {
+        getOrdersAPI(date1).then((result: any) => {
+            setDate(date1)
+            setOrders(result)
+        }).catch((error) => {
+            alert("Unable to fetch the orders of this date")
+        })
     }
     return (
         <div className="grid grid-rows-2 h-full">
             <div className="overflow-y-scroll flex flex-col justify-start items-center">
                 <div className="flex justify-center m-2">
                     <p className="text-blue-900 mt-2">Date</p>
-                    <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date: Date) => OnDateChangeHandler(date)} />
+                    <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1: Date) => OnDateChangeHandler(date1)} />
                 </div>
                 <table className="w-full text-sm text-center text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">

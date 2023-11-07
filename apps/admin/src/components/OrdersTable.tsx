@@ -6,6 +6,7 @@ const OrdersTable = () => {
 
     // let items: number[] = [1, 2, 3];
     const orders = useRecoilValue(getOrders)
+
     if (orders != null && orders.length > 0) {
         return <>
             <div className="mt-4 shadow-md sm:rounded-lg">

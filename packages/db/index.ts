@@ -129,7 +129,7 @@ export const getOrders = (driverId: string): Promise<OrderType[]> => {
 export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
 
   return new Promise((resolve, reject) => {
-    db.collection('orders').where("deliveryDate", ">=", date).get().then((result) => {
+    db.collection('orders').where("deliveryDate", "==", date).get().then((result) => {
       let orders = result.docs.map(
         (doc) => {
           let order = doc.data() as OrderType
@@ -146,7 +146,7 @@ export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
 export const getPathswithDate = (date: Date): Promise<PathOrderType[]> => {
 
   return new Promise((resolve, reject) => {
-    db.collection('paths').where("dateOfPath", ">=", date).get().then((result) => {
+    db.collection('paths').where("dateOfPath", "==", date).get().then((result) => {
       let paths = result.docs.map(
         (doc) => {
           let path = doc.data() as PathOrderType

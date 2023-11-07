@@ -15,6 +15,8 @@ const Init = () => {
     const setPaths = useSetRecoilState(savedPaths)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     useEffect(() => {
+
+        console.log(orderSearchDate)
         getRentingItemsAPI().then((rentingItems: any) => {
             console.log(rentingItems)
             setRentingItems({
@@ -34,7 +36,7 @@ const Init = () => {
                 value: drivers
             })
         })
-        getOrdersAPI().then((orders: any) => {
+        getOrdersAPI(orderSearchDate).then((orders: any) => {
             setOrders(orders)
         })
         getPathsAPI(orderSearchDate).then((paths: any) => {

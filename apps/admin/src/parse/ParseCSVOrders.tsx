@@ -25,7 +25,7 @@ const ParseCSVOrders = () => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
       //console.log(orderobject)
-      orderobject[orderAttributes[5]] = new Date(orderobject[orderAttributes[5]])
+      orderobject[orderAttributes[5]] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
       orderobject[orderAttributes[8]] = []
       orderobject[orderAttributes[9]] = []
       try {
@@ -46,7 +46,7 @@ const ParseCSVOrders = () => {
     )
 
     createOrdersApi(orders).then((result: any) => {
-      getOrdersAPI().then((orders: any) => {
+      getOrdersAPI(new Date()).then((orders: any) => {
         setOrders(orders)
       })
       setCreateOrdersStatus(result)

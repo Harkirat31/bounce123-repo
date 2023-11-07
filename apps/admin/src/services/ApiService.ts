@@ -52,10 +52,10 @@ export const getDriversAPI = () => {
     })
 }
 
-export const getOrdersAPI = () => {
+export const getOrdersAPI = (date: Date) => {
     return new Promise((resolve, reject) => {
         const urlGetOrders = `${BASE_URL}/admin/getOrders`
-        let dateNow = new Date().setUTCHours(0, 0, 0, 0)
+        let dateNow = date.setHours(0, 0, 0, 0)
         console.log(dateNow)
         fetch(urlGetOrders, {
             method: "POST",
@@ -79,7 +79,7 @@ export const getPathsAPI = (date: Date) => {
         fetch(urlGetPaths, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date: date.setUTCHours(0, 0, 0, 0) })
+            body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
         }).then(result => {
             result.json().then(
                 (jsonData) => {

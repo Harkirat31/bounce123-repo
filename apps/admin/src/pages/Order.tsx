@@ -2,8 +2,8 @@ import CreateOrder from "../components/CreateOrder.tsx";
 import OrdersTable from "../components/OrdersTable.tsx";
 import DatePicker from "react-datepicker"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom.ts";
-import { BASE_URL } from "../../config.ts";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { getOrdersAPI } from "../services/ApiService.ts";
 
 
 const Order = () => {
@@ -12,23 +12,12 @@ const Order = () => {
 
   const OnDateChangeHandler = (date: Date) => {
 
-    const urlGetOrders = `${BASE_URL}/admin/getOrders`
-
-    fetch(urlGetOrders, {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
-    }).then(result => {
-      result.json().then(
-        (jsonData) => {
-          console.log(jsonData)
-          setDate(new Date(date.setHours(0, 0, 0, 0)))
-          setOrders(jsonData)
-        }
-      ).catch((error) => {
-        console.log(error)
-      })
-    }).catch((error) => console.log("error"))
+    getOrdersAPI(date).then((result: any) => {
+      setDate(new Date(date.setHours(0, 0, 0, 0)))
+      setOrders(result)
+    }).catch((_error) => {
+      alert("Unable to fetch the orders of this date")
+    })
   }
 
 
