@@ -53,7 +53,7 @@ export const getDriversAPI = () => {
 }
 
 export const getOrdersAPI = (date: Date) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: (orders: OrderType[]) => void, reject) => {
         const urlGetOrders = `${BASE_URL}/admin/getOrders`
         let dateNow = date.setHours(0, 0, 0, 0)
         console.log(dateNow)
@@ -65,6 +65,7 @@ export const getOrdersAPI = (date: Date) => {
             result.json().then(
                 (jsonData) => {
                     resolve(jsonData)
+
                 }
             ).catch((error) => {
                 reject(error)

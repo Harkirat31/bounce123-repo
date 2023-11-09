@@ -3,7 +3,8 @@ import { BASE_URL } from "../../config";
 import { useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getDrivers } from "../store/selectors/driversSelector";
-import { getOrderById } from "../store/atoms/orderAtom";
+import { getOrderById, ordersAtom } from "../store/atoms/orderAtom";
+
 
 const DriverDropDownForOrder = (props: { order: OrderType }) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
@@ -29,7 +30,7 @@ const DriverDropDownForOrder = (props: { order: OrderType }) => {
         }).then((response) => response.json().then((jsonData) => {
             console.log(jsonData)
             if (jsonData.isAdded == true) {
-                setOrder((order) => ({ ...order, ...params }) as OrderType)
+                setOrder((order) => ({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
             }
             else {
                 console.log("Not updated Order")

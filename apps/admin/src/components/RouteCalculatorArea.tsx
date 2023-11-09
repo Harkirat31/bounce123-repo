@@ -1,25 +1,28 @@
-import { useRecoilState } from "recoil"
-import { OrderType } from "types"
+import { useRecoilState, useSetRecoilState } from "recoil"
 
 import DatePicker from "react-datepicker"
-import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { getOrderById, getOrdersIdsAtom, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
 import { getOrdersAPI } from "../services/ApiService"
+import { handleOrdersUpdate } from "../utils/handleUpdatesUtil"
 
 const RouteCalculatorArea = () => {
-    const [orders, setOrders] = useRecoilState(ordersAtom)
+    const setOrders = useSetRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
+    const [ordersIds, setOrdersIds] = useRecoilState(getOrdersIdsAtom())
     const OnDateChangeHandler = (date1: Date) => {
         getOrdersAPI(date1).then((result: any) => {
             setDate(date1)
-            setOrders(result)
+            handleOrdersUpdate(result, setOrders, setOrdersIds)
         }).catch((error) => {
             alert("Unable to fetch the orders of this date")
         })
     }
     return (
+
         <div className="grid grid-rows-2 h-full">
+
             <div className="overflow-y-scroll flex flex-col justify-start items-center">
                 <div className="flex justify-center m-2">
                     <p className="text-blue-900 mt-2">Date</p>
@@ -43,8 +46,8 @@ const RouteCalculatorArea = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order: OrderType, index: number) => {
-                            return <OrderRow key={order.orderId} order={order} index={index + 1}></OrderRow>
+                        {ordersIds.map((orderId, index) => {
+                            return <OrderRow key={orderId} orderId={orderId!} index={index + 1}></OrderRow>
                         })}
                     </tbody>
                 </table>
@@ -60,21 +63,21 @@ const RouteCalculatorArea = () => {
 export default RouteCalculatorArea
 
 
-const OrderRow = (props: { order: OrderType, index: number }) => {
-
+const OrderRow = (props: { orderId: string, index: number }) => {
+    const [order, _] = useRecoilState(getOrderById(props.orderId))
     return (
         <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td className="px-3 py-4">
                 <p>{props.index}</p>
             </td>
             <td className="px-1 py-4">
-                {props.order.currentStatus}
+                {order!.currentStatus}
             </td>
             <td className="px-1 py-4">
-                {props.order.priority}
+                {order!.priority}
             </td>
             <td className="px-1 py-4">
-                <DriverDropDownForOrder order={props.order}></DriverDropDownForOrder>
+                <DriverDropDownForOrder order={order!}></DriverDropDownForOrder>
             </td>
         </tr>
     )

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrders } from "../store/selectors/orderSelector";
 import { OrderType, PathOrderType } from "types";
-import { getOrderById } from "../store/atoms/orderAtom";
+import { getOrderById, getOrdersIdsAtom } from "../store/atoms/orderAtom";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
 
@@ -28,8 +28,8 @@ const MapArea = () => {
 }
 
 const MapComponent = () => {
-    const ref: any = useRef();
-    const orders = useRecoilValue(getOrders)
+    const ref: any = useRef()
+    const ordersIds = useRecoilValue(getOrdersIdsAtom())
     const [map, setMap] = useState<any>()
 
     useEffect(() => {
@@ -40,8 +40,8 @@ const MapComponent = () => {
         <div ref={ref} id="map" className="h-screen" >
             {map && <div>
                 <PickUpMarker map={map}></PickUpMarker>
-                {orders.map((order, index) => {
-                    return <OrderMarker order={order} srNo={index + 1} map={map}></OrderMarker>
+                {ordersIds.map((orderId, index) => {
+                    return <OrderMarker orderId={orderId!} srNo={index + 1} map={map}></OrderMarker>
                 })}
                 <CreatePolygonWhileCreatingPath map={map}></CreatePolygonWhileCreatingPath>
                 <CreatePaths map={map}></CreatePaths>
@@ -131,8 +131,8 @@ const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
 }
 
 
-const OrderMarker = ({ order, map, srNo }: { order: OrderType, map: any, srNo: number }) => {
-    const [orderData, _setOrderData] = useRecoilState(getOrderById(order.orderId!))
+const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: number }) => {
+    const [orderData, _setOrderData] = useRecoilState(getOrderById(orderId))
     const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({

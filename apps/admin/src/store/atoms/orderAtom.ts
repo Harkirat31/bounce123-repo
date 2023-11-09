@@ -8,6 +8,15 @@ export const ordersAtom = atom<OrderType[]>({
     default: []
 })
 
+export const getOrdersIdsAtom = () => {
+    const [orders] = useRecoilState(ordersAtom)
+    let ordersIds = orders.map((order) => order.orderId)
+    return atom({
+        key: "ordersIds",
+        default: [...ordersIds]
+    })
+}
+
 export const ordersSearchDate = atom({
     key: "ordersSearchDate",
     default: new Date()

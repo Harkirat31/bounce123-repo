@@ -4,8 +4,11 @@ import { useRecoilValue, useSetRecoilState } from "recoil"
 import { rentItemsState } from "../store/atoms/rentItemsAtom"
 import { sideItemsState } from "../store/atoms/sideItemsAtom"
 import { driversState } from "../store/atoms/driversAtom"
-import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { getOrdersIdsAtom, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { savedPaths } from "../store/atoms/pathAtom"
+import { OrderType } from "types"
+import { handleOrdersUpdate } from "../utils/handleUpdatesUtil"
+
 
 const Init = () => {
     const setRentingItems = useSetRecoilState(rentItemsState)
@@ -14,6 +17,7 @@ const Init = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const setPaths = useSetRecoilState(savedPaths)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
+    const setOrdersIds = useSetRecoilState(getOrdersIdsAtom())
     useEffect(() => {
 
         console.log(orderSearchDate)
@@ -36,8 +40,8 @@ const Init = () => {
                 value: drivers
             })
         })
-        getOrdersAPI(orderSearchDate).then((orders: any) => {
-            setOrders(orders)
+        getOrdersAPI(orderSearchDate).then((orders: OrderType[]) => {
+            handleOrdersUpdate(orders, setOrders, setOrdersIds)
         })
         getPathsAPI(orderSearchDate).then((paths: any) => {
             setPaths(paths)
