@@ -118,6 +118,8 @@ export const pathOrder = z.object({
     show: z.boolean(),
     path: z.array(z.string()),
     dateOfPath: z.date(),
+    driverId: z.string().optional(),
+    driverName: z.string().optional()
 })
 
 export type PathOrderType = z.infer<typeof pathOrder>

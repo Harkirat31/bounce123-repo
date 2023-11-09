@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
-import { OrderType, PathOrderType } from "types"
+import { getOrdersIdsAtom, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { DriverType, OrderType, PathOrderType } from "types"
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom"
 import { createPath, getPathsAPI } from "../services/ApiService"
+import { getDrivers } from "../store/selectors/driversSelector"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -19,10 +20,10 @@ export default PathArea
 
 const Paths = ({ setShowCreatePath }: any) => {
     const paths = useRecoilValue(savedPaths)
-    const orders = useRecoilValue(ordersAtom)
+    const orderIds = useRecoilValue(getOrdersIdsAtom())
 
     const getSrNoFororderId = (orderId: string) => {
-        return orders.findIndex((order) => order.orderId === orderId) + 1
+        return orderIds.findIndex((x) => x === orderId) + 1
     }
 
     return <div className="flex flex-col items-center  border-t-2 border-grey-600 ">
@@ -58,24 +59,25 @@ const Paths = ({ setShowCreatePath }: any) => {
 const CreatePath = ({ setShowCreatePath }: any) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
-    const orders = useRecoilValue(ordersAtom)
+    //const orders = useRecoilValue(ordersAtom)
+    const orderIds = useRecoilValue(getOrdersIdsAtom())
     const [dropDownValue, setDropDownValue] = useState<number>(1)
-    const [orderSetForPath, setorderSetForPath] = useState<OrderType[]>([])
+    const [orderSetForPath, setorderSetForPath] = useState<(string | undefined)[]>([])
     const [reset, setReset] = useState(true)
     const [_paths, setSavedPaths] = useRecoilState(savedPaths)
     const date = useRecoilValue(ordersSearchDate)
 
     useEffect(() => {
-        setorderSetForPath([...orders])
+        setorderSetForPath([...orderIds])
         setPathOrders([])
         setDropDownValue(1)
         return () => {
             setPathOrders([])
         };
-    }, [orders, reset])
+    }, [orderIds, reset])
 
     const getSrNoFororderId = (orderId: string) => {
-        return orders.findIndex((order) => order.orderId === orderId) + 1
+        return orderIds.findIndex((x) => x === orderId) + 1
     }
 
     return <div className="flex flex-col items-center  border-t-2 border-grey-600">
@@ -112,21 +114,21 @@ const CreatePath = ({ setShowCreatePath }: any) => {
             <div>
                 {orderSetForPath.length > 0 &&
                     <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
-                        {orderSetForPath.map((order: OrderType) => {
+                        {orderSetForPath.map((orderId) => {
                             return <>
-                                <option value={getSrNoFororderId(order.orderId!)}>{getSrNoFororderId(order.orderId!)}</option>
+                                <option value={getSrNoFororderId(orderId!)}>{getSrNoFororderId(orderId!)}</option>
                             </>
                         })}
                     </select>}
 
                 {orderSetForPath.length > 0 && <button onClick={
                     () => {
-                        setPathOrders([...pathOrders, orders[dropDownValue - 1].orderId!])
-                        let newSet = orderSetForPath.filter((order: OrderType) => order.orderId != orders[dropDownValue - 1].orderId!)
+                        setPathOrders([...pathOrders, orderIds[dropDownValue - 1]!])
+                        let newSet = orderSetForPath.filter((orderId) => orderId != orderIds[dropDownValue - 1]!)
                         console.log(newSet)
                         setorderSetForPath([...newSet])
                         if (newSet.length > 0) {
-                            setDropDownValue(getSrNoFororderId(newSet[0].orderId!))
+                            setDropDownValue(getSrNoFororderId(newSet[0]!))
                         }
 
                     }
@@ -141,7 +143,9 @@ const CreatePath = ({ setShowCreatePath }: any) => {
 
 const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number }) => {
     const [pathData, setPathData] = useRecoilState(getSavedPathById(path.pathId))
-
+    const drivers = useRecoilValue(getDrivers)
+    const selectRef = useRef<HTMLSelectElement | null>(null);
+    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: pathData!.driverId ? pathData!.driverId : "Select", driverName: pathData?.driverName ? pathData?.driverName : "Select" })
     const handleShowToggle = () => {
         if (pathData!.show) {
             setPathData({ ...pathData!, show: false })
@@ -150,6 +154,11 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
             setPathData({ ...pathData!, show: true })
         }
     }
+    function handleDropdownChanged(event: ChangeEvent<HTMLSelectElement>): void {
+        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
+        //console.log(event.target.value)
+    }
+
     return <>
         <tr>
             <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
@@ -164,9 +173,19 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
 
                 </div>
             </td>
-            <td></td>
+            <td>
+                <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
+                    <option value={"Select"}>Select</option>
+                    {drivers.map((driver: DriverType) => {
+                        return <>
+                            <option value={driver.uid}>{driver.name}</option>
+                        </>
+                    })}
+                </select>
+            </td>
             <td className="px-6 py-4 text-right">
-                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Send SMS</button>
+                <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</button>
             </td>
 
         </tr>

@@ -3,7 +3,7 @@ import { BASE_URL } from "../../config";
 import { useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getDrivers } from "../store/selectors/driversSelector";
-import { getOrderById, ordersAtom } from "../store/atoms/orderAtom";
+import { getOrderById } from "../store/atoms/orderAtom";
 
 
 const DriverDropDownForOrder = (props: { order: OrderType }) => {
