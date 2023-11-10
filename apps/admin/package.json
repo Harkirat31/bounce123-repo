@@ -13,6 +13,7 @@
     "@googlemaps/react-wrapper": "^1.1.35",
     "@types/papaparse": "^5.3.10",
     "@types/react-datepicker": "^4.19.1",
+    "axios": "^1.6.1",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-datepicker": "^4.21.0",

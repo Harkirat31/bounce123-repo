@@ -6,9 +6,12 @@ import Order from './pages/Order'
 import Deliverable from './pages/Deliverable'
 import Driver from './pages/Driver'
 import Init from './components/Init'
+import { RecoilEnv } from 'recoil'
+
 
 
 function App() {
+  RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false
   return (
     <div className='w-full'>
       <Router>

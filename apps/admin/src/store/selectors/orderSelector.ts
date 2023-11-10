@@ -9,3 +9,12 @@ export const getOrders = selector({
     }
 })
 
+export const getOrderIds = selector({
+    key: "getOrderIds",
+    get: ({ get }) => {
+        const state = get(ordersAtom)
+        let orderIds = state.map((order) => order.orderId)
+        return orderIds
+    }
+})
+

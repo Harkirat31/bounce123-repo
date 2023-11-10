@@ -2,9 +2,9 @@ import { Wrapper } from "@googlemaps/react-wrapper";
 import { API_KEY } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { getOrders } from "../store/selectors/orderSelector";
+import { getOrderIds, getOrders } from "../store/selectors/orderSelector";
 import { OrderType, PathOrderType } from "types";
-import { getOrderById, getOrdersIdsAtom } from "../store/atoms/orderAtom";
+import { getOrderById } from "../store/atoms/orderAtom";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
 
@@ -29,7 +29,7 @@ const MapArea = () => {
 
 const MapComponent = () => {
     const ref: any = useRef()
-    const ordersIds = useRecoilValue(getOrdersIdsAtom())
+    const ordersIds = useRecoilValue(getOrderIds)
     const [map, setMap] = useState<any>()
 
     useEffect(() => {

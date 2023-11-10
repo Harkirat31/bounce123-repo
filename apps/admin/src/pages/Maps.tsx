@@ -1,6 +1,7 @@
 import MapArea from "../components/MapArea"
 import RouteCalculatorArea from "../components/RouteCalculatorArea"
 
+
 const Map = () => {
   return (
     <div className="xl:grid grid-cols-11 h-screen">

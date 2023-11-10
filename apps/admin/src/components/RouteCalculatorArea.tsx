@@ -1,20 +1,20 @@
-import { useRecoilState, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 import DatePicker from "react-datepicker"
-import { getOrderById, getOrdersIdsAtom, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { getOrderById, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
 import { getOrdersAPI } from "../services/ApiService"
-import { handleOrdersUpdate } from "../utils/handleUpdatesUtil"
+import { getOrderIds } from "../store/selectors/orderSelector"
 
 const RouteCalculatorArea = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
-    const [ordersIds, setOrdersIds] = useRecoilState(getOrdersIdsAtom())
+    const ordersIds = useRecoilValue(getOrderIds)
     const OnDateChangeHandler = (date1: Date) => {
         getOrdersAPI(date1).then((result: any) => {
             setDate(date1)
-            handleOrdersUpdate(result, setOrders, setOrdersIds)
+            setOrders(result)
         }).catch((error) => {
             alert("Unable to fetch the orders of this date")
         })

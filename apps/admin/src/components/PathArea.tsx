@@ -1,10 +1,13 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import { getOrdersIdsAtom, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
-import { DriverType, OrderType, PathOrderType } from "types"
+import { ordersSearchDate } from "../store/atoms/orderAtom"
+import { DriverType, PathOrderType } from "types"
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom"
 import { createPath, getPathsAPI } from "../services/ApiService"
 import { getDrivers } from "../store/selectors/driversSelector"
+import { getOrderIds } from "../store/selectors/orderSelector"
+import { AiFillDelete } from 'react-icons/ai';
+import axios from "axios"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -20,7 +23,7 @@ export default PathArea
 
 const Paths = ({ setShowCreatePath }: any) => {
     const paths = useRecoilValue(savedPaths)
-    const orderIds = useRecoilValue(getOrdersIdsAtom())
+    const orderIds = useRecoilValue(getOrderIds)
 
     const getSrNoFororderId = (orderId: string) => {
         return orderIds.findIndex((x) => x === orderId) + 1
@@ -59,8 +62,7 @@ const Paths = ({ setShowCreatePath }: any) => {
 const CreatePath = ({ setShowCreatePath }: any) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
-    //const orders = useRecoilValue(ordersAtom)
-    const orderIds = useRecoilValue(getOrdersIdsAtom())
+    const orderIds = useRecoilValue(getOrderIds)
     const [dropDownValue, setDropDownValue] = useState<number>(1)
     const [orderSetForPath, setorderSetForPath] = useState<(string | undefined)[]>([])
     const [reset, setReset] = useState(true)
@@ -159,15 +161,50 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
         //console.log(event.target.value)
     }
 
+    const hanldeSendSMS = () => {
+
+        let order1: any = {
+            name: "Harkirat Singh",
+            address: "19 Simmons Blvd,Brampton ON",
+            rentingItem: "Animal Kingdom",
+            instructions: "Deliver Before 12"
+        }
+        let order2: any = {
+            name: "Kamaldeep",
+            address: "19 Simmons Blvd,Brampton ON",
+            rentingItem: "Animal Kingdom",
+            instructions: "Deliver Before 9"
+        }
+        let orders: any[] = []
+        orders.push(order1)
+        orders.push(order2)
+
+        let message = `Orders for 12/11/2023: \n\n`
+        orders.forEach((order, index) => {
+            //message = message + "https://minipunjabincanada/update/322323233232323"
+            message = message + `Order Sr No ${index + 1} \n`
+            message = message + `Name: ${order.name} \n Address: ${order.address} \n Delivery Items: ${order.rentingItem} \n Instructions: ${order.instructions} \n\n`
+
+        })
+
+        axios.post('https://textbelt.com/text', {
+            phone: '4379864033',
+            message: message,
+            key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
+        }).then(response => {
+            console.log(response.data);
+        })
+    }
+
     return <>
         <tr>
             <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
             <td>
-                <div className="grid grid-flow-col">
+                <div className="grid grid-cols-5 justify-between">
 
                     {path.path.map((node) => {
                         return <div>
-                            <p className="text-center w-5 h-5 m-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
+                            <p className="text-center w-5 h-5 mx-2 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
                         </div>
                     })}
 
@@ -183,9 +220,9 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
                     })}
                 </select>
             </td>
-            <td className="px-6 py-4 text-right">
-                <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Send SMS</button>
-                <button className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</button>
+            <td className="px-6 py-4 flex">
+                <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">Send SMS</button>
+                <button className="text-2xl"><AiFillDelete></AiFillDelete></button>
             </td>
 
         </tr>
