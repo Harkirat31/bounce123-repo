@@ -1,24 +1,26 @@
 import { DriverType, OrderType } from "types";
 import { BASE_URL } from "../../config";
-import { useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useEffect, useRef, useState } from "react";
+import { useRecoilValue } from "recoil";
 import { getDrivers } from "../store/selectors/driversSelector";
-import { getOrderById } from "../store/atoms/orderAtom";
 
 
-const DriverDropDownForOrder = (props: { order: OrderType }) => {
+
+const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const drivers: any = useRecoilValue(getDrivers)
-    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
-    const [order, setOrder] = useRecoilState(getOrderById(props.order.orderId!))
+    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
+    const order = props.order
+    useEffect(() => {
+        setDropDownItem({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
+    }, [order])
+
     const handleDropdownChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
         event.preventDefault();
         if (event.target.value == "Select") {
             return
         }
-        if (dropDownItem == "Select") {
-            return
-        }
+
         setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
         const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
 
@@ -30,7 +32,7 @@ const DriverDropDownForOrder = (props: { order: OrderType }) => {
         }).then((response) => response.json().then((jsonData) => {
             console.log(jsonData)
             if (jsonData.isAdded == true) {
-                setOrder((order) => ({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
+                props.setOrder((order: OrderType) => ({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
             }
             else {
                 console.log("Not updated Order")

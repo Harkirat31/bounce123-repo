@@ -1,4 +1,4 @@
-import { selector } from "recoil";
+import { atomFamily, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
 
 export const getOrders = selector({
@@ -17,4 +17,17 @@ export const getOrderIds = selector({
         return orderIds
     }
 })
+
+export const getOrder = atomFamily({
+    key: "getOrder",
+    default: selectorFamily({
+        key: "getOrder/Default",
+        get: (orderId: string) => ({ get }) => {
+            const orders = get(ordersAtom)
+            return orders.find((order) => order.orderId === orderId)
+        }
+    })
+})
+
+
 

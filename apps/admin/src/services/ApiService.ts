@@ -127,6 +127,21 @@ export const createOrder = (order: OrderType) => {
     })
 }
 
+export const assignPathAPI = (path: PathOrderType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/assignPath', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(path)
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+
 export const createOrdersApi = (orders: OrderType[]) => {
     let createOrderStatuses: any = []
 

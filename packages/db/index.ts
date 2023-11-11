@@ -247,13 +247,33 @@ export const getDrivers = () => {
   })
 }
 
+export const assignPathToDriver = (path: PathOrderType) => {
+  return new Promise((resolve, reject) => {
+    db.collection('paths').doc(path.pathId!).update({
+      driverId: path.driverId,
+      driverName: path.driverName,
+    }).then((result) => {
+      path.path.forEach(async (pathNode) => {
+        await db.collection('orders').doc(pathNode).update({
+          driverId: path.driverId,
+          driverName: path.driverName,
+          currentStatus: "PathAssigned"
+        })
+      })
+      resolve(result)
+    }).catch((error) => reject(new Error("Error")))
+  })
+}
+
 
 
 
 
 
 const test = async () => {
-  const c = new Date().getMilliseconds()
+
+
+  //const c = new Date().getMilliseconds()
 
   //getRentingItems().then((result) => console.log(result))
   //assignOrderToDriver("7GnMyRNWRzMU2cShccm4JkrRuEu1","VuXKAvFciTXe4Wo4axrR")
@@ -293,7 +313,7 @@ const test = async () => {
   //   driverId:"driverId",
   // }).then((result)=>console.log(result)).catch((error)=>console.log(error))
 }
-
+//0ph5kBt6cMCxiJ3SUMUu
 //test()
 //getUser("6JwbGWEL1DUWSv11GlLAdMm9EQn2").then((result)=>console.log(result))
 

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver } from "db"
 
 
 
@@ -118,6 +118,33 @@ router.post('/createRentingItem', authenticateJwt, (req: Request, res: Response)
     res.json({ isAdded: true });
   }).catch((error) => res.json({ isAdded: false }))
 
+})
+
+
+router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
+  if (req.body.dateOfPath) {
+    try {
+      req.body.dateOfPath = new Date(req.body.dateOfPath)
+    }
+    catch (_error) {
+      return res.status(403).json({
+        isAdded: false,
+        msg: "Error in Parameters"
+      })
+    }
+  }
+  let assignPathParams = pathOrder.safeParse(req.body)
+  console.log(req.body)
+  if (!assignPathParams.success) {
+    console.log(assignPathParams.error)
+    return res.status(403).json({
+      isAdded: false,
+      msg: "Error in Parameters"
+    })
+  }
+  assignPathToDriver(assignPathParams.data).then((result) => {
+    res.json({ isAdded: true })
+  }).catch((errro) => res.json({ isAdded: false }))
 })
 
 router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {

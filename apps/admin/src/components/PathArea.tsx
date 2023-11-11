@@ -3,11 +3,11 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { ordersSearchDate } from "../store/atoms/orderAtom"
 import { DriverType, PathOrderType } from "types"
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom"
-import { createPath, getPathsAPI } from "../services/ApiService"
+import { assignPathAPI, createPath, getPathsAPI } from "../services/ApiService"
 import { getDrivers } from "../store/selectors/driversSelector"
 import { getOrderIds } from "../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
-import axios from "axios"
+import { getPathById } from "../store/selectors/pathSelector"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
@@ -144,7 +144,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
 
 
 const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number }) => {
-    const [pathData, setPathData] = useRecoilState(getSavedPathById(path.pathId))
+    const [pathData, setPathData] = useRecoilState(getPathById(path.pathId!))
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: pathData!.driverId ? pathData!.driverId : "Select", driverName: pathData?.driverName ? pathData?.driverName : "Select" })
@@ -162,38 +162,54 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     }
 
     const hanldeSendSMS = () => {
-
-        let order1: any = {
-            name: "Harkirat Singh",
-            address: "19 Simmons Blvd,Brampton ON",
-            rentingItem: "Animal Kingdom",
-            instructions: "Deliver Before 12"
+        if (dropDownItem == "Select") {
+            return
         }
-        let order2: any = {
-            name: "Kamaldeep",
-            address: "19 Simmons Blvd,Brampton ON",
-            rentingItem: "Animal Kingdom",
-            instructions: "Deliver Before 9"
+        if (dropDownItem.driverId == "Select") {
+            return
         }
-        let orders: any[] = []
-        orders.push(order1)
-        orders.push(order2)
+        let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
 
-        let message = `Orders for 12/11/2023: \n\n`
-        orders.forEach((order, index) => {
-            //message = message + "https://minipunjabincanada/update/322323233232323"
-            message = message + `Order Sr No ${index + 1} \n`
-            message = message + `Name: ${order.name} \n Address: ${order.address} \n Delivery Items: ${order.rentingItem} \n Instructions: ${order.instructions} \n\n`
+        assignPathAPI(pathArgs as PathOrderType).then((result) => {
+            alert("Assigned and Sent to driver")
+            setPathData(pathArgs as PathOrderType)
 
+        }).catch((_error) => {
+            alert("Error")
         })
 
-        axios.post('https://textbelt.com/text', {
-            phone: '4379864033',
-            message: message,
-            key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
-        }).then(response => {
-            console.log(response.data);
-        })
+        // let order1: any = {
+        //     name: "Harkirat Singh",
+        //     address: "19 Simmons Blvd,Brampton ON",
+        //     rentingItem: "Animal Kingdom",
+        //     instructions: "Deliver Before 12"
+        // }
+        // let order2: any = {
+        //     name: "Kamaldeep",
+        //     address: "19 Simmons Blvd,Brampton ON",
+        //     rentingItem: "Animal Kingdom",
+        //     instructions: "Deliver Before 9"
+        // }
+        // let orders: any[] = []
+        // orders.push(order1)
+        // orders.push(order2)
+
+        // let message = `Orders for 12/11/2023: \n\n`
+        // orders.forEach((order, index) => {
+        //     //message = message + "https://minipunjabincanada/update/322323233232323"
+        //     message = message + `Order Sr No ${index + 1} \n`
+        //     message = message + `Name: ${order.name} \n Address: ${order.address} \n Delivery Items: ${order.rentingItem} \n Instructions: ${order.instructions} \n\n`
+
+        // })
+
+        // axios.post('https://textbelt.com/text', {
+        //     phone: '4379864033',
+        //     message: message,
+        //     key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
+        // }).then(response => {
+        //     console.log(response.data);
+        // })
+
     }
 
     return <>

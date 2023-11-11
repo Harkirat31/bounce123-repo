@@ -1,11 +1,11 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 import DatePicker from "react-datepicker"
-import { getOrderById, ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
+import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
 import { getOrdersAPI } from "../services/ApiService"
-import { getOrderIds } from "../store/selectors/orderSelector"
+import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
 
 const RouteCalculatorArea = () => {
     const setOrders = useSetRecoilState(ordersAtom)
@@ -64,7 +64,7 @@ export default RouteCalculatorArea
 
 
 const OrderRow = (props: { orderId: string, index: number }) => {
-    const [order, _] = useRecoilState(getOrderById(props.orderId))
+    const [order, setOrder] = useRecoilState(getOrder(props.orderId))
     return (
         <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td className="px-3 py-4">
@@ -77,7 +77,7 @@ const OrderRow = (props: { orderId: string, index: number }) => {
                 {order!.priority}
             </td>
             <td className="px-1 py-4">
-                <DriverDropDownForOrder order={order!}></DriverDropDownForOrder>
+                <DriverDropDownForOrder order={order!} setOrder={setOrder}></DriverDropDownForOrder>
             </td>
         </tr>
     )

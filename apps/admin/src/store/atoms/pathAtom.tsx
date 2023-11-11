@@ -1,4 +1,4 @@
-import { atom, useRecoilState } from "recoil";
+import { atom, atomFamily, selectorFamily } from "recoil";
 import { PathOrderType } from "types";
 
 export const createPathAtom = atom<string[]>({
@@ -11,11 +11,19 @@ export const savedPaths = atom<PathOrderType[]>({
     default: []
 })
 
-export const getSavedPathById = (id?: string) => {
-    const [paths] = useRecoilState(savedPaths)
-    let path = paths.find((path) => id === path.pathId)
-    return atom({
-        key: `path${id}`,
-        default: path
+export const getSavedPathById = atomFamily({
+    key: `getPath`,
+    default: selectorFamily({
+        key: "getPath/Default",
+        get: (pathId: string) => ({ get }) => {
+            const paths = get(savedPaths)
+            return paths.find((path) => path.pathId === pathId)
+        }
     })
-}
+})
+
+
+export const getSavedPathWithId = atomFamily({
+    key: "getSavedPathWithId",
+    default: savedPaths
+})

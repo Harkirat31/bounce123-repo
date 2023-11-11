@@ -2,9 +2,8 @@ import { Wrapper } from "@googlemaps/react-wrapper";
 import { API_KEY } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { getOrderIds, getOrders } from "../store/selectors/orderSelector";
+import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector";
 import { OrderType, PathOrderType } from "types";
-import { getOrderById } from "../store/atoms/orderAtom";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
 
@@ -62,7 +61,7 @@ const CreatePaths = ({ map }: { map: any }) => {
 }
 
 const CreateSinglePath = ({ map, pathElement, orders }: { map: any, pathElement: PathOrderType, orders: OrderType[] }) => {
-    const pathData = useRecoilValue(getSavedPathById(pathElement.pathId))
+    const pathData = useRecoilValue(getSavedPathById(pathElement.pathId!))
     useEffect(() => {
         if (!pathData)
             return
@@ -132,7 +131,7 @@ const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
 
 
 const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: number }) => {
-    const [orderData, _setOrderData] = useRecoilState(getOrderById(orderId))
+    const [orderData, _setOrderData] = useRecoilState(getOrder(orderId))
     const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({

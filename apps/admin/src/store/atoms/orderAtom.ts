@@ -1,4 +1,4 @@
-import { atom, useRecoilState, useRecoilValue } from "recoil"
+import { atom } from "recoil"
 import { OrderType } from "types"
 
 
@@ -15,12 +15,4 @@ export const ordersSearchDate = atom({
     default: new Date()
 })
 
-export const getOrderById = (id: string) => {
-    const [orders] = useRecoilState(ordersAtom)
-    let order = orders.find((order) => id === order.orderId)
-    return atom({
-        key: `order${id}`,
-        default: order
-    })
-}
 

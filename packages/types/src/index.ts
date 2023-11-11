@@ -74,7 +74,7 @@ export const order = z.object({
     placeId: z.string().optional(),
     driverId: z.string().optional(),
     driverName: z.string().optional(),
-    currentStatus: z.enum(["NotAssigned", "Assigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
+    currentStatus: z.enum(["NotAssigned", "Assigned", "PathAssigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
     deliveryDate: z.date(),
     specialInstructions: z.string().optional(),
     deliverTimeRangeStart: z.number().min(1).max(24).optional(),
@@ -105,6 +105,7 @@ export const updateStatusOfOrder = z.object({
 export enum deliveryStatus {
     NotAssigned,
     Assigned,
+    PathAssigned,
     OnTheWay,
     Delivered,
     Picked,
@@ -123,10 +124,3 @@ export const pathOrder = z.object({
 })
 
 export type PathOrderType = z.infer<typeof pathOrder>
-
-// export const path = z.object({
-//     driverId: z.string().optional(),
-//     orders: z.map(z.number(), z.string())
-// })
-
-// export type PathType = z.infer<typeof path>
