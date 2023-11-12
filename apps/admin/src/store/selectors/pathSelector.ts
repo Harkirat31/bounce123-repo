@@ -1,5 +1,5 @@
 import { DefaultValue, selectorFamily } from "recoil";
-import { getSavedPathById, savedPaths } from "../atoms/pathAtom";
+import { getSavedPathById, } from "../atoms/pathAtom";
 import { getOrder } from "./orderSelector";
 import { OrderType } from "types";
 
@@ -18,7 +18,7 @@ export const getPathById = selectorFamily({
         if (!(newValue instanceof DefaultValue)) {
             newValue?.path.forEach((pathNode) => {
                 let order = get(getOrder(pathNode))
-                set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "PathAssigned" } as OrderType)
+                set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "SentToDriver" } as OrderType)
             })
         }
     },

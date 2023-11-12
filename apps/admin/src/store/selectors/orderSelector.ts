@@ -1,5 +1,6 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
+import { DefaultValue, atomFamily, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
+import { OrderType } from "types";
 
 export const getOrders = selector({
     key: "getOrders",
@@ -28,6 +29,23 @@ export const getOrder = atomFamily({
         }
     })
 })
+
+// export const getOrder = selectorFamily({
+//     key: "getOrder",
+//     get: (id: string) => ({ get }) => {
+//         return getOrderAtom(id)
+//     },
+//     set: (id: string) => ({ get, set }, newValue) => {
+//         set(getOrderAtom(id), newValue)
+//         // if (!(newValue instanceof DefaultValue)) {
+//         //     let orders = get(ordersAtom)
+//         //     let ordersCopy = [...orders]
+//         //     let index = ordersCopy.findIndex((order) => order.orderId === newValue!.orderId)
+//         //     ordersCopy[index] = newValue as OrderType
+//         //     set(ordersAtom, ordersCopy)
+//         // }
+//     },
+// })
 
 
 

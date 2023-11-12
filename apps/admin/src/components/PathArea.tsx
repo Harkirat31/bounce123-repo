@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { ordersSearchDate } from "../store/atoms/orderAtom"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom"
+import { createPathAtom, getSavedPathById, orderSetForPathCreation, savedPaths } from "../store/atoms/pathAtom"
 import { assignPathAPI, createPath, getPathsAPI } from "../services/ApiService"
 import { getDrivers } from "../store/selectors/driversSelector"
 import { getOrderIds } from "../store/selectors/orderSelector"
@@ -63,16 +63,16 @@ const CreatePath = ({ setShowCreatePath }: any) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
     const orderIds = useRecoilValue(getOrderIds)
-    const [dropDownValue, setDropDownValue] = useState<number>(1)
-    const [orderSetForPath, setorderSetForPath] = useState<(string | undefined)[]>([])
+    const [dropDownValue, setDropDownValue] = useState<number | "Select">("Select")
+    const [orderSetForPath, setorderSetForPath] = useRecoilState(orderSetForPathCreation)
     const [reset, setReset] = useState(true)
     const [_paths, setSavedPaths] = useRecoilState(savedPaths)
     const date = useRecoilValue(ordersSearchDate)
 
     useEffect(() => {
-        setorderSetForPath([...orderIds])
+        setorderSetForPath([...orderIds] as string[])
         setPathOrders([])
-        setDropDownValue(1)
+        //setDropDownValue("Select Order")
         return () => {
             setPathOrders([])
         };
@@ -116,6 +116,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
             <div>
                 {orderSetForPath.length > 0 &&
                     <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
+                        <option value="Select" >Select Order</option>
                         {orderSetForPath.map((orderId) => {
                             return <>
                                 <option value={getSrNoFororderId(orderId!)}>{getSrNoFororderId(orderId!)}</option>
@@ -125,6 +126,9 @@ const CreatePath = ({ setShowCreatePath }: any) => {
 
                 {orderSetForPath.length > 0 && <button onClick={
                     () => {
+                        if (dropDownValue === "Select") {
+                            return
+                        }
                         setPathOrders([...pathOrders, orderIds[dropDownValue - 1]!])
                         let newSet = orderSetForPath.filter((orderId) => orderId != orderIds[dropDownValue - 1]!)
                         console.log(newSet)
@@ -171,9 +175,8 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
         let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
 
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
-            alert("Assigned and Sent to driver")
             setPathData(pathArgs as PathOrderType)
-
+            alert("Assigned and Sent to driver")
         }).catch((_error) => {
             alert("Error")
         })

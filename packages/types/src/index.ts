@@ -74,7 +74,7 @@ export const order = z.object({
     placeId: z.string().optional(),
     driverId: z.string().optional(),
     driverName: z.string().optional(),
-    currentStatus: z.enum(["NotAssigned", "Assigned", "PathAssigned", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
+    currentStatus: z.enum(["NotAssigned", "Assigned", "PathAssigned", "SentToDriver", "Accepted", "OnTheWay", "Delivered", "Picked", "Returned"]).default("NotAssigned"), //weather deliverd, picked, pending to deliver, pending to pick
     deliveryDate: z.date(),
     specialInstructions: z.string().optional(),
     deliverTimeRangeStart: z.number().min(1).max(24).optional(),
@@ -106,10 +106,11 @@ export enum deliveryStatus {
     NotAssigned,
     Assigned,
     PathAssigned,
+    SentToDriver,
     OnTheWay,
     Delivered,
     Picked,
-    Returned
+    Returned,
 }
 
 
