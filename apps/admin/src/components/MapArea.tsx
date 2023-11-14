@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector";
 import { OrderType, PathOrderType } from "types";
-import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR } from "../utils/constants";
+import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, darkColors } from "../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
 
 
@@ -54,13 +54,13 @@ const CreatePaths = ({ map }: { map: any }) => {
     const paths = useRecoilValue(savedPaths)
     const orders = useRecoilValue(getOrders)
     return <>
-        {paths.map((pathElement) => {
-            return <CreateSinglePath map={map} orders={orders} pathElement={pathElement} ></CreateSinglePath>
+        {paths.map((pathElement, index) => {
+            return <CreateSinglePath map={map} orders={orders} pathElement={pathElement} index={index} ></CreateSinglePath>
         })}
     </>
 }
 
-const CreateSinglePath = ({ map, pathElement, orders }: { map: any, pathElement: PathOrderType, orders: OrderType[] }) => {
+const CreateSinglePath = ({ map, pathElement, orders, index }: { map: any, pathElement: PathOrderType, orders: OrderType[], index: number }) => {
     const pathData = useRecoilValue(getSavedPathById(pathElement.pathId!))
     useEffect(() => {
         if (!pathData)
@@ -73,7 +73,7 @@ const CreateSinglePath = ({ map, pathElement, orders }: { map: any, pathElement:
         };
         let flightPath = new window.google.maps.Polyline({
             geodesic: true,
-            strokeColor: "Green",
+            strokeColor: darkColors[index % darkColors.length],
             strokeOpacity: 1.0,
             strokeWeight: 2,
             icons: [{ icon: lineSymbol, offset: "100%", repeat: "20%" }]

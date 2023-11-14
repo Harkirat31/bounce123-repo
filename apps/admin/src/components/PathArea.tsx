@@ -8,11 +8,16 @@ import { getDrivers } from "../store/selectors/driversSelector"
 import { getOrderIds } from "../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
 import { getPathById } from "../store/selectors/pathSelector"
+import { useNavigate } from "react-router-dom";
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState(false)
     return (
-        <div >
+        <div className="border-t-2 border-grey-600">
+            <div className="flex justify-center">
+                <button onClick={() => setShowCreatePath(false)} type="button" className={`m-2 text-sm ${showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
+                <button onClick={() => setShowCreatePath(true)} type="button" className={`m-2 text-sm ${!showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
+            </div>
             {showCreatePath && <CreatePath setShowCreatePath={setShowCreatePath}></CreatePath>}
             {!showCreatePath && <Paths setShowCreatePath={setShowCreatePath}></Paths>}
         </div>
@@ -24,38 +29,49 @@ export default PathArea
 const Paths = ({ setShowCreatePath }: any) => {
     const paths = useRecoilValue(savedPaths)
     const orderIds = useRecoilValue(getOrderIds)
+    const navigate = useNavigate()
 
     const getSrNoFororderId = (orderId: string) => {
         return orderIds.findIndex((x) => x === orderId) + 1
     }
 
-    return <div className="flex flex-col items-center  border-t-2 border-grey-600 ">
-        <button onClick={() => setShowCreatePath(true)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Create Path</button>
-        <table className="text-sm  text-center text-gray-500 ">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th scope="col" className="px-3 py-3 ">
-                        Show
-                    </th>
-                    <th scope="col" className="text-left px-1 py-3">
-                        Path
-                    </th>
-                    <th scope="col" className="px-1 py-3">
-                        Assign To
-                    </th>
-                    <th scope="col" className="px-3 py-3">
-                        <span className="sr-only">Edit</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {paths.length > 0 &&
-                    paths.map((pathElement) => {
-                        return <PathRow path={pathElement} callbackToCalculateSrNo={getSrNoFororderId}></PathRow>
-                    })
-                }
-            </tbody>
-        </table>
+    return <div className="flex flex-col items-center ">
+        {orderIds.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
+            <p>No order is created for this day!!</p>
+            <a className="underline text-blue-900" onClick={() => navigate('/orders')} >Create new orders</a>
+        </div>}
+        {orderIds.length !== 0 && paths.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
+            <p>No Path is created!!</p>
+            <a className="underline text-blue-900" onClick={() => setShowCreatePath(true)} >Create a Path</a>
+        </div>}
+        {orderIds.length > 0 && paths.length > 0 &&
+            <table className="text-sm  text-center text-gray-500 ">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" className="px-3 py-3 ">
+                            Show
+                        </th>
+                        <th scope="col" className="text-left px-1 py-3">
+                            Path
+                        </th>
+                        <th scope="col" className="px-1 py-3">
+                            Assign To
+                        </th>
+                        <th scope="col" className="px-3 py-3">
+                            <span className="sr-only">Edit</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {paths.length > 0 &&
+                        paths.map((pathElement) => {
+                            return <PathRow path={pathElement} callbackToCalculateSrNo={getSrNoFororderId}></PathRow>
+                        })
+                    }
+                </tbody>
+            </table>
+        }
+
     </div>
 }
 
@@ -66,7 +82,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
     const [dropDownValue, setDropDownValue] = useState<number | "Select">("Select")
     const [orderSetForPath, setorderSetForPath] = useRecoilState(orderSetForPathCreation)
     const [reset, setReset] = useState(true)
-    const [_paths, setSavedPaths] = useRecoilState(savedPaths)
+    const [paths, setSavedPaths] = useRecoilState(savedPaths)
     const date = useRecoilValue(ordersSearchDate)
 
     useEffect(() => {
@@ -76,16 +92,19 @@ const CreatePath = ({ setShowCreatePath }: any) => {
         return () => {
             setPathOrders([])
         };
-    }, [orderIds, reset])
+    }, [orderIds, reset, paths])
 
     const getSrNoFororderId = (orderId: string) => {
         return orderIds.findIndex((x) => x === orderId) + 1
     }
 
-    return <div className="flex flex-col items-center  border-t-2 border-grey-600">
-        <button onClick={() => setShowCreatePath(false)} type="button" className="my-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-2 py-1 text-center mr-3 md:mr-0">Show All Paths</button>
-
+    return <div className="flex flex-col items-center">
         <div className="mx-2 flex flex-col justify-center items-center">
+            {orderSetForPath.length == 0 &&
+                <div className="h-full">
+                    <p> All Orders have been added to paths</p>
+                </div>
+            }
             <div className="grid grid-cols-8 items-center justify-center">
                 {pathOrders.map((pathnode) => {
                     return <>
@@ -162,7 +181,6 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     }
     function handleDropdownChanged(event: ChangeEvent<HTMLSelectElement>): void {
         setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-        //console.log(event.target.value)
     }
 
     const hanldeSendSMS = () => {

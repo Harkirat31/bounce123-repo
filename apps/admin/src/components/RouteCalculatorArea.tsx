@@ -8,11 +8,14 @@ import { changePriority, getOrdersAPI } from "../services/ApiService"
 import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
 import { OrderType } from "types"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
+
 
 const RouteCalculatorArea = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
     const ordersIds = useRecoilValue(getOrderIds)
+    const navigate = useNavigate()
     const OnDateChangeHandler = (date1: Date) => {
         getOrdersAPI(date1).then((result: any) => {
             setDate(date1)
@@ -26,33 +29,40 @@ const RouteCalculatorArea = () => {
         <div className="grid grid-rows-2 h-full">
 
             <div className="overflow-y-scroll flex flex-col justify-start items-center">
-                <div className="flex justify-center m-2">
-                    <p className="text-blue-900 mt-2">Date</p>
+                <div className="flex text-center justify-center items-center m-2">
+                    <p className="text-center text-blue-900 mt-2">Date</p>
                     <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1: Date) => OnDateChangeHandler(date1)} />
                 </div>
-                <table className="w-full text-sm text-center text-gray-500 ">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                        <tr>
-                            <th scope="col" className="px-3 py-3">
-                                Sr. No
-                            </th>
-                            <th scope="col" className="px-1 py-3">
-                                Status
-                            </th>
-                            <th scope="col" className="px-1 py-3">
-                                Priority
-                            </th>
-                            <th scope="col" className="px-2 py-3">
-                                Asign To
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ordersIds.map((orderId, index) => {
-                            return <OrderRow key={orderId} orderId={orderId!} index={index + 1}></OrderRow>
-                        })}
-                    </tbody>
-                </table>
+                {ordersIds.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
+                    <p>No order is created for this day!!</p>
+                    <a className="underline text-blue-900" onClick={() => navigate('/orders')} >Create new orders</a>
+                </div>}
+                {ordersIds.length > 0 &&
+                    <table className="w-full text-sm text-center text-gray-500 ">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" className="px-3 py-3">
+                                    Sr. No
+                                </th>
+                                <th scope="col" className="px-1 py-3">
+                                    Status
+                                </th>
+                                <th scope="col" className="px-1 py-3">
+                                    Priority
+                                </th>
+                                <th scope="col" className="px-2 py-3">
+                                    Asign To
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ordersIds.map((orderId, index) => {
+                                return <OrderRow key={orderId} orderId={orderId!} index={index + 1}></OrderRow>
+                            })}
+                        </tbody>
+                    </table>
+                }
+
             </div>
             <div className="h-full overflow-y-scroll">
                 <PathArea></PathArea>

@@ -40,8 +40,9 @@ export const orderSetForPathCreation = selector({
             let allPaths = get(savedPaths)
             let filteredOrderIds = newValue.filter((orderId) => {
                 let resultOrderId = true
-                allPaths.forEach((path) => {
-                    path.path.forEach((id) => {
+                allPaths.forEach((path1) => {
+                    console.log("Alredy there")
+                    path1.path.forEach((id) => {
                         if (id === orderId) {
                             resultOrderId = false
                         }
@@ -52,7 +53,9 @@ export const orderSetForPathCreation = selector({
             set(orderSetForAtom, filteredOrderIds)
 
         }
-        else { set(orderSetForAtom, newValue) }
+        else {
+            set(orderSetForAtom, newValue)
+        }
 
     }
 })
