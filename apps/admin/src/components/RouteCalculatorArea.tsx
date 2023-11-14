@@ -4,8 +4,10 @@ import DatePicker from "react-datepicker"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
-import { getOrdersAPI } from "../services/ApiService"
+import { changePriority, getOrdersAPI } from "../services/ApiService"
 import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
+import { OrderType } from "types"
+import { useState } from "react"
 
 const RouteCalculatorArea = () => {
     const setOrders = useSetRecoilState(ordersAtom)
@@ -74,12 +76,39 @@ const OrderRow = (props: { orderId: string, index: number }) => {
                 {order!.currentStatus}
             </td>
             <td className="px-1 py-4">
-                {order!.priority}
+                <DropdownForPriority order={order!} setOrder={setOrder}></DropdownForPriority>
             </td>
-            <td className="px-1 py-4">
-                <DriverDropDownForOrder order={order!} setOrder={setOrder}></DriverDropDownForOrder>
-            </td>
+            {order!.currentStatus === "NotAssigned" || order!.currentStatus === "Assigned" ?
+                <td className="px-1 py-4">
+                    <DriverDropDownForOrder order={order!} setOrder={setOrder}></DriverDropDownForOrder>
+                </td> :
+                <td className="px-1 py-4">
+                    {order!.driverName}
+                </td>
+            }
         </tr>
     )
 }
 
+
+const DropdownForPriority = ({ order, setOrder }: { order: OrderType, setOrder: any }) => {
+    const [priority, setPriority] = useState(order.priority)
+    return <>
+        <select value={priority} onChange={(event) => {
+            if (event.target.value === "Low" || event.target.value === "High" || event.target.value === "Medium") {
+                setPriority(event.target.value)
+                changePriority(order.orderId!, event.target.value).then(
+                    (result: any) => {
+                        if (result.isAdded) {
+                            setOrder({ ...order, priority: event.target.value })
+                        }
+                    }
+                ).catch((_) => { })
+            }
+        }}>
+            <option value={"Low"}>Low</option>
+            <option value={"Medium"}>Medium</option>
+            <option value={"High"}>High</option>
+        </select>
+    </>
+}

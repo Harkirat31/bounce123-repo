@@ -92,6 +92,11 @@ export const assignOrder = z.object({
     orderId: z.string()
 })
 
+export const changePriority = z.object({
+    priority: z.string(),
+    orderId: z.string()
+})
+
 export const updateLocation = z.object({
     driverId: z.string(),
     currentLocation: location

@@ -187,6 +187,15 @@ export const assignOrderToDriver = (driverId: string, driverName: string, orderI
   })
 }
 
+export const changeOrderPriority = (priority: string, orderId: string) => {
+  return new Promise((resolve, reject) => {
+    db.collection('orders').doc(orderId).update({
+      priority: priority,
+    }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
+  })
+}
+
+
 export const getRentingItems = () => {
   return new Promise((resolve, reject) => {
     db.collection("renting_items").get().then(

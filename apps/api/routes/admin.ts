@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
-import { driver, assignOrder, rentingItem, sideItem, order, pathOrder } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver } from "db"
+import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority } from "types";
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority } from "db"
 
 
 
@@ -159,6 +159,20 @@ router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
     res.json({ isAdded: true })
   }).catch((errro) => res.json({ isAdded: false }))
 })
+
+router.post('/changePriority', authenticateJwt, (req: Request, res: Response) => {
+  let changePriorityParams = changePriority.safeParse(req.body)
+  if (!changePriorityParams.success) {
+    return res.status(403).json({
+      isAdded: false,
+      msg: "Error in Parameters"
+    })
+  }
+  changeOrderPriority(changePriorityParams.data.priority, changePriorityParams.data.orderId).then((result) => {
+    res.json({ isAdded: true })
+  }).catch((errr) => res.json({ isAdded: false }))
+})
+
 
 
 router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {

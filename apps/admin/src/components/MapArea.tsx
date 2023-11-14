@@ -200,8 +200,6 @@ const PickUpMarker = ({ map }: any) => {
     </>
 }
 
-
-
 function getInfoWindowContent(order: OrderType) {
     let rentingItems = ''
     order.rentingItems.forEach((item) => {

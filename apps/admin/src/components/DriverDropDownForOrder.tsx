@@ -32,7 +32,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
         }).then((response) => response.json().then((jsonData) => {
             console.log(jsonData)
             if (jsonData.isAdded == true) {
-                props.setOrder((order: OrderType) => ({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
+                props.setOrder(({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
             }
             else {
                 console.log("Not updated Order")

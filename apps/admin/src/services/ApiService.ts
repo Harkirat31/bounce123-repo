@@ -204,3 +204,26 @@ export const createMainItemsApi = (orders: RentingItemType[]) => {
 
 
 }
+
+export const changePriority = (orderId: string, priority: string) => {
+    return new Promise((resolve, reject) => {
+        const urlAssignOrder = `${BASE_URL}/admin/changePriority`
+
+        let params = { orderId: orderId, priority: priority }
+        fetch(urlAssignOrder, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        }).then((response) => response.json().then((jsonData) => {
+            console.log(jsonData)
+            if (jsonData.isAdded == true) {
+                resolve({ isAdded: true })
+            }
+            else {
+                reject({ isAdded: false })
+            }
+        })).catch((_) => {
+            reject({ isAdded: false })
+        })
+    })
+}
