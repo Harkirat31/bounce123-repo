@@ -127,10 +127,10 @@ export const getOrders = (driverId: string): Promise<OrderType[]> => {
   })
 }
 
-export const getOrderswithDate = (date: Date): Promise<OrderType[]> => {
+export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderType[]> => {
 
   return new Promise((resolve, reject) => {
-    db.collection('orders').where("deliveryDate", "==", date).get().then((result) => {
+    db.collection('orders').where("companyId", "==", companyId).where("deliveryDate", "==", date).get().then((result) => {
       let orders = result.docs.map(
         (doc) => {
           let order = doc.data() as OrderType

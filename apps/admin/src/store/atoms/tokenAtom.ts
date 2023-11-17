@@ -17,6 +17,7 @@ export const token = selector<string | null>({
             set(tokenAtom, newValue)
         }
         else {
+            localStorage.removeItem("token")
             set(tokenAtom, null)
         }
 

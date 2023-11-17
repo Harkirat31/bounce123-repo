@@ -103,6 +103,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
             {orderSetForPath.length == 0 &&
                 <div className="h-full">
                     <p> All Orders have been added to paths</p>
+                    <p> Or No order is created for this date!!</p>
                 </div>
             }
             <div className="grid grid-cols-8 items-center justify-center">

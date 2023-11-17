@@ -1,7 +1,9 @@
 import { useState } from "react"
 
 import { driver } from "types/src/index"
-import { BASE_URL } from "../../config"
+import { createDriver, getDriversAPI } from "../services/ApiService"
+import { useSetRecoilState } from "recoil"
+import { driversState } from "../store/atoms/driversAtom"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")
@@ -9,6 +11,7 @@ const CreateDriver = () => {
     const [vehicleCapacity, setVehicleCapacity] = useState(0)
     const [phone, setPhone] = useState("")
     const [vehicleStyle, setVehicleStyle] = useState("Pick Up")
+    const setDrivers = useSetRecoilState(driversState)
 
     function saveDriver() {
 
@@ -19,14 +22,18 @@ const CreateDriver = () => {
             alert("Error in Data")
             return
         }
-
-        fetch(BASE_URL + '/admin/createDriver', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(parsedDriverData.data)
-        }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
-        }))
+        createDriver(parsedDriverData.data).then((result: any) => {
+            if (result.isAdded) {
+                getDriversAPI().then((drivers: any) => {
+                    setDrivers({
+                        isLoading: false,
+                        value: drivers
+                    })
+                })
+            }
+        }).catch((result) => {
+            alert("Not Added, Errors in Detail or Internet is down")
+        })
     }
     const setIntParam = (event: any, stateVariable: any) => {
         let capacity = 0

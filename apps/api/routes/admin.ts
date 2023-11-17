@@ -39,15 +39,16 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
   let parsedUserData = driver.safeParse(req.body)
   if (!parsedUserData.success) {
     return res.status(403).json({
+      isadded: false,
       msg: "Error in User Details"
     });
   }
   createDriver(parsedUserData.data).then((driver) => {
-    res.json({ message: 'Sign Up successfully', driver });
+    res.json({ message: 'Sign Up successfully', isAdded: true });
   }).catch((error) => {
     return res.status(403).json({
       msg: "Error in User Details",
-      err: error
+      isAdded: false
     });
   })
 
@@ -174,7 +175,7 @@ router.post('/changePriority', authenticateJwt, (req: Request, res: Response) =>
 })
 
 router.get('/getUser', authenticateJwt, (req: Request, res: Response) => {
-  getUser(req.body.jwtDetails.user.userId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+  getUser(req.body.companyId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })
 
@@ -196,14 +197,13 @@ router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
 
 
 router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
-  console.log(req.body)
   let parsedDate = req.body.date
   if (!parsedDate) {
     return res.status(403).json({
       msg: "Error in  Details "
     });
   }
-  getOrderswithDate(new Date(parsedDate)).then((orders) => {
+  getOrderswithDate(new Date(parsedDate), req.body.companyId).then((orders) => {
     res.json(orders);
   }).catch(() => {
     res.status(403).json({

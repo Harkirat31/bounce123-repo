@@ -1,4 +1,4 @@
-import { OrderType, PathOrderType, RentingItemType } from "types";
+import { DriverType, OrderType, PathOrderType, RentingItemType } from "types";
 import { BASE_URL } from "../../config";
 
 
@@ -299,4 +299,49 @@ export const changePriority = (orderId: string, priority: string) => {
             reject({ isAdded: false })
         })
     })
+}
+
+
+export const assignDriver = (orderId: string, driverId: string, driverName: string) => {
+    return new Promise((resolve, reject) => {
+        const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
+
+        let params = { orderId: orderId, driverId: driverId, driverName: driverName }
+        fetch(urlAssignOrder, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(params)
+        }).then((response) => response.json().then((jsonData) => {
+            console.log(jsonData)
+            if (jsonData.isAdded == true) {
+                resolve({ isAdded: true })
+            }
+            else {
+                reject({ isAdded: false })
+            }
+        })).catch((_) => {
+            reject({ isAdded: false })
+        })
+    })
+}
+
+export const createDriver = (driverData: DriverType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/createDriver', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(driverData)
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        })).catch((result) => {
+            reject(result)
+        })
+    })
+
 }

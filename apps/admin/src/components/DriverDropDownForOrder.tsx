@@ -1,8 +1,8 @@
 import { DriverType, OrderType } from "types";
-import { BASE_URL } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { getDrivers } from "../store/selectors/driversSelector";
+import { assignDriver } from "../services/ApiService";
 
 
 
@@ -22,22 +22,17 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
         }
 
         setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-        const urlAssignOrder = `${BASE_URL}/admin/assignOrder`
 
         let params = { orderId: order!.orderId, driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text }
-        fetch(urlAssignOrder, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params)
-        }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
-            if (jsonData.isAdded == true) {
+
+        assignDriver(params.orderId!, params.driverId, params.driverName).then((response: any) => {
+            if (response.isAdded == true) {
                 props.setOrder(({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
             }
             else {
                 console.log("Not updated Order")
             }
-        }))
+        })
 
     }
 

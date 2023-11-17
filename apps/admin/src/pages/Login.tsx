@@ -2,6 +2,7 @@ import { useState } from "react"
 import { signInAPI } from "../services/ApiService"
 import { useSetRecoilState } from "recoil"
 import { token } from "../store/atoms/tokenAtom"
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -15,6 +16,8 @@ const Login = () => {
         signInAPI(email, password).then((result: any) => {
             if (result.token) {
                 setToken(result.token)
+                window.location.assign("/")
+
             } else {
                 console.log("Error ....")
             }
