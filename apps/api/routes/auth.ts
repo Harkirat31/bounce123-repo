@@ -1,12 +1,11 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
-import { authenticateJwt } from "../middleware"
 import { userSignIn } from "types";
 import { signIn, signUp } from "db"
 
 const router = express.Router();
-const secretKey = process.env.JWT_SECRET || 'secret';
+
 
 router.post("/signin", (req: Request, res: Response) => {
   let parsedSignInInput = userSignIn.safeParse(req.body)
@@ -18,8 +17,13 @@ router.post("/signin", (req: Request, res: Response) => {
   const email = parsedSignInInput.data.email;
   const password = parsedSignInInput.data.password;
   signIn(email, password).then((user) => {
-    const token = jwt.sign({ id: user.uid }, secretKey, { expiresIn: '30 days', });
+    const secretKey = process.env.JWT_SECRET;
+    const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
+  }).catch((error) => {
+    return res.status(401).json({
+      msg: "Wrong Credentials"
+    });
   })
 
 })

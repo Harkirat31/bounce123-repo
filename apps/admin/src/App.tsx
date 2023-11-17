@@ -6,22 +6,27 @@ import Order from './pages/Order'
 import Deliverable from './pages/Deliverable'
 import Driver from './pages/Driver'
 import Init from './components/Init'
-import { RecoilEnv } from 'recoil'
+import { RecoilEnv, useRecoilValue } from 'recoil'
+import Login from './pages/Login'
+
+import { token } from './store/atoms/tokenAtom'
 
 
 
 function App() {
+  const tokenKey = useRecoilValue<string | null>(token)
   RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false
   return (
     <div className='w-full'>
       <Router>
         <AppBar></AppBar>
         <Init></Init>
-        <Routes>
-          <Route path='/*' element={<Map></Map>} />
-          <Route path='/orders' element={<Order />} />
-          <Route path='/delerables' element={<Deliverable />} />
-          <Route path='/drivers' element={<Driver />} />
+        <Routes >
+          <Route path='/*' element={tokenKey == null ? <Login></Login> : <Map></Map>} />
+          <Route path='/orders' element={tokenKey == null ? <Login></Login> : <Order></Order>} />
+          <Route path='/delerables' element={tokenKey == null ? <Login></Login> : <Deliverable></Deliverable>} />
+          <Route path='/drivers' element={tokenKey == null ? <Login></Login> : <Driver></Driver>} />
+          <Route path='/login' element={<Login></Login>} />
         </Routes>
       </Router>
 

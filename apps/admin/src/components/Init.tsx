@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { getDriversAPI, getOrdersAPI, getPathsAPI, getRentingItemsAPI, getSideItemsAPI } from "../services/ApiService"
+import { getDriversAPI, getOrdersAPI, getPathsAPI, getRentingItemsAPI, getSideItemsAPI, getUserAPI } from "../services/ApiService"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import { rentItemsState } from "../store/atoms/rentItemsAtom"
 import { sideItemsState } from "../store/atoms/sideItemsAtom"
@@ -7,6 +7,7 @@ import { driversState } from "../store/atoms/driversAtom"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { savedPaths } from "../store/atoms/pathAtom"
 import { OrderType } from "types"
+import { userAtom } from "../store/atoms/userAtom"
 
 
 const Init = () => {
@@ -16,9 +17,14 @@ const Init = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const setPaths = useSetRecoilState(savedPaths)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
-    useEffect(() => {
+    const setUser = useSetRecoilState(userAtom)
 
-        console.log(orderSearchDate)
+    useEffect(() => {
+        getUserAPI().then((user: any) => {
+            console.log(user)
+            setUser(user)
+        })
+
         getRentingItemsAPI().then((rentingItems: any) => {
             setRentingItems({
                 isLoading: false,
@@ -43,6 +49,7 @@ const Init = () => {
         getPathsAPI(orderSearchDate).then((paths: any) => {
             setPaths(paths)
         })
+
     }, [orderSearchDate])
 
     return (

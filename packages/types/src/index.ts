@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+
+
+
 export const userId = z.object({ uid: z.string() })
 
 
@@ -130,3 +133,13 @@ export const pathOrder = z.object({
 })
 
 export type PathOrderType = z.infer<typeof pathOrder>
+
+export const user = z.object({
+    userId: z.string().optional(),
+    email: z.string(),
+    companyName: z.string(),
+    phone: z.string(),
+    location: location,
+    ordersCountForMonth: z.number().optional(),
+})
+export type UserType = z.infer<typeof user>

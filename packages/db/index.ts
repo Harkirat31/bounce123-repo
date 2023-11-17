@@ -3,7 +3,8 @@ import path from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType } from "types"
+import { API_KEY_SIGNIN } from './config';
 // Initialize Firebase Admin SDK
 
 const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
@@ -20,22 +21,22 @@ async function getData() {
   console.log(x);
 }
 
-export const signIn = async (email: string, password: string): Promise<DriverType> => {
-  return new Promise(async (resolve, reject) => {
-    fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAqhTnwk7mkiABKb1onJDVJI8wNmhJbe80', {
+export const signIn = async (email: string, password: string) => {
+  return new Promise((resolve, reject) => {
+    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
     }).then(response => {
-      response.json().then(async (responseData) => {
+      response.json().then((responseData) => {
         if (response.status !== 200) {
           return reject(responseData)
         }
         if (!responseData.localId) {
           return reject(new Error("Error Parsing response from google SignIn Api"))
         }
-        await getDriver(responseData.localId).then((driver) => {
-          resolve(driver)
+        getUser(responseData.localId).then((user) => {
+          resolve(user)
         }).catch((error) => {
           return reject(new Error("Error Fetching User from getUser Method"))
         })
@@ -252,6 +253,17 @@ export const getDrivers = () => {
           resolve([])
         }
       }
+    ).catch((error) => reject(new Error("Error Fetching Data")))
+  })
+}
+
+export const getUser = (userId: string) => {
+  return new Promise((resolve, reject) => {
+    db.collection("users").doc(userId).get().then((result) => {
+      let user = result.data() as UserType
+      user.userId = userId
+      resolve(user)
+    }
     ).catch((error) => reject(new Error("Error Fetching Data")))
   })
 }

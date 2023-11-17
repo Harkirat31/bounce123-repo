@@ -1,11 +1,52 @@
 import { OrderType, PathOrderType, RentingItemType } from "types";
 import { BASE_URL } from "../../config";
 
+
+export const signInAPI = (email: string, password: string) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/auth/signin', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        }).then((response) => response.json().then((jsonData) => {
+            console.log(jsonData)
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+export const getUserAPI = () => {
+    return new Promise((resolve, reject) => {
+        const urlGetPaths = `${BASE_URL}/admin/getUser`
+        fetch(urlGetPaths, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    resolve(jsonData)
+                }
+            ).catch((error) => {
+                reject(error)
+            })
+        }).catch((error) => reject(error))
+    })
+}
+
 export const getRentingItemsAPI = () => {
     return new Promise((resolve, reject) => {
         const urlGetRentingItems = `${BASE_URL}/admin/getRentingItems`
         fetch(urlGetRentingItems, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
         }).then(result => {
             result.json().then(
                 (jsonData) => {
@@ -22,7 +63,10 @@ export const getSideItemsAPI = () => {
     return new Promise((resolve, reject) => {
         const urlGetSideItems = `${BASE_URL}/admin/getSideItems`
         fetch(urlGetSideItems, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
         }).then(result => {
             result.json().then(
                 (jsonData) => {
@@ -39,7 +83,10 @@ export const getDriversAPI = () => {
     return new Promise((resolve, reject) => {
         const urlGetDrivers = `${BASE_URL}/admin/getDrivers`
         fetch(urlGetDrivers, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
         }).then(result => {
             result.json().then(
                 (jsonData) => {
@@ -59,7 +106,12 @@ export const getOrdersAPI = (date: Date) => {
         console.log(dateNow)
         fetch(urlGetOrders, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+
+            },
+
             body: JSON.stringify({ date: dateNow })
         }).then(result => {
             result.json().then(
@@ -79,7 +131,10 @@ export const getPathsAPI = (date: Date) => {
         const urlGetPaths = `${BASE_URL}/admin/getPaths`
         fetch(urlGetPaths, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify({ date: date.setHours(0, 0, 0, 0) })
         }).then(result => {
             result.json().then(
@@ -97,7 +152,10 @@ export const createPath = (path: PathOrderType) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + '/admin/createPath', {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify(path)
         }).then((response) => response.json().then((jsonData) => {
             if (response.status == 200) {
@@ -117,7 +175,10 @@ export const createOrder = (order: OrderType) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + '/admin/createOrder', {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify(order)
         }).then((response) => response.json().then((jsonData) => {
             resolve(jsonData)
@@ -131,7 +192,10 @@ export const assignPathAPI = (path: PathOrderType) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + '/admin/assignPath', {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify(path)
         }).then((response) => response.json().then((jsonData) => {
             resolve(jsonData)
@@ -150,7 +214,10 @@ export const createOrdersApi = (orders: OrderType[]) => {
         orders.forEach(async (order, index) => {
             fetch(BASE_URL + '/admin/createOrder', {
                 method: "POST",
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify(order)
             }).then((response) => response.json().then((jsonData) => {
                 iteratedElements = index + 1
@@ -181,7 +248,10 @@ export const createMainItemsApi = (orders: RentingItemType[]) => {
         orders.forEach(async (item, index) => {
             fetch(BASE_URL + '/admin/createRentingItem', {
                 method: "POST",
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify(item)
             }).then((response) => response.json().then((jsonData) => {
                 iteratedElements = index + 1
@@ -212,7 +282,10 @@ export const changePriority = (orderId: string, priority: string) => {
         let params = { orderId: orderId, priority: priority }
         fetch(urlAssignOrder, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify(params)
         }).then((response) => response.json().then((jsonData) => {
             console.log(jsonData)

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser } from "db"
 
 
 
@@ -173,13 +173,16 @@ router.post('/changePriority', authenticateJwt, (req: Request, res: Response) =>
   }).catch((errr) => res.json({ isAdded: false }))
 })
 
-
+router.get('/getUser', authenticateJwt, (req: Request, res: Response) => {
+  getUser(req.body.jwtDetails.user.userId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+  )
+})
 
 router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {
-  console.log(req.body.userId)
   getRentingItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })
+
 
 router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
   getSideItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
