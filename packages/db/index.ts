@@ -68,6 +68,27 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
   })
 }
 
+export const createUser = (newUserDetail: UserType): Promise<UserType> => {
+  return new Promise((resolve, reject) => {
+    signUp({ email: newUserDetail.email, password: newUserDetail.password! }).then((uidNewUser) => {
+      newUserDetail.userId = uidNewUser
+      newUserDetail.password = ""
+      db.collection('users').doc(uidNewUser).set(
+        newUserDetail
+      ).then((result) => {
+        resolve(newUserDetail)
+      }).catch(() => reject(new Error("Error creating user in firestore db")))
+    }
+    ).catch((error: admin.FirebaseError) => {
+      console.log(error)
+      reject(error)
+    })
+
+  })
+}
+
+
+
 export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver

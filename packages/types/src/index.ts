@@ -136,10 +136,23 @@ export type PathOrderType = z.infer<typeof pathOrder>
 
 export const user = z.object({
     userId: z.string().optional(),
+    password: z.string().optional(),
     email: z.string(),
     companyName: z.string(),
+    address: z.string(),
     phone: z.string(),
-    location: location,
+    location: location.optional(),
     ordersCountForMonth: z.number().optional(),
+    placeId: z.string().optional()
 })
 export type UserType = z.infer<typeof user>
+
+export enum ErrorCode {
+    AddressError,
+    EmailAlreadyExist,
+    WorngCredentials,
+    MissisRequiredParams,
+    FirebaseError,
+    MapsApiError,
+    JsonParseError
+}

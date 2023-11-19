@@ -10,6 +10,7 @@ import { RecoilEnv, useRecoilValue } from 'recoil'
 import Login from './pages/Login'
 
 import { token } from './store/atoms/tokenAtom'
+import Signup from './pages/Signup'
 
 
 
@@ -27,6 +28,7 @@ function App() {
           <Route path='/delerables' element={tokenKey == null ? <Login></Login> : <Deliverable></Deliverable>} />
           <Route path='/drivers' element={tokenKey == null ? <Login></Login> : <Driver></Driver>} />
           <Route path='/login' element={<Login></Login>} />
+          <Route path='/signup' element={<Signup></Signup>} />
         </Routes>
       </Router>
 

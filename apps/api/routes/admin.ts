@@ -9,18 +9,7 @@ import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, crea
 
 const router = express.Router();
 
-router.post("/createUser", authenticateJwt, (req: Request, res: Response) => {
-  let parsedUserData = driver.safeParse(req.body)
-  if (!parsedUserData.success) {
-    return res.status(403).json({
-      msg: "Error in User Details"
-    });
-  }
-  createDriver(parsedUserData.data).then((driver) => {
-    res.json({ message: 'Sign Up successfully', driver });
-  })
 
-})
 
 router.post('/createSideItem', authenticateJwt, (req: Request, res: Response) => {
   let parsedData = sideItem.safeParse(req.body)

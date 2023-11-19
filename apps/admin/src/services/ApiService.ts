@@ -1,6 +1,23 @@
-import { DriverType, OrderType, PathOrderType, RentingItemType } from "types";
+import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
 import { BASE_URL } from "../../config";
 
+
+export const signupAPI = (user: UserType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/auth/createUser', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user)
+        }).then((response) => response.json().then((jsonData) => {
+            console.log(jsonData)
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
 
 export const signInAPI = (email: string, password: string) => {
     return new Promise((resolve, reject) => {
