@@ -3,35 +3,37 @@ import { API_KEY } from "../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector";
-import { OrderType, PathOrderType } from "types";
+import { OrderType, PathOrderType, UserType } from "types";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, darkColors } from "../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
+import { userAtom } from "../store/atoms/userAtom";
 
 
-const mapOptions = {
-    center: { lat: 43.6811345, lng: -79.58786719999999 },
-    zoom: 11,
-    mapId: '4504f8b37365c3d0'
-};
 
-const MapArea = () => {
+
+const MapArea = ({ user }: { user: UserType }) => {
     return (
         <div>
             <div className='map_main'>
                 <Wrapper apiKey={API_KEY} version="beta" libraries={["marker"]}>
-                    <MapComponent></MapComponent>
+                    <MapComponent user={user}></MapComponent>
                 </Wrapper>
             </div>
         </div>
     )
 }
 
-const MapComponent = () => {
+const MapComponent = ({ user }: { user: UserType }) => {
     const ref: any = useRef()
     const ordersIds = useRecoilValue(getOrderIds)
     const [map, setMap] = useState<any>()
 
     useEffect(() => {
+        const mapOptions = {
+            center: user?.location,
+            zoom: 11,
+            mapId: '4504f8b37365c3d0'
+        };
         setMap(new window.google.maps.Map(ref.current, mapOptions,))
     }, []);
 
@@ -42,25 +44,25 @@ const MapComponent = () => {
                 {ordersIds.map((orderId, index) => {
                     return <OrderMarker orderId={orderId!} srNo={index + 1} map={map}></OrderMarker>
                 })}
-                <CreatePolygonWhileCreatingPath map={map}></CreatePolygonWhileCreatingPath>
-                <CreatePaths map={map}></CreatePaths>
+                <CreatePolygonWhileCreatingPath map={map} user={user}></CreatePolygonWhileCreatingPath>
+                <CreatePaths map={map} user={user}></CreatePaths>
             </div>}
         </div>
     );
 
 }
 
-const CreatePaths = ({ map }: { map: any }) => {
+const CreatePaths = ({ map, user }: { map: any, user: UserType }) => {
     const paths = useRecoilValue(savedPaths)
     const orders = useRecoilValue(getOrders)
     return <>
         {paths.map((pathElement, index) => {
-            return <CreateSinglePath map={map} orders={orders} pathElement={pathElement} index={index} ></CreateSinglePath>
+            return <CreateSinglePath map={map} orders={orders} pathElement={pathElement} index={index} user={user}></CreateSinglePath>
         })}
     </>
 }
 
-const CreateSinglePath = ({ map, pathElement, orders, index }: { map: any, pathElement: PathOrderType, orders: OrderType[], index: number }) => {
+const CreateSinglePath = ({ map, pathElement, orders, index, user }: { map: any, pathElement: PathOrderType, orders: OrderType[], index: number, user: UserType }) => {
     const pathData = useRecoilValue(getSavedPathById(pathElement.pathId!))
     useEffect(() => {
         if (!pathData)
@@ -79,7 +81,7 @@ const CreateSinglePath = ({ map, pathElement, orders, index }: { map: any, pathE
             icons: [{ icon: lineSymbol, offset: "100%", repeat: "20%" }]
         });
         if (pathData.path.length > 0) {
-            let cordinates: any = [{ lat: 43.6811345, lng: -79.58786719999999 }]
+            let cordinates: any = [user?.location] //
             pathData.path.forEach((orderId) => {
                 let order = orders.find((order) => order.orderId === orderId)
                 cordinates.push(order?.location)
@@ -96,7 +98,7 @@ const CreateSinglePath = ({ map, pathElement, orders, index }: { map: any, pathE
 }
 
 
-const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
+const CreatePolygonWhileCreatingPath = ({ map, user }: { map: any, user: UserType }) => {
     const createPathOrders = useRecoilValue(createPathAtom)
     const orders = useRecoilValue(getOrders)
     useEffect(() => {
@@ -111,7 +113,7 @@ const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
             icons: [{ icon: lineSymbol, offset: "100%", }]
         });
         if (createPathOrders.length > 0) {
-            let cordinates: any = [{ lat: 43.6811345, lng: -79.58786719999999 }]
+            let cordinates: any = [user?.location] //initialize the array of path with starting from comapany address
             createPathOrders.forEach((orderId) => {
                 let order = orders.find((order) => order.orderId === orderId)
                 cordinates.push(order?.location)
@@ -121,7 +123,6 @@ const CreatePolygonWhileCreatingPath = ({ map }: { map: any }) => {
         }
         return () => {
             flightPath.setMap(null)
-            console.log("Map Area")
         }
 
     }, [createPathOrders])
@@ -180,12 +181,18 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: 
 }
 
 const PickUpMarker = ({ map }: any) => {
+    const user = useRecoilValue(userAtom)
     useEffect(() => {
+        const mapOptions = {
+            center: user?.location,
+            zoom: 11,
+            mapId: '4504f8b37365c3d0'
+        };
 
         const bounce123Info = document.createElement("div");
 
         bounce123Info.className = "home-tag";
-        bounce123Info.textContent = "Bounce 123";
+        bounce123Info.textContent = user?.companyName ?? "ff";
 
         new window.google.maps.marker.AdvancedMarkerElement(
             {
@@ -195,28 +202,17 @@ const PickUpMarker = ({ map }: any) => {
                 //label: srNo.toString()
             }
         )
-    }, [])
+    }, [user])
     return <>
     </>
 }
 
 function getInfoWindowContent(order: OrderType) {
-    let rentingItems = ''
-    order.rentingItems.forEach((item) => {
-        rentingItems = rentingItems + item.rentingItemTitle
-    })
-    let extraItems = ''
-    if (order.extraItems) {
-        order.extraItems.forEach((item) => {
-            extraItems = extraItems + item.sideItemTitle
-        })
-    }
     return `<p>Name : ${order.cname}</p>
     <p>Address : ${order.address}</p>
     <p>Status : ${order.currentStatus}</p>
     <p>Assigned To : ${order.driverName ? order.driverName : "No Driver Assigned"}</p>
-    <p>Rent Items : ${rentingItems} </p>
-    <p>Extra Items : ${extraItems === '' ? "No Extra Items" : extraItems} </p>`
+    <p>Item Details : ${order.itemsDetail}</p>`
 }
 
 export default MapArea

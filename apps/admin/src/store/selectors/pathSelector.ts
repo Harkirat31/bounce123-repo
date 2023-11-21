@@ -14,12 +14,19 @@ export const getPathById = selectorFamily({
     },
 
     set: (id: string) => ({ get, set }, newValue) => {
-        set(getSavedPathById(id), newValue);
-        if (!(newValue instanceof DefaultValue)) {
-            newValue?.path.forEach((pathNode) => {
-                let order = get(getOrder(pathNode))
-                set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "SentToDriver" } as OrderType)
-            })
+        let pathState = get(getSavedPathById(id))
+        if (!(newValue instanceof DefaultValue) && pathState?.show != newValue?.show) {
+            set(getSavedPathById(id), newValue);
         }
+        else {
+            set(getSavedPathById(id), newValue);
+            if (!(newValue instanceof DefaultValue)) {
+                newValue?.path.forEach((pathNode) => {
+                    let order = get(getOrder(pathNode))
+                    set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "SentToDriver" } as OrderType)
+                })
+            }
+        }
+
     },
 });

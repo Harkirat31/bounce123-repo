@@ -180,7 +180,7 @@ router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
 })
 
 router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
-  getDrivers().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+  getDrivers(req.body.companyId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
 })
 

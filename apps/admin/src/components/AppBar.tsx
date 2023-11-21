@@ -1,17 +1,18 @@
 import { useState } from "react"
 import logo from "../assets/BounceLogo-Main.webp"
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue, } from "recoil";
+import { useRecoilState, useRecoilValue, } from "recoil";
 import { userAtom } from "../store/atoms/userAtom";
+import { token } from "../store/atoms/tokenAtom";
 
 
 const AppBar = () => {
   const [visibility, setVisibility] = useState(false)
-  const user = useRecoilValue(userAtom)
+  const [tokenValue, setTokenValue] = useRecoilState(token)
 
 
   const logout = () => {
-    window.localStorage.removeItem("token")
+    setTokenValue(null)
     window.location.assign("/")
   }
 
@@ -24,7 +25,7 @@ const AppBar = () => {
     }
   }
 
-  if (user) {
+  if (tokenValue) {
     return (
       <div>
         <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200">
@@ -68,9 +69,9 @@ const NavMenu = (props: any) => {
     <li>
       <button onClick={() => { navigate("/orders"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Orders</button>
     </li>
-    <li>
+    {/* <li>
       <button onClick={() => { navigate("/delerables"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Deliverables</button>
-    </li>
+    </li> */}
     <li>
       <button onClick={() => { navigate("/drivers"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Drivers</button>
     </li>

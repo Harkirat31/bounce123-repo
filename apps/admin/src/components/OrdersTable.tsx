@@ -28,13 +28,16 @@ const OrdersTable = () => {
                             <th scope="col" className="px-1 py-3 w-10" >
                                 Priority
                             </th>
+                            <th scope="col" className="px-1 py-3 w-10" >
+                                Items Detail
+                            </th>
 
-                            <th scope="col" className="px-1 py-3 w-10">
+                            {/* <th scope="col" className="px-1 py-3 w-10">
                                 Main Items
                             </th>
                             <th scope="col" className="px-1 py-3 w-10">
                                 Extras
-                            </th>
+                            </th> */}
                             <th scope="col" className="px-1 py-3 w-10">
                                 Instructions
                             </th>
@@ -64,26 +67,29 @@ const OrdersTable = () => {
                                         {order.cphone}
                                     </td>
                                     <td className="px-1 py-4">
-                                        {new Date(order.deliveryDate).toLocaleDateString()}
+                                        {new Date(order.deliveryDate).toDateString()}
                                     </td>
                                     <td className="px-1 py-4">
                                         {order.priority}
                                     </td>
-
                                     <td className="px-1 py-4">
-                                        {order.rentingItems.map((item) => {
+                                        {order.itemsDetail}
+                                    </td>
+
+                                    {/* <td className="px-1 py-4">
+                                        {order.itemsDetail.map((item) => {
                                             return <>{
                                                 <p>{item.rentingItemTitle}</p>
                                             }</>
                                         })}
-                                    </td>
-                                    <td className="px-1 py-4">
+                                    </td> */}
+                                    {/* <td className="px-1 py-4">
                                         {order.extraItems && order.extraItems.map((item) => {
                                             return <>{
                                                 <p>{item.sideItemTitle}</p>
                                             }</>
                                         })}
-                                    </td>
+                                    </td> */}
                                     <td className="px-1 py-4">
                                         {order.specialInstructions}
                                     </td>

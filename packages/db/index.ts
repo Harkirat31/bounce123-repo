@@ -258,9 +258,9 @@ export const getSideItems = () => {
   })
 }
 
-export const getDrivers = () => {
+export const getDrivers = (companyId: string) => {
   return new Promise((resolve, reject) => {
-    db.collection("drivers").get().then(
+    db.collection("drivers").where("companyId", "==", companyId).get().then(
       (result) => {
         let drivers = result.docs.map((doc) => {
           let driver = doc.data() as DriverType
@@ -299,7 +299,7 @@ export const assignPathToDriver = (path: PathOrderType) => {
         await db.collection('orders').doc(pathNode).update({
           driverId: path.driverId,
           driverName: path.driverName,
-          currentStatus: "PathAssigned"
+          currentStatus: "SentToDriver"
         })
       })
       resolve(result)

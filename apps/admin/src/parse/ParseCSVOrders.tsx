@@ -16,7 +16,7 @@ const ParseCSVOrders = () => {
 
   const handleSubmitCSV = () => {
 
-    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'rentingItems', 'extraItems']
+    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail',]
     setIsLoading(true)
     let orders: any = []
     csvData.map(async (row) => {
@@ -24,10 +24,8 @@ const ParseCSVOrders = () => {
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
-      //console.log(orderobject)
+      console.log(orderobject)
       orderobject[orderAttributes[5]] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
-      orderobject[orderAttributes[8]] = []
-      orderobject[orderAttributes[9]] = []
       try {
         let parse = order.safeParse(orderobject)
         if (parse.success) {
@@ -44,6 +42,7 @@ const ParseCSVOrders = () => {
     }
 
     )
+    console.log(orders)
 
     createOrdersApi(orders).then((result: any) => {
       getOrdersAPI(new Date()).then((orders: any) => {
@@ -78,7 +77,7 @@ const ParseCSVOrders = () => {
     <div className='flex flex-col  '>
       <h1 className='text-center text-xl mb-8'>Upload CSV</h1>
       <DownloadButton></DownloadButton>
-      <input ref={uploadInputButtonRef} className='mb-8' type="file" accept=".csv" onChange={handleFileUpload} />
+      <input ref={uploadInputButtonRef} className='mb-8' type="file" accept='.csv' onChange={handleFileUpload} />
 
 
       {csvData.length > 0 && (

@@ -1,11 +1,11 @@
-import { useRef, useState } from "react"
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { getSideItems } from "../store/selectors/sideItemsSelector"
-import { RentingItemType, SideItemType, order } from "types/src/index"
-import { TiDelete } from "react-icons/ti"
+import { useState } from "react"
+import { useRecoilState, useSetRecoilState } from "recoil"
+//import { getSideItems } from "../store/selectors/sideItemsSelector"
+import { order } from "types/src/index"
+//import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css';
-import { getRentingItems } from "../store/selectors/rentingItemsSelector"
+//import { getRentingItems } from "../store/selectors/rentingItemsSelector"
 import UploadOrdersCSV from "./UploadOrdersCSV"
 import { createOrder, getOrdersAPI } from "../services/ApiService"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
@@ -17,21 +17,23 @@ const CreateOrder = () => {
     const [address, setAddress] = useState("")
     const [_searchDate, setSearchDate] = useRecoilState(ordersSearchDate)
     const [date, setDate] = useState<Date | null>(_searchDate)
-    const sideItemsFromDb: any = useRecoilValue(getSideItems)
-    const [sideItems, setSideItems] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }[]>([])
-    const [dropDownItem, setDropDownItem] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }>({ sideItemId: '', sideItemTitle: 'Select', count: 1 })
     const [specialInstructions, setSpecialInstructions] = useState("")
-    const rentingItemsFromDB: any = useRecoilValue(getRentingItems)
-    const [rentingItems, setRentingItems] = useState<{ rentingItemId: string, rentingItemTitle: string, }[]>([])
+    const [itemsDetail, setItemsDetail] = useState("")
+    //const [sideItems, setSideItems] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }[]>([])
+    // const sideItemsFromDb: any = useRecoilValue(getSideItems)
+    // const [dropDownItem, setDropDownItem] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }>({ sideItemId: '', sideItemTitle: 'Select', count: 1 })
+    // const rentingItemsFromDB: any = useRecoilValue(getRentingItems)
+    // const [dropDownRentingItem, setDropDownRentingItem] = useState<{ rentingItemId: string, rentingItemTitle: string }>({ rentingItemId: '', rentingItemTitle: 'Select' })
+    // const selectRef = useRef<HTMLSelectElement | null>(null);
+    // const selectRefExtras = useRef<HTMLSelectElement | null>(null);
+    //const [rentingItems, setRentingItems] = useState<{ rentingItemId: string, rentingItemTitle: string, }[]>([])
     const [priority, setPriority] = useState("Medium")
-    const [dropDownRentingItem, setDropDownRentingItem] = useState<{ rentingItemId: string, rentingItemTitle: string }>({ rentingItemId: '', rentingItemTitle: 'Select' })
-    const selectRef = useRef<HTMLSelectElement | null>(null);
-    const selectRefExtras = useRef<HTMLSelectElement | null>(null);
     const setOrders = useSetRecoilState(ordersAtom)
 
     function saveOrder() {
-        console.log({ cName, cphone, address, deliveryDate: date, extraItems: sideItems, rentingItems, priority })
-        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), extraItems: sideItems, rentingItems, priority, specialInstructions })
+
+        //let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), extraItems: sideItems, rentingItems, priority, specialInstructions })
+        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
         if (!parsedOrder.success) {
             console.log(parsedOrder.error)
             alert("Error in Data")
@@ -50,28 +52,28 @@ const CreateOrder = () => {
     }
 
 
-    const handleRentingItemBoxDelete = (event: any) => {
-        const button = event.currentTarget;
-        const rentingItemId = button.getAttribute('data-value');
-        let isdeleted = false
-        let updatedItems = rentingItems.filter((item) => {
-            if (item.rentingItemId === rentingItemId && isdeleted === false) {
-                isdeleted = true
-                return false
-            }
-            return true
-        })
-        setRentingItems(updatedItems)
-    }
+    // const handleRentingItemBoxDelete = (event: any) => {
+    //     const button = event.currentTarget;
+    //     const rentingItemId = button.getAttribute('data-value');
+    //     let isdeleted = false
+    //     let updatedItems = rentingItems.filter((item) => {
+    //         if (item.rentingItemId === rentingItemId && isdeleted === false) {
+    //             isdeleted = true
+    //             return false
+    //         }
+    //         return true
+    //     })
+    //     setRentingItems(updatedItems)
+    // }
 
-    const handleSideItemBoxDelete = (event: any) => {
-        const button = event.currentTarget;
-        const sideItemId = button.getAttribute('data-value');
-        let updatedSideItems = sideItems.filter((sideItem) => {
-            return sideItem.sideItemId != sideItemId
-        })
-        setSideItems(updatedSideItems)
-    }
+    // const handleSideItemBoxDelete = (event: any) => {
+    //     const button = event.currentTarget;
+    //     const sideItemId = button.getAttribute('data-value');
+    //     let updatedSideItems = sideItems.filter((sideItem) => {
+    //         return sideItem.sideItemId != sideItemId
+    //     })
+    //     setSideItems(updatedSideItems)
+    // }
 
 
     return <>
@@ -96,7 +98,7 @@ const CreateOrder = () => {
 
                 </div>
 
-                <div className="mb-2 flex flex-row">
+                {/* <div className="mb-2 flex flex-row">
                     <div className="flex ">
                         <p className="flex text-blue-900 items-center">Main Item:</p>
                         <select ref={selectRef} value={dropDownRentingItem.rentingItemId} onChange={(event) => { setDropDownRentingItem({ rentingItemId: event.target.value, rentingItemTitle: selectRef.current!.options[selectRef.current!.selectedIndex].text, }) }} className="ml-2  border-2 border-blue-900" >
@@ -128,7 +130,7 @@ const CreateOrder = () => {
                     })}
                 </div>}
 
-                {/* Extras for Order */}
+
 
                 {sideItems.length > 0 && <div className="grid grid-cols-3">
                     {sideItems.map((sideItem) => {
@@ -177,8 +179,10 @@ const CreateOrder = () => {
                             setSideItems([{ sideItemId: dropDownItem.sideItemId, count: dropDownItem.count, sideItemTitle: dropDownItem.sideItemTitle }, ...updatedSideItems])
                         }} className="ml-2 p-0.5 px-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center mr-3 md:mr-0">Add</button>
                     </div>
-                </div>
+                </div> */}
 
+
+                <textarea onChange={(event) => setItemsDetail(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Item Details" rows={3} />
 
                 <textarea onChange={(event) => setSpecialInstructions(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Special Instructions" rows={3} />
 
