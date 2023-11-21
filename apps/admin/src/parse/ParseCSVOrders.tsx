@@ -2,59 +2,69 @@ import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import DownloadButton from '../components/DownloadButton';
 import { order } from 'types/src/index';
-import { createOrdersApi, getOrdersAPI } from '../services/ApiService';
-import { useSetRecoilState } from 'recoil';
-import { ordersAtom } from '../store/atoms/orderAtom';
+import { createOrder, } from '../services/ApiService';
+
 
 const ParseCSVOrders = () => {
   const [csvData, setCSVData] = useState<any[]>([]);
   const [createOrderStatus, setCreateOrdersStatus] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const uploadInputButtonRef = useRef<any>(null);
-  const setOrders = useSetRecoilState(ordersAtom)
 
 
   const handleSubmitCSV = () => {
 
     let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail',]
     setIsLoading(true)
-    let orders: any = []
+    let statusOfUploading: {}[] = []
     csvData.map(async (row) => {
       let orderobject: any = {}
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
-      console.log(orderobject)
       orderobject[orderAttributes[5]] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
       try {
         let parse = order.safeParse(orderobject)
         if (parse.success) {
-          console.log(parse.data)
-          orders.push(parse.data)
+          createOrder(parse.data).then((result: any) => {
+            if (result.isAdded) {
+              statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
+            }
+            else {
+              statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+            }
+            if (statusOfUploading.length === csvData.length) {
+              setCreateOrdersStatus(statusOfUploading)
+            }
+
+          }).catch((_err) => {
+            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+            if (statusOfUploading.length === csvData.length) {
+              setCreateOrdersStatus(statusOfUploading)
+            }
+          })
         }
         else {
-          console.log("Error in Parsing")
+          statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+          if (statusOfUploading.length === csvData.length) {
+            setCreateOrdersStatus(statusOfUploading)
+          }
         }
       }
       catch (e) {
-
+        statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+        if (statusOfUploading.length === csvData.length) {
+          setCreateOrdersStatus(statusOfUploading)
+        }
       }
     }
-
     )
-    console.log(orders)
+    console.log(statusOfUploading)
 
-    createOrdersApi(orders).then((result: any) => {
-      getOrdersAPI(new Date()).then((orders: any) => {
-        setOrders(orders)
-      })
-      setCreateOrdersStatus(result)
-      setIsLoading(false)
-      setCSVData([])
-      uploadInputButtonRef.current.value = ''
-    }).catch(() => {
 
-    })
+    setIsLoading(false)
+    setCSVData([])
+    uploadInputButtonRef.current.value = ''
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,12 +135,17 @@ const ParseCSVOrders = () => {
             {createOrderStatus.map((orderStatus: any) => {
               return <>
                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {orderStatus.orderNumber}
-                  </th>
-                  <td className="px-6 py-4">
-                    {orderStatus.success == true ? "Success" : "Failed"}
-                  </td>
+                  {orderStatus.success &&
+                    <>
+                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {orderStatus.orderNumber}
+                      </th>
+                      <td className="px-6 py-4">
+                        {orderStatus.success == true ? "Success" : "Failed"}
+                      </td>
+                    </>
+                  }
+
                 </tr>
               </>
             })}
