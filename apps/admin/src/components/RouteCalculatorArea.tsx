@@ -38,7 +38,7 @@ const RouteCalculatorArea = () => {
                     <a className="underline text-blue-900" onClick={() => navigate('/orders')} >Create new orders</a>
                 </div>}
                 {ordersIds.length > 0 &&
-                    <table className="w-full text-sm text-center text-gray-500 ">
+                    <table className="w-full text-xs text-center text-gray-500 ">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" className="px-3 py-3">

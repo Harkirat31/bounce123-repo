@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders } from "db"
 
 
 
@@ -218,5 +218,23 @@ router.post("/getPaths", authenticateJwt, (req: Request, res: Response) => {
   })
 })
 
+
+router.post('/deleteOrders', authenticateJwt, (req: Request, res: Response) => {
+  if (req.body.orders) {
+    console.log(req.body.orders)
+    deleteOrders(req.body.orders).then((_) => {
+      res.json({ isDeleted: true });
+    }).catch((_) => {
+      res.status(403).json({
+        isDeleted: false
+      })
+    })
+  }
+  else {
+    res.status(403).json({
+      isDeleted: false
+    })
+  }
+})
 
 export default router

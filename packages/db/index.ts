@@ -306,6 +306,24 @@ export const assignPathToDriver = (path: PathOrderType) => {
     }).catch((error) => reject(new Error("Error")))
   })
 }
+export const deleteOrders = (orders: string[]) => {
+  return new Promise((resolve, reject) => {
+    orders.forEach(async (order, index) => {
+      try {
+        await db.collection('orders').doc(order).delete()
+        if (index === orders.length - 1) {
+          resolve("deleted")
+        }
+      }
+      catch (_) {
+        if (index === orders.length - 1) {
+          resolve("deleted")
+        }
+      }
+    })
+  })
+}
+
 
 
 

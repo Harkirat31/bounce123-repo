@@ -16,3 +16,7 @@ export const ordersSearchDate = atom({
 })
 
 
+export const rowsToBeDeleted = atom({
+    key: "rowsToBeDeleted",
+    default: new Set()
+})

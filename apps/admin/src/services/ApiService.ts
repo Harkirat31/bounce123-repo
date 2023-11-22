@@ -362,3 +362,20 @@ export const createDriver = (driverData: DriverType) => {
     })
 
 }
+
+export const deleteOrders = (orders: any[]) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/deleteOrders', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ orders: orders })
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        })).catch((result) => {
+            reject(result)
+        })
+    })
+}

@@ -1,16 +1,18 @@
-import { useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector"
+import { ordersSearchDate, rowsToBeDeleted } from "../store/atoms/orderAtom"
 import { OrderType } from "types"
-import { getOrders } from "../store/selectors/orderSelector"
+import { deleteOrders } from "../services/ApiService"
 
 const OrdersTable = () => {
 
     // let items: number[] = [1, 2, 3];
-    const orders = useRecoilValue(getOrders)
+    const orders = useRecoilValue(getOrderIds)
 
     if (orders != null && orders.length > 0) {
         return <>
-            <div className="mt-4 shadow-md sm:rounded-lg">
-                <table className="text-sm text-left text-gray-500 ">
+            <div className="mt-4 w-full shadow-md sm:rounded-lg">
+                <table className="text-sm text-left w-full text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3 w-10">
@@ -22,7 +24,7 @@ const OrdersTable = () => {
                             <th scope="col" className="px-1 py-3 w-10">
                                 Phone
                             </th>
-                            <th scope="col" className="px-1 py-3 w-10">
+                            <th scope="col" className="px-1 py-3 w-12">
                                 Date
                             </th>
                             <th scope="col" className="px-1 py-3 w-10" >
@@ -41,69 +43,21 @@ const OrdersTable = () => {
                             <th scope="col" className="px-1 py-3 w-10">
                                 Instructions
                             </th>
-                            <th scope="col" className="px-2 py-3">
+                            <th scope="col" className="px-2 py-3 w-10">
                                 Asign To
                             </th>
                             <th scope="col" className="px-1 py-3 w-10">
                                 Status
                             </th>
 
-                            <th scope="col" className="px-1 py-3">
-                                <span className="sr-only">Edit</span>
+                            <th scope="col" className="px-1 py-3 w-10">
+                                <DeleteRows></DeleteRows>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order: OrderType) => {
-                            return <>
-                                <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td className="px-3 py-4">
-                                        <p>{order.cname}</p>
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        <p>{order.address}</p>
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {order.cphone}
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {new Date(order.deliveryDate).toDateString()}
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {order.priority}
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {order.itemsDetail}
-                                    </td>
-
-                                    {/* <td className="px-1 py-4">
-                                        {order.itemsDetail.map((item) => {
-                                            return <>{
-                                                <p>{item.rentingItemTitle}</p>
-                                            }</>
-                                        })}
-                                    </td> */}
-                                    {/* <td className="px-1 py-4">
-                                        {order.extraItems && order.extraItems.map((item) => {
-                                            return <>{
-                                                <p>{item.sideItemTitle}</p>
-                                            }</>
-                                        })}
-                                    </td> */}
-                                    <td className="px-1 py-4">
-                                        {order.specialInstructions}
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {order.driverName}
-                                    </td>
-                                    <td className="px-1 py-4">
-                                        {order.currentStatus}
-                                    </td>
-                                    <td className="px-3 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
-                                    </td>
-                                </tr>
-                            </>
+                        {orders.map((orderId: any) => {
+                            return <OrderRow orderId={orderId}></OrderRow>
                         })}
                     </tbody>
                 </table>
@@ -119,5 +73,83 @@ const OrdersTable = () => {
     }
 
 }
+
+
+const OrderRow = ({ orderId }: any) => {
+    const order = useRecoilValue(getOrder(orderId))
+    return <>
+        {order &&
+            <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td className="px-3 py-4">
+                    <p>{order.cname}</p>
+                </td>
+                <td className="px-1 py-4">
+                    <p>{order.address}</p>
+                </td>
+                <td className="px-1 py-4">
+                    {order.cphone}
+                </td>
+                <td className="px-1 py-4">
+                    {new Date(order.deliveryDate).toDateString()}
+                </td>
+                <td className="px-1 py-4">
+                    {order.priority}
+                </td>
+                <td className="px-1 py-4">
+                    {order.itemsDetail}
+                </td>
+                <td className="px-1 py-4">
+                    {order.specialInstructions}
+                </td>
+                <td className="px-1 py-4">
+                    {order.driverName}
+                </td>
+                <td className="px-1 py-4">
+                    {order.currentStatus}
+                </td>
+                <td className="px-1 py-4">
+                    <ColumnDeleteCheckBox order={order} ></ColumnDeleteCheckBox>
+                </td>
+            </tr>
+        }
+    </>
+}
+
+const ColumnDeleteCheckBox = (props: { order: OrderType }) => {
+    const [rows, setRows] = useRecoilState(rowsToBeDeleted)
+    return <>
+        {props.order.currentStatus == "NotAssigned" ? <input
+            onChange={(event) => {
+                if (event.target.checked) {
+                    let setCopy = new Set(rows)
+                    setCopy.add(props.order.orderId)
+                    setRows(setCopy)
+                }
+                else {
+                    let setCopy = new Set(rows)
+                    setCopy.delete(props.order.orderId)
+                    setRows
+                }
+            }
+            } type="checkbox" className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+        </input> : "NA"}</>
+}
+
+
+const DeleteRows = () => {
+    const [rows, setRows] = useRecoilState(rowsToBeDeleted)
+    const [searchDate, setSearchDate] = useRecoilState(ordersSearchDate)
+    const onDeleteHandle = () => {
+        console.log(rows)
+        deleteOrders([...rows]).then(() => {
+            setSearchDate(new Date(searchDate.setHours(0, 0, 0, 0)))
+        })
+        setRows(new Set())
+    }
+    return <>
+        <button onClick={onDeleteHandle} type="button" className="text-xs text-blue-700 underline" >Delete Selected </button>
+    </>
+}
+
 
 export default OrdersTable
