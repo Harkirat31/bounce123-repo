@@ -1,5 +1,6 @@
 import { DefaultValue, atom, atomFamily, selector, selectorFamily } from "recoil";
 import { PathOrderType } from "types";
+import { getOrder } from "../selectors/orderSelector";
 
 
 export const createPathAtom = atom<(string)[]>({
@@ -7,9 +8,32 @@ export const createPathAtom = atom<(string)[]>({
     default: []
 })
 
-export const savedPaths = atom<PathOrderType[]>({
+export const savedPathsAtom = atom<PathOrderType[]>({
     key: "getPaths",
     default: []
+})
+
+export const savedPaths = selector<PathOrderType[]>({
+    key: "savedPathsSelector",
+    get: ({ get }) => {
+        return get(savedPathsAtom)
+    },
+    set: ({ set, get }, newValue) => {
+        if (!(newValue instanceof DefaultValue)) {
+            newValue.forEach((path) => {
+                path.path.forEach((orderId) => {
+                    let order = get(getOrder(orderId))
+                    if (order!.assignedPathId == null || order!.assignedPathId == "") {
+                        set(getOrder(orderId), { ...order!, assignedPathId: path.pathId, currentStatus: "PathAssigned" })
+                    }
+                })
+            })
+            set(savedPathsAtom, newValue)
+        }
+        else {
+            set(savedPathsAtom, newValue)
+        }
+    }
 })
 
 

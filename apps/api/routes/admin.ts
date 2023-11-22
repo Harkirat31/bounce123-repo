@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId } from "db"
+import axios from "axios";
 
 
 
@@ -132,10 +133,31 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in Parameters"
     })
   }
-  assignPathToDriver(assignPathParams.data).then((result) => {
+  let pathId = assignPathParams.data.pathId
+  let pathDate = assignPathParams.data.dateOfPath
+  let driverId = assignPathParams.data.driverId
+  assignPathToDriver(assignPathParams.data).then(async (result) => {
+    let orders = await getOrdersWithPathId(pathId!)
+    let driver = await getDriver(driverId!)
+    let message = `Orders for ${pathDate.toLocaleDateString()}: \n\n`
+    orders.forEach((order, index) => {
+      //message = message + "https://minipunjabincanada/update/322323233232323"
+      message = message + `Order Sr No ${index + 1} \n`
+      message = message + `Name: ${order.cname} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
+
+    })
+    axios.post('https://textbelt.com/text', {
+      phone: driver.phone,
+      message: message,
+      key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
+    }).then(response => {
+      console.log(response.data);
+    })
     res.json({ isAdded: true })
   }).catch((errro) => res.json({ isAdded: false }))
 })
+
+
 
 router.post('/assignOrder', authenticateJwt, (req: Request, res: Response) => {
   let assignOrderParams = assignOrder.safeParse(req.body)

@@ -67,6 +67,7 @@ export type DriverType = z.infer<typeof driver>
 
 export const order = z.object({
     companyId: z.string().optional(),
+    assignedPathId: z.string().optional(),
     orderId: z.string().optional(),
     orderNumber: z.string().optional(),
     itemsDetail: z.string().optional(),

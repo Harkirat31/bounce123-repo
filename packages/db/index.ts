@@ -110,8 +110,22 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
 }
 
 export const createPath = (newPath: PathOrderType) => {
-  return new Promise((resolve, reject) => {
-    db.collection("paths").add(newPath).then(() => resolve("Success")).catch(() => reject("Error"))
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await db.collection("paths").add(newPath)
+      newPath.path.forEach(async (orderId) => {
+        await db.collection("orders").doc(orderId).update({
+          assignedPathId: result.id,
+          currentStatus: "PathAssigned"
+        })
+      })
+      resolve("Success")
+
+    }
+    catch {
+      reject("Error")
+    }
+
   })
 }
 
@@ -142,6 +156,15 @@ export const createOrder = (orderData: OrderType) => {
 export const getOrders = (driverId: string): Promise<OrderType[]> => {
   return new Promise((resolve, reject) => {
     db.collection('orders').where("driverId", "==", driverId).get().then((result) => {
+      let orders = result.docs.map((doc) => doc.data() as OrderType)
+      resolve(orders)
+    }).catch((error) => reject(new Error("Error fetching orders of driver")))
+  })
+}
+
+export const getOrdersWithPathId = (pathId: string): Promise<OrderType[]> => {
+  return new Promise((resolve, reject) => {
+    db.collection('orders').where("assignedPathId", "==", pathId).get().then((result) => {
       let orders = result.docs.map((doc) => doc.data() as OrderType)
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
