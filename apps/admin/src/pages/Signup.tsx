@@ -80,7 +80,7 @@ const Signup = () => {
             } else {
                 if (result.err != null || result.err != undefined) {
                     if (result.err == ErrorCode.EmailAlreadyExist) {
-                        setErrorMessage(["Email Already Exist, Please Sign In"])
+                        setErrorMessage(["Email Already Exists, Please Sign In"])
                     }
                     if (result.err == ErrorCode.AddressError) {
                         setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
