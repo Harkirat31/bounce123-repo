@@ -180,8 +180,10 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: pathData!.driverId ? pathData!.driverId : "Select", driverName: pathData?.driverName ? pathData?.driverName : "Select" })
-    const setDate = useSetRecoilState(ordersSearchDate)
+    //const setDate = useSetRecoilState(ordersSearchDate)
     const updateOrder = useSetRecoilState(updateOrders)
+    const [allPaths, setAllPaths] = useRecoilState(savedPaths)
+
     const handleShowToggle = () => {
         if (pathData!.show) {
             setPathData({ ...pathData!, show: false })
@@ -223,7 +225,16 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     const handleDelete = () => {
         deletePath(pathData).then((result: any) => {
             if (result.isDeleted) {
-                setDate(new Date(pathData!.dateOfPath))
+                // Reather than setting date, fetch paths and set paths
+                let allPathsCopy = allPaths.filter((path) => {
+                    if (path.pathId == pathData!.pathId) {
+                        return false
+                    } else {
+                        return true
+                    }
+                })
+                setAllPaths(allPathsCopy)
+                //setDate(new Date(pathData!.dateOfPath))
                 updateOrder(pathData!.path)
             }
             if (result.err != null || result.err != undefined) {
