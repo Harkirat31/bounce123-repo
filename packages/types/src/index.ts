@@ -6,10 +6,6 @@ import { z } from "zod"
 export const userId = z.object({ uid: z.string() })
 
 
-export const x = z.object({
-    name: z.string()
-})
-
 export const rentingItem = z.object({
     companyId: z.string().optional(),
     rentingItemId: z.string().optional(),
@@ -136,13 +132,14 @@ export const pathOrder = z.object({
 
 export type PathOrderType = z.infer<typeof pathOrder>
 
+
 export const user = z.object({
     userId: z.string().optional(),
-    password: z.string().optional(),
-    email: z.string(),
-    companyName: z.string(),
-    address: z.string(),
-    phone: z.string(),
+    password: z.string().min(8).optional(),
+    email: z.string().email(),
+    companyName: z.string().min(1),
+    address: z.string().min(1),
+    phone: z.string().min(10),
     location: location.optional(),
     ordersCountForMonth: z.number().optional(),
     placeId: z.string().optional()
@@ -156,5 +153,8 @@ export enum ErrorCode {
     MissisRequiredParams,
     FirebaseError,
     MapsApiError,
-    JsonParseError
+    JsonParseError,
+    WrongInputs
 }
+
+

@@ -3,6 +3,7 @@ import { signInAPI } from "../services/ApiService"
 import { useSetRecoilState } from "recoil"
 import { token } from "../store/atoms/tokenAtom"
 import { useNavigate } from "react-router-dom"
+import { ErrorCode, userSignIn } from "types"
 
 
 const Login = () => {
@@ -11,17 +12,55 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false)
     const setToken = useSetRecoilState(token)
     const navigate = useNavigate()
+    const [errorMessage, setErrorMessage] = useState<any[]>([])
+
+
+
+    const validateInput = (input: {}) => {
+        let parsedInput = userSignIn.safeParse(input)
+        if (parsedInput.success) {
+            return parsedInput.data
+        }
+        else {
+            let errors: any[] = []
+            parsedInput.error.issues.forEach((issue) => {
+                if (issue.path[0] == "email") {
+                    errors.push("Email: " + issue.message)
+                }
+                if (issue.path[0] == "password") {
+                    errors.push("Password :" + "Cannot be Empty")
+                }
+
+                setErrorMessage(errors)
+            })
+            return null
+        }
+    }
 
     const handleSubmit = () => {
 
         setIsLoading(true)
+
+        let inputData = validateInput({ email, password })
+        if (inputData == null) {
+            setIsLoading(false)
+            return
+        }
+
         signInAPI(email, password).then((result: any) => {
             if (result.token) {
                 setToken(result.token)
                 window.location.assign("/")
 
             } else {
-                console.log("Error ....")
+                if (result.err != null || result.err != undefined) {
+                    if (result.err == ErrorCode.WorngCredentials) {
+                        setErrorMessage(["Wrong Credentials, Please check again"])
+                    }
+                    else {
+                        setErrorMessage(["Server Error, Please try again after some time"])
+                    }
+                }
             }
             setIsLoading(false)
 
@@ -44,58 +83,71 @@ const Login = () => {
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form className="space-y-6" action="#" method="POST">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                            Email address
+                <div>
+                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                        Email address
+                    </label>
+                    <div className="mt-2">
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            onChange={(event) => setEmail(event.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                            Password
                         </label>
-                        <div className="mt-2">
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                onChange={(event) => setEmail(event.target.value)}
-                            />
+                        <div className="text-sm">
+                            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                Forgot password?
+                            </a>
                         </div>
                     </div>
-
-                    <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                                Password
-                            </label>
-                            <div className="text-sm">
-                                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                    Forgot password?
-                                </a>
-                            </div>
-                        </div>
-                        <div className="mt-2">
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                onChange={(event) => setPassword(event.target.value)}
-                            />
-                        </div>
+                    <div className="mt-2">
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            onChange={(event) => setPassword(event.target.value)}
+                        />
                     </div>
+                </div>
 
-                    <div>
+                <div className="mt-3">
+                    {isLoading &&
+                        <button
+                            type="button"
+                            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Please wait
+                        </button>
+                    }
+                    {!isLoading &&
                         <button
                             type="button"
                             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             onClick={handleSubmit}
                         >
-                            Sign in
+                            Sign In
                         </button>
-                    </div>
-                </form>
+                    }
+                </div>
+                {errorMessage.length > 0 &&
+                    errorMessage.map((error) => {
+                        return <p className="text-red-600 text-xs mt-2">{error}</p>
+                    })
+                }
+
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Not a member?{' '}

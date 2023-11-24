@@ -3,7 +3,7 @@ import path from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode } from "types"
 import { API_KEY_SIGNIN } from './config';
 // Initialize Firebase Admin SDK
 
@@ -64,7 +64,16 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
     admin.auth().createUser({
       email: authUser.email,
       password: authUser.password
-    }).then((firebaseUser) => resolve(firebaseUser.uid)).catch((error: admin.FirebaseError) => reject(error))
+    }).then((firebaseUser) => resolve(firebaseUser.uid)).catch(
+      (error: admin.FirebaseError) => {
+        if (error.code == "auth/email-already-exists") {
+          reject(ErrorCode.EmailAlreadyExist)
+        } else {
+          reject(ErrorCode.FirebaseError)
+        }
+
+      }
+    )
   })
 }
 
@@ -77,10 +86,9 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
         newUserDetail
       ).then((result) => {
         resolve(newUserDetail)
-      }).catch(() => reject(new Error("Error creating user in firestore db")))
+      }).catch(() => reject(ErrorCode.FirebaseError))
     }
-    ).catch((error: admin.FirebaseError) => {
-      console.log(error)
+    ).catch((error) => {
       reject(error)
     })
 

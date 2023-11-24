@@ -11,7 +11,6 @@ export const signupAPI = (user: UserType) => {
             },
             body: JSON.stringify(user)
         }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
             resolve(jsonData)
         }).catch((error) => reject(error))).catch((error) => {
             reject(error)

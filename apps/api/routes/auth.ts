@@ -11,7 +11,7 @@ router.post("/signin", (req: Request, res: Response) => {
   let parsedSignInInput = userSignIn.safeParse(req.body)
   if (!parsedSignInInput.success) {
     return res.status(403).json({
-      msg: "Error in User Details"
+      err: ErrorCode.WrongInputs
     });
   }
   const email = parsedSignInInput.data.email;
@@ -22,7 +22,7 @@ router.post("/signin", (req: Request, res: Response) => {
     res.json({ message: 'Login successfully', token });
   }).catch((error) => {
     return res.status(401).json({
-      msg: "Wrong Credentials"
+      err: ErrorCode.WorngCredentials
     });
   })
 
@@ -46,7 +46,7 @@ router.post("/createUser", (req: Request, res: Response) => {
   let parsedUserData = user.safeParse(req.body)
   if (!parsedUserData.success) {
     return res.status(403).json({
-      msg: "Error in User Details"
+      err: ErrorCode.WrongInputs
     });
   }
   const apiKey = process.env.MAPS_API_KEY;
@@ -73,10 +73,9 @@ router.post("/createUser", (req: Request, res: Response) => {
         const secretKey = process.env.JWT_SECRET;
         const token = jwt.sign({ user: result }, secretKey!, { expiresIn: '30 days', });
         res.json({ message: 'Login successfully', token });
-      }).catch((firebaseError) => {
-        console.log("Firebase Error")
+      }).catch((error) => {
         return res.status(403).json({
-          err: ErrorCode.FirebaseError
+          err: error
         });
       })
     }
