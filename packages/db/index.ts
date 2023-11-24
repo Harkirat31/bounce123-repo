@@ -16,6 +16,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 
+
 async function getData() {
   const x = await db.collection('test').doc("1").get()
   console.log(x);
@@ -132,6 +133,26 @@ export const createPath = (newPath: PathOrderType) => {
     }
     catch {
       reject("Error")
+    }
+
+  })
+}
+
+export const deletePath = (path: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await db.collection("paths").doc(path.pathId!).delete()
+      path.path.forEach(async (orderId) => {
+        await db.collection("orders").doc(orderId).update({
+          assignedPathId: admin.firestore.FieldValue.delete(),
+          currentStatus: "NotAssigned"
+        })
+      })
+      resolve("Success")
+
+    }
+    catch {
+      reject(ErrorCode.FirebaseError)
     }
 
   })

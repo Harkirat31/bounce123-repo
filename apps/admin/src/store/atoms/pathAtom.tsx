@@ -1,5 +1,5 @@
 import { DefaultValue, atom, atomFamily, selector, selectorFamily } from "recoil";
-import { PathOrderType } from "types";
+import { OrderType, PathOrderType } from "types";
 import { getOrder } from "../selectors/orderSelector";
 
 
@@ -79,6 +79,25 @@ export const orderSetForPathCreation = selector({
         }
         else {
             set(orderSetForAtom, newValue)
+        }
+
+    }
+})
+
+export const updateOrders = selector<string[]>({
+    key: "updateOrders",
+    get: ({ get }) => {
+        return []
+    },
+    set: ({ set, get }, newValue) => {
+        if (!(newValue instanceof DefaultValue)) {
+            newValue.forEach((orderId) => {
+                let order = { ...get(getOrder(orderId)) }
+                order!.currentStatus = "NotAssigned"
+                order!.assignedPathId = ""
+                set(getOrder(orderId), { ...order as OrderType })
+            })
+
         }
 
     }

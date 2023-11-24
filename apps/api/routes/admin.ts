@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
-import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId } from "db"
+import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode } from "types";
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath } from "db"
 import axios from "axios";
 
 
@@ -258,5 +258,23 @@ router.post('/deleteOrders', authenticateJwt, (req: Request, res: Response) => {
     })
   }
 })
+
+
+router.post('/deletePath', authenticateJwt, (req: Request, res: Response) => {
+  req.body.dateOfPath = new Date(req.body.dateOfPath)
+  let parsedData = pathOrder.safeParse(req.body)
+  if (!parsedData.success) {
+    console.log(parsedData.error)
+    return res.status(403).json({
+      err: ErrorCode.WrongInputs
+    });
+  }
+  deletePath(parsedData.data).then((result) => {
+    res.json({ isDeleted: true });
+  }).catch((error) => res.json({ err: error }))
+})
+
+
+
 
 export default router

@@ -78,7 +78,7 @@ export default RouteCalculatorArea
 const OrderRow = (props: { orderId: string, index: number }) => {
     const [order, setOrder] = useRecoilState(getOrder(props.orderId))
     return (
-        <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tr className="border-b-2 border-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td className="px-3 py-4">
                 <p>{props.index}</p>
             </td>

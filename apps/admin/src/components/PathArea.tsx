@@ -1,9 +1,9 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { ordersSearchDate } from "../store/atoms/orderAtom"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, orderSetForPathCreation, savedPaths } from "../store/atoms/pathAtom"
-import { assignPathAPI, createPath, getPathsAPI } from "../services/ApiService"
+import { createPathAtom, orderSetForPathCreation, savedPaths, updateOrders } from "../store/atoms/pathAtom"
+import { assignPathAPI, createPath, deletePath, getPathsAPI } from "../services/ApiService"
 import { getDrivers } from "../store/selectors/driversSelector"
 import { getOrderIds } from "../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
@@ -99,13 +99,48 @@ const CreatePath = ({ setShowCreatePath }: any) => {
     }
 
     return <div className="flex flex-col items-center">
-        <div className="mx-2 flex flex-col justify-center items-center">
+        <div className="mx-2 mt-2 flex flex-col justify-center items-center">
             {orderSetForPath.length == 0 &&
                 <div className="h-full">
                     <p> All Orders have been added to paths</p>
                     <p> Or No order is created for this date!!</p>
                 </div>
             }
+
+            <div className="flex flex-row" >
+                {orderSetForPath.length > 0 &&
+                    <div className="flex flex-row">
+                        <p>Order Sr No.</p>
+                        <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
+                            <option value="Select" >Select</option>
+                            {orderSetForPath.map((orderId) => {
+                                return <>
+                                    <option value={getSrNoFororderId(orderId!)}>{getSrNoFororderId(orderId!)}</option>
+                                </>
+                            })}
+                        </select>
+                    </div>
+                }
+
+                {orderSetForPath.length > 0 && <button onClick={
+                    () => {
+                        if (dropDownValue === "Select") {
+                            return
+                        }
+                        setPathOrders([...pathOrders, orderIds[dropDownValue - 1]!])
+                        let newSet = orderSetForPath.filter((orderId) => orderId != orderIds[dropDownValue - 1]!)
+                        console.log(newSet)
+                        setorderSetForPath([...newSet])
+                        if (newSet.length > 0) {
+                            setDropDownValue(getSrNoFororderId(newSet[0]!))
+                        }
+
+                    }
+                } className="ml-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-2 py-1 text-center" >
+                    Add to Path
+                </button>}
+            </div>
+
             <div className="grid grid-cols-8 items-center justify-center">
                 {pathOrders.map((pathnode) => {
                     return <>
@@ -123,6 +158,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
                                         setSavedPaths([...data]);
                                         reset ? setReset(false) : setReset(true)
                                     }).catch(() => alert("Error Saving Path"))
+                                    setShowCreatePath(false)
 
                                 }).catch((error) => {
                                     alert(error)
@@ -133,35 +169,7 @@ const CreatePath = ({ setShowCreatePath }: any) => {
                     </div>
                 }
             </div>
-            <div>
-                {orderSetForPath.length > 0 &&
-                    <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className="ml-2  border-2 border-blue-900" >
-                        <option value="Select" >Select Order</option>
-                        {orderSetForPath.map((orderId) => {
-                            return <>
-                                <option value={getSrNoFororderId(orderId!)}>{getSrNoFororderId(orderId!)}</option>
-                            </>
-                        })}
-                    </select>}
 
-                {orderSetForPath.length > 0 && <button onClick={
-                    () => {
-                        if (dropDownValue === "Select") {
-                            return
-                        }
-                        setPathOrders([...pathOrders, orderIds[dropDownValue - 1]!])
-                        let newSet = orderSetForPath.filter((orderId) => orderId != orderIds[dropDownValue - 1]!)
-                        console.log(newSet)
-                        setorderSetForPath([...newSet])
-                        if (newSet.length > 0) {
-                            setDropDownValue(getSrNoFororderId(newSet[0]!))
-                        }
-
-                    }
-                } className="ml-2 text-sm text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-2 py-1 text-center" >
-                    Add
-                </button>}
-            </div>
         </div>
     </div>
 }
@@ -172,6 +180,8 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: pathData!.driverId ? pathData!.driverId : "Select", driverName: pathData?.driverName ? pathData?.driverName : "Select" })
+    const setDate = useSetRecoilState(ordersSearchDate)
+    const updateOrder = useSetRecoilState(updateOrders)
     const handleShowToggle = () => {
         if (pathData!.show) {
             setPathData({ ...pathData!, show: false })
@@ -185,84 +195,91 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     }
 
     const hanldeSendSMS = () => {
+
         if (dropDownItem == "Select") {
             return
         }
         if (dropDownItem.driverId == "Select") {
             return
         }
+
+        const confirm = window.confirm("Are you Sure?")
+        if (!confirm) {
+            return
+        }
+
         let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
 
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
             setPathData(pathArgs as PathOrderType)
-            alert("Assigned and Sent to driver")
+            //alert("Assigned and Sent to driver")
         }).catch((_error) => {
             alert("Error")
         })
 
-        // let order1: any = {
-        //     name: "Harkirat Singh",
-        //     address: "19 Simmons Blvd,Brampton ON",
-        //     rentingItem: "Animal Kingdom",
-        //     instructions: "Deliver Before 12"
-        // }
-        // let order2: any = {
-        //     name: "Kamaldeep",
-        //     address: "19 Simmons Blvd,Brampton ON",
-        //     rentingItem: "Animal Kingdom",
-        //     instructions: "Deliver Before 9"
-        // }
-        // let orders: any[] = []
-        // orders.push(order1)
-        // orders.push(order2)
-
-        // let message = `Orders for 12/11/2023: \n\n`
-        // orders.forEach((order, index) => {
-        //     //message = message + "https://minipunjabincanada/update/322323233232323"
-        //     message = message + `Order Sr No ${index + 1} \n`
-        //     message = message + `Name: ${order.name} \n Address: ${order.address} \n Delivery Items: ${order.rentingItem} \n Instructions: ${order.instructions} \n\n`
-
-        // })
-
-        // axios.post('https://textbelt.com/text', {
-        //     phone: '4379864033',
-        //     message: message,
-        //     key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
-        // }).then(response => {
-        //     console.log(response.data);
-        // })
 
     }
 
-    return <>
-        <tr>
-            <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
-            <td>
-                <div className="grid grid-cols-5 justify-between">
+    const handleDelete = () => {
+        deletePath(pathData).then((result: any) => {
+            if (result.isDeleted) {
+                setDate(new Date(pathData!.dateOfPath))
+                updateOrder(pathData!.path)
+            }
+            if (result.err != null || result.err != undefined) {
+                alert("Error Deleting Path")
+            }
+        }
+        )
+    }
 
-                    {path.path.map((node) => {
-                        return <div>
-                            <p className="text-center w-5 h-5 mx-2 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
-                        </div>
-                    })}
+    if (pathData) {
+        return <>
+            <tr className="border-b-2 border-gray-100">
+                <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
+                <td>
+                    <div className="grid grid-cols-5 justify-between">
 
-                </div>
-            </td>
-            <td>
-                <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
-                    <option value={"Select"}>Select</option>
-                    {drivers.map((driver: DriverType) => {
-                        return <>
-                            <option value={driver.uid}>{driver.name}</option>
+                        {pathData!.path.map((node) => {
+                            return <div>
+                                <p className="text-center w-5 h-5 mx-2 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
+                            </div>
+                        })}
+
+                    </div>
+                </td>
+                <td>
+                    {(pathData!.driverId == null || pathData!.driverId == undefined) ?
+                        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
+                            <option value={"Select"}>Select</option>
+                            {drivers.map((driver: DriverType) => {
+                                return <>
+                                    <option value={driver.uid}>{driver.name}</option>
+                                </>
+                            })}
+                        </select>
+                        :
+                        <p>{pathData!.driverName}</p>
+                    }
+                </td>
+                <td className="px-6 py-4 flex">
+                    {(pathData!.driverId == null || pathData!.driverId == undefined) ?
+                        <>
+                            <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                Send SMS
+                            </button>
+                            <button type="button" onClick={handleDelete} className="text-2xl"><AiFillDelete></AiFillDelete></button>
                         </>
-                    })}
-                </select>
-            </td>
-            <td className="px-6 py-4 flex">
-                <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">Send SMS</button>
-                <button className="text-2xl"><AiFillDelete></AiFillDelete></button>
-            </td>
+                        :
+                        <p className="ml-2">Sent</p>
+                    }
+                </td>
 
-        </tr>
-    </>
+            </tr>
+
+        </>
+    }
+    else {
+        return <></>
+    }
 }
