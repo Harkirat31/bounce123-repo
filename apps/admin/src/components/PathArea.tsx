@@ -227,6 +227,7 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
             if (result.isDeleted) {
                 // Reather than setting date, fetch paths and set paths
                 let allPathsCopy = allPaths.filter((path) => {
+                    //removed path which is deleted
                     if (path.pathId == pathData!.pathId) {
                         return false
                     } else {
@@ -234,7 +235,6 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
                     }
                 })
                 setAllPaths(allPathsCopy)
-                //setDate(new Date(pathData!.dateOfPath))
                 updateOrder(pathData!.path)
             }
             if (result.err != null || result.err != undefined) {
