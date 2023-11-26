@@ -1,6 +1,5 @@
-import { DefaultValue, atomFamily, selector, selectorFamily } from "recoil";
+import { atomFamily, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
-import { OrderType } from "types";
 
 export const getOrders = selector({
     key: "getOrders",
@@ -16,7 +15,7 @@ export const getOrderIds = selector({
         const state = get(ordersAtom)
         let orderIds = state.map((order) => order.orderId)
         return orderIds
-    }
+    },
 })
 
 export const getOrder = atomFamily({
@@ -28,6 +27,47 @@ export const getOrder = atomFamily({
             return orders.find((order) => order.orderId === orderId)
         }
     })
+})
+
+export const sortOrders = selectorFamily({
+    key: "sortOrders",
+    get: (sortBy: string) => ({ get }) => {
+        return ""
+    },
+    set: (sortBy: string) => ({ get, set }, newValue) => {
+        let ordersCopy = [...get(ordersAtom)]
+        ordersCopy.sort((a, b) => {
+            if (a.currentStatus == "NotAssigned"
+                &&
+                (
+                    b.currentStatus == "NotAssigned"
+                    ||
+                    b.currentStatus == "SentToDriver"
+                    ||
+                    b.currentStatus == "Assigned"
+                    ||
+                    b.currentStatus == "OnTheWay"
+                    ||
+                    b.currentStatus == "Picked"
+                    ||
+                    b.currentStatus == "Returned"
+                    ||
+                    b.currentStatus == "Delivered"
+                    ||
+                    b.currentStatus == "PathAssigned"
+                )
+            ) {
+                return -1
+            }
+            else {
+                return 1
+            }
+
+        })
+
+        set(ordersAtom, ordersCopy)
+    },
+
 })
 
 // export const getOrder = selectorFamily({

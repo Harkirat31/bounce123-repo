@@ -24,44 +24,39 @@ const ParseCSVOrders = () => {
       })
       orderobject[orderAttributes[5]] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
 
-      if (orderobject['priority'])
-        try {
-          let parse = order.safeParse(orderobject)
-          if (parse.success) {
-            createOrder(parse.data).then((result: any) => {
-              if (result.isAdded) {
-                statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
-              }
-              else {
-                statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
-              }
-              if (statusOfUploading.length === csvData.length) {
-                setCreateOrdersStatus(statusOfUploading)
-              }
-
-            }).catch((_err) => {
-              statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
-              if (statusOfUploading.length === csvData.length) {
-                setCreateOrdersStatus(statusOfUploading)
-              }
-            })
+      //if (orderobject['priority'])
+      try {
+        let parse = order.safeParse(orderobject)
+        if (parse.success) {
+          let result: any = await createOrder(parse.data)
+          if (result.isAdded) {
+            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
+          }
+          else if (!result.isAdded) {
+            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
           }
           else {
             statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
-            if (statusOfUploading.length === csvData.length) {
-              setCreateOrdersStatus(statusOfUploading)
-            }
+          }
+          if (statusOfUploading.length === csvData.length) {
+            setCreateOrdersStatus(statusOfUploading)
           }
         }
-        catch (e) {
+        else {
           statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
           if (statusOfUploading.length === csvData.length) {
             setCreateOrdersStatus(statusOfUploading)
           }
         }
+      }
+      catch (e) {
+        statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+        if (statusOfUploading.length === csvData.length) {
+          setCreateOrdersStatus(statusOfUploading)
+        }
+      }
     }
     )
-    console.log(statusOfUploading)
 
 
     setIsLoading(false)

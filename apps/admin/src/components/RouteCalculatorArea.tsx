@@ -5,10 +5,11 @@ import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import PathArea from "./PathArea"
 import DriverDropDownForOrder from "./DriverDropDownForOrder"
 import { changePriority, getOrdersAPI } from "../services/ApiService"
-import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
+import { getOrder, getOrderIds, sortOrders } from "../store/selectors/orderSelector"
 import { OrderType } from "types"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { BiSortAlt2 } from "react-icons/bi";
 
 
 const RouteCalculatorArea = () => {
@@ -16,6 +17,7 @@ const RouteCalculatorArea = () => {
     const [date, setDate] = useRecoilState(ordersSearchDate)
     const ordersIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
+    const setSortOrders = useSetRecoilState(sortOrders(""))
     const OnDateChangeHandler = (date1: Date) => {
         getOrdersAPI(date1).then((result: any) => {
             setDate(date1)
@@ -23,6 +25,10 @@ const RouteCalculatorArea = () => {
         }).catch((error) => {
             alert("Unable to fetch the orders of this date")
         })
+    }
+
+    const sortHandle = () => {
+        setSortOrders("")
     }
     return (
 
@@ -45,7 +51,12 @@ const RouteCalculatorArea = () => {
                                     Sr. No
                                 </th>
                                 <th scope="col" className="px-1 py-3">
-                                    Status
+                                    <div className="flex items-center justify-center">
+                                        Status
+                                        <button type="button" onClick={sortHandle} className="text-lg">
+                                            <BiSortAlt2 />
+                                        </button>
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-1 py-3">
                                     Priority
