@@ -25,9 +25,11 @@ const ParseCSVOrders = () => {
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
-      orderobject[orderAttributes[5]] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
+      orderobject['deliveryDate'] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
 
-      //if (orderobject['priority'])
+      if (!orderobject['priority']) {
+        orderobject['priority'] = "Medium"
+      }
       try {
         let parse = order.safeParse(orderobject)
         if (parse.success) {
@@ -46,7 +48,17 @@ const ParseCSVOrders = () => {
           }
         }
         else {
-          statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+          if (parse.error) {
+            let errMsg = ''
+            parse.error.issues.forEach((issue) => {
+              errMsg = errMsg + issue.path[0] + ":" + issue.message + ", "
+            })
+            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: errMsg })
+          }
+          else {
+            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Error" })
+          }
+
           if (statusOfUploading.length === csvData.length) {
             setCreateOrdersStatus(statusOfUploading)
           }
@@ -129,22 +141,29 @@ const ParseCSVOrders = () => {
               <th scope="col" className="px-6 py-3">
                 Result
               </th>
+              <th scope="col" className="px-6 py-3">
+                Error
+              </th>
+
             </tr>
           </thead>
           <tbody>
             {createOrderStatus.map((orderStatus: any) => {
               return <>
                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  {orderStatus.success &&
-                    <>
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {orderStatus.orderNumber}
-                      </th>
-                      <td className="px-6 py-4">
-                        {orderStatus.success == true ? "Success" : "Failed"}
-                      </td>
-                    </>
-                  }
+
+                  <>
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      {orderStatus.orderNumber}
+                    </th>
+                    <td className="px-6 py-4">
+                      {orderStatus.success == true ? "Success" : "Failed"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {orderStatus.success == true ? "No issue" : orderStatus.err}
+                    </td>
+                  </>
+
 
                 </tr>
               </>

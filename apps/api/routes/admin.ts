@@ -64,7 +64,7 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
   if (!parsedData.success) {
     console.log(parsedData.error)
     return res.status(403).json({
-      msg: "Error in  Details"
+      err: ErrorCode.WrongInputs
     });
   }
   const apiKey = process.env.MAPS_API_KEY;
@@ -82,10 +82,15 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
       location = results[0].geometry.location;
       placeId = results[0].place_id;
     } else {
-      console.log('No results found for the given address.');
+      return res.status(403).json({
+        err: ErrorCode.AddressError
+      });
     }
   }
   catch (e) {
+    return res.status(403).json({
+      err: ErrorCode.AddressError
+    });
   }
 
   parsedData.data.location = location

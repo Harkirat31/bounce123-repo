@@ -68,7 +68,7 @@ export const order = z.object({
     orderNumber: z.string().optional(),
     itemsDetail: z.string().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })).optional(),
-    address: z.string(),
+    address: z.string().min(1),
     cname: z.string().min(1),
     cphone: z.string().min(10),
     location: location.optional(),

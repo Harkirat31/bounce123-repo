@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from "recoil"
-import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector"
+import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
 import { ordersSearchDate, rowsToBeDeleted } from "../store/atoms/orderAtom"
 import { OrderType } from "types"
 import { deleteOrders } from "../services/ApiService"

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
 //import { getSideItems } from "../store/selectors/sideItemsSelector"
-import { order } from "types/src/index"
+import { ErrorCode, order } from "types/src/index"
 //import { TiDelete } from "react-icons/ti"
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css';
@@ -29,26 +29,68 @@ const CreateOrder = () => {
     //const [rentingItems, setRentingItems] = useState<{ rentingItemId: string, rentingItemTitle: string, }[]>([])
     const [priority, setPriority] = useState("Medium")
     const setOrders = useSetRecoilState(ordersAtom)
+    const [errorMessage, setErrorMessage] = useState<any[]>([])
 
     function saveOrder() {
 
         //let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), extraItems: sideItems, rentingItems, priority, specialInstructions })
-        let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
-        if (!parsedOrder.success) {
-            console.log(parsedOrder.error)
-            alert("Error in Data")
+        setErrorMessage([])
+        let parsedOrder = validateInput({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+
+        if (parsedOrder == null) {
             return
         }
-        createOrder(parsedOrder.data).then(() => {
+        createOrder(parsedOrder).then((result: any) => {
             if (date) {
                 getOrdersAPI(date).then((orders: any) => {
                     setOrders(orders)
                     setSearchDate(date)
                 })
-
             }
-
+            if (result.err != null || result.err != undefined) {
+                if (result.err == ErrorCode.WrongInputs) {
+                    setErrorMessage(["Wrong INputs"])
+                }
+                if (result.err == ErrorCode.AddressError) {
+                    setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
+                }
+            }
         })
+    }
+
+    const validateInput = (input: {}) => {
+        let parsedInput = order.safeParse(input)
+        if (parsedInput.success) {
+            try {
+                let phone = parseInt(parsedInput.data.cphone)
+                if (!phone) {
+                    setErrorMessage(["Phone: Not Valid Phone number"])
+                    return null
+                }
+            }
+            catch {
+                setErrorMessage(["Phone: Not Valid Phone number"])
+                return null
+            }
+            return parsedInput.data
+        }
+        else {
+            let errors: any[] = []
+            parsedInput.error.issues.forEach((issue) => {
+                if (issue.path[0] == "cname") {
+                    errors.push("Name:  " + issue.message)
+                }
+                if (issue.path[0] == "address") {
+                    errors.push("Address: " + issue.message)
+                }
+                if (issue.path[0] == "cphone") {
+                    errors.push("Phone: " + issue.message)
+                }
+
+                setErrorMessage(errors)
+            })
+            return null
+        }
     }
 
 
@@ -186,6 +228,11 @@ const CreateOrder = () => {
 
                 <textarea onChange={(event) => setSpecialInstructions(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Special Instructions" rows={3} />
 
+                {errorMessage.length > 0 &&
+                    errorMessage.map((error) => {
+                        return <p className="text-red-600 text-xs mt-2">{error}</p>
+                    })
+                }
 
                 <button onClick={saveOrder} type="button" className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Submit</button>
 
