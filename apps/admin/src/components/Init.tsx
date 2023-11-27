@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { getDriversAPI, getOrdersAPI, getPathsAPI, getRentingItemsAPI, getSideItemsAPI, getUserAPI } from "../services/ApiService"
+import { getDriversAPI, getOrdersAPI, getPathsAPI, getRentingItemsAPI, getSideItemsAPI } from "../services/ApiService"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import { rentItemsState } from "../store/atoms/rentItemsAtom"
 import { sideItemsState } from "../store/atoms/sideItemsAtom"
