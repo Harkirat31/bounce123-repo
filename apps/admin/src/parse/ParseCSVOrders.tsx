@@ -3,6 +3,8 @@ import Papa from 'papaparse';
 import DownloadButton from '../components/DownloadButton';
 import { order } from 'types/src/index';
 import { createOrder, } from '../services/ApiService';
+import { useRecoilState } from 'recoil';
+import { ordersSearchDate } from '../store/atoms/orderAtom';
 
 
 const ParseCSVOrders = () => {
@@ -10,6 +12,7 @@ const ParseCSVOrders = () => {
   const [createOrderStatus, setCreateOrdersStatus] = useState<any>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const uploadInputButtonRef = useRef<any>(null);
+  const [date, setDate] = useRecoilState(ordersSearchDate)
 
 
   const handleSubmitCSV = () => {
@@ -58,10 +61,10 @@ const ParseCSVOrders = () => {
     }
     )
 
-
     setIsLoading(false)
     setCSVData([])
     uploadInputButtonRef.current.value = ''
+    setDate(new Date(date))
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
