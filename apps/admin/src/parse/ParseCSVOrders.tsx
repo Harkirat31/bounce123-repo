@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import DownloadButton from '../components/DownloadButton';
-import { order } from 'types/src/index';
+import { ErrorCode, order } from 'types/src/index';
 import { createOrder, } from '../services/ApiService';
 import { useRecoilState } from 'recoil';
 import { ordersSearchDate } from '../store/atoms/orderAtom';
@@ -15,7 +15,19 @@ const ParseCSVOrders = () => {
   const [date, setDate] = useRecoilState(ordersSearchDate)
 
 
+
   const handleSubmitCSV = () => {
+
+
+    const resetStates = () => {
+      if (statusOfUploading.length === csvData.length) {
+        setCreateOrdersStatus(statusOfUploading)
+        setDate(new Date(date))
+        setIsLoading(false)
+        setCSVData([])
+        uploadInputButtonRef.current.value = ''
+      }
+    }
 
     let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail',]
     setIsLoading(true)
@@ -33,19 +45,29 @@ const ParseCSVOrders = () => {
       try {
         let parse = order.safeParse(orderobject)
         if (parse.success) {
-          let result: any = await createOrder(parse.data)
-          if (result.isAdded) {
-            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
-          }
-          else if (!result.isAdded) {
+          createOrder(parse.data).then((result: any) => {
+            if (result.isAdded) {
+              statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
+            }
+            else {
+              if (result.err != null || result.err != undefined) {
+                if (result.err == ErrorCode.AddressError) {
+                  statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Address not recognised by Google Maps" })
+                }
+              }
+              else {
+                statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+              }
+            }
+            if (statusOfUploading.length === csvData.length) {
+              resetStates()
+            }
+          }).catch((result: any) => {
             statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
-          }
-          else {
-            statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
-          }
-          if (statusOfUploading.length === csvData.length) {
-            setCreateOrdersStatus(statusOfUploading)
-          }
+            if (statusOfUploading.length === csvData.length) {
+              resetStates()
+            }
+          })
         }
         else {
           if (parse.error) {
@@ -60,23 +82,19 @@ const ParseCSVOrders = () => {
           }
 
           if (statusOfUploading.length === csvData.length) {
-            setCreateOrdersStatus(statusOfUploading)
+            resetStates()
           }
         }
       }
       catch (e) {
         statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
         if (statusOfUploading.length === csvData.length) {
-          setCreateOrdersStatus(statusOfUploading)
+          resetStates()
         }
       }
     }
     )
 
-    setIsLoading(false)
-    setCSVData([])
-    uploadInputButtonRef.current.value = ''
-    setDate(new Date(date))
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +108,7 @@ const ParseCSVOrders = () => {
           setCSVData(result.data);
         },
         header: true, // Set this to true if the CSV file has headers
+        skipEmptyLines: true,
       });
     }
   };

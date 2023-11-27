@@ -18,31 +18,32 @@ const Init = () => {
     const orderSearchDate = useRecoilValue(ordersSearchDate)
 
     useEffect(() => {
-        getRentingItemsAPI().then((rentingItems: any) => {
-            setRentingItems({
-                isLoading: false,
-                value: rentingItems
+        if (window.localStorage.getItem("token")) {
+            getRentingItemsAPI().then((rentingItems: any) => {
+                setRentingItems({
+                    isLoading: false,
+                    value: rentingItems
+                })
             })
-        })
-        getSideItemsAPI().then((sideItems: any) => {
-            setSideItems({
-                isLoading: false,
-                value: sideItems
+            getSideItemsAPI().then((sideItems: any) => {
+                setSideItems({
+                    isLoading: false,
+                    value: sideItems
+                })
             })
-        })
-        getDriversAPI().then((drivers: any) => {
-            setDrivers({
-                isLoading: false,
-                value: drivers
+            getDriversAPI().then((drivers: any) => {
+                setDrivers({
+                    isLoading: false,
+                    value: drivers
+                })
             })
-        })
-        getOrdersAPI(orderSearchDate).then((orders: OrderType[]) => {
-            setOrders(orders)
-        })
-        getPathsAPI(orderSearchDate).then((paths: any) => {
-            setPaths(paths)
-        })
-
+            getOrdersAPI(orderSearchDate).then((orders: OrderType[]) => {
+                setOrders(orders)
+            })
+            getPathsAPI(orderSearchDate).then((paths: any) => {
+                setPaths(paths)
+            })
+        }
     }, [orderSearchDate])
 
     return (

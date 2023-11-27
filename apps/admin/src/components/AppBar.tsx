@@ -3,6 +3,7 @@ import logo from "../assets/BounceLogo-Main.webp"
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { token } from "../store/atoms/tokenAtom";
+import { NavLink } from "react-router-dom";
 
 
 const AppBar = () => {
@@ -60,21 +61,41 @@ const AppBar = () => {
 }
 
 const NavMenu = (props: any) => {
-  const navigate = useNavigate()
+
   return <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
     <li>
-      <button onClick={() => { navigate("/"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0" aria-current="page">Map</button>
+      <NavLink to={"/"} onClick={() => { props.setVisibility(false) }}
+        className={({ isActive, isPending }) =>
+          isPending ? getStyle(false) : isActive ? getStyle(true) : getStyle(false)
+        }
+        aria-current="page">Map</NavLink>
     </li>
     <li>
-      <button onClick={() => { navigate("/orders"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Orders</button>
+      <NavLink to={"/orders"} onClick={() => { props.setVisibility(false) }}
+        className={({ isActive, isPending }) =>
+          isPending ? getStyle(false) : isActive ? getStyle(true) : getStyle(false)
+        }>Orders</NavLink>
     </li>
     {/* <li>
       <button onClick={() => { navigate("/delerables"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Deliverables</button>
     </li> */}
     <li>
-      <button onClick={() => { navigate("/drivers"); props.setVisibility(false) }} className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Manage Drivers</button>
+      <NavLink to={"/drivers"} onClick={() => { props.setVisibility(false) }} className={({ isActive, isPending }) =>
+        isPending ? getStyle(false) : isActive ? getStyle(true) : getStyle(false)
+      }>
+        Manage Drivers</NavLink>
     </li>
   </ul>
 }
+
+const getStyle = (active: boolean) => {
+  if (active) {
+    return "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0"
+  }
+  else {
+    return "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0"
+  }
+}
+
 
 export default AppBar
