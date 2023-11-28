@@ -48,7 +48,7 @@ export type UserSignInType = z.infer<typeof userSignIn>
 
 export const driver = z.object({
     companyId: z.string().optional(),
-    email: z.string().email().min(8),
+    email: z.string().email(),
     name: z.string(),
     uid: z.string().optional(),
     role: z.string().optional(),
@@ -67,6 +67,7 @@ export const order = z.object({
     orderId: z.string().optional(),
     orderNumber: z.string().optional(),
     itemsDetail: z.string().optional(),
+    cemail: z.string().email().optional(),
     rentingItems: z.array(z.object({ rentingItemId: z.string(), rentingItemTitle: z.string() })).optional(),
     address: z.string().min(1),
     cname: z.string().min(1),

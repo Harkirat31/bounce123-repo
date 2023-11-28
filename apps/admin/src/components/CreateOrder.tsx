@@ -15,6 +15,8 @@ const CreateOrder = () => {
     const [cName, setCName] = useState("")
     const [cphone, setCPhone] = useState("")
     const [address, setAddress] = useState("")
+    const [orderNumber, setOrderNumber] = useState("")
+    const [cemail, setCEmail] = useState<string>("")
     const [_searchDate, setSearchDate] = useRecoilState(ordersSearchDate)
     const [date, setDate] = useState<Date | null>(_searchDate)
     const [specialInstructions, setSpecialInstructions] = useState("")
@@ -35,7 +37,14 @@ const CreateOrder = () => {
 
         //let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), extraItems: sideItems, rentingItems, priority, specialInstructions })
         setErrorMessage([])
-        let parsedOrder = validateInput({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+        let parsedOrder: any = {}
+        if (cemail == "") {
+            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+        }
+        else {
+            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, cemail, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+        }
+
 
         if (parsedOrder == null) {
             return
@@ -43,19 +52,31 @@ const CreateOrder = () => {
         createOrder(parsedOrder).then((result: any) => {
             if (date) {
                 getOrdersAPI(date).then((orders: any) => {
+                    resetInputs()
                     setOrders(orders)
                     setSearchDate(date)
+
                 })
             }
             if (result.err != null || result.err != undefined) {
                 if (result.err == ErrorCode.WrongInputs) {
-                    setErrorMessage(["Wrong INputs"])
+                    setErrorMessage(["Wrong Inputs"])
                 }
                 if (result.err == ErrorCode.AddressError) {
                     setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
                 }
             }
         })
+    }
+
+    const resetInputs = () => {
+        setCName("")
+        setAddress("")
+        setCEmail("")
+        setCPhone("")
+        setOrderNumber("")
+        setSpecialInstructions("")
+        setItemsDetail("")
     }
 
     const validateInput = (input: {}) => {
@@ -85,6 +106,9 @@ const CreateOrder = () => {
                 }
                 if (issue.path[0] == "cphone") {
                     errors.push("Phone: " + issue.message)
+                }
+                if (issue.path[0] == "cemail") {
+                    errors.push("Email: " + issue.message)
                 }
 
                 setErrorMessage(errors)
@@ -123,9 +147,11 @@ const CreateOrder = () => {
             <UploadOrdersCSV></UploadOrdersCSV>
             <p className="text-blue-900 mt-5 " >New Order</p>
             <div className="text-xs mt-4">
-                <input onChange={(event) => setCName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input onChange={(event) => setCPhone(event.target.value)} placeholder="Phone" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input onChange={(event) => setAddress(event.target.value)} placeholder="Address" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+                <input value={orderNumber} onChange={(event) => setOrderNumber(event.target.value)} placeholder="Order Id" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+                <input value={cName} onChange={(event) => setCName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+                <input value={cphone} onChange={(event) => setCPhone(event.target.value)} placeholder="Phone" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+                <input value={cemail} onChange={(event) => setCEmail(event.target.value)} placeholder="Email" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
+                <input value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Address" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <div className="flex grid-cols-8 mb-2">
                     <DatePicker className="col-span-2  text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1) => setDate(date1)} />
                     <div className="col-span-6 flex flex-row">
@@ -224,9 +250,9 @@ const CreateOrder = () => {
                 </div> */}
 
 
-                <textarea onChange={(event) => setItemsDetail(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Item Details" rows={3} />
+                <textarea value={itemsDetail} onChange={(event) => setItemsDetail(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Item Details" rows={3} />
 
-                <textarea onChange={(event) => setSpecialInstructions(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Special Instructions" rows={3} />
+                <textarea value={specialInstructions} onChange={(event) => setSpecialInstructions(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Special Instructions" rows={3} />
 
                 {errorMessage.length > 0 &&
                     errorMessage.map((error) => {

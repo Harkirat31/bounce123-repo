@@ -145,7 +145,9 @@ export const deletePath = (path: PathOrderType) => {
       path.path.forEach(async (orderId) => {
         await db.collection("orders").doc(orderId).update({
           assignedPathId: admin.firestore.FieldValue.delete(),
-          currentStatus: "NotAssigned"
+          currentStatus: "NotAssigned",
+          driverId: admin.firestore.FieldValue.delete(),
+          driverName: admin.firestore.FieldValue.delete()
         })
       })
       resolve("Success")

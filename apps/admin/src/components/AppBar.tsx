@@ -1,6 +1,5 @@
 import { useState } from "react"
 import logo from "../assets/BounceLogo-Main.webp"
-import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { token } from "../store/atoms/tokenAtom";
 import { NavLink } from "react-router-dom";

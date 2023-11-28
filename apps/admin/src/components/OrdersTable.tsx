@@ -16,6 +16,9 @@ const OrdersTable = () => {
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3 w-10">
+                                Ord. Id
+                            </th>
+                            <th scope="col" className="px-3 py-3 w-10">
                                 Name
                             </th>
                             <th scope="col" className="px-1 py-3 w-10">
@@ -80,6 +83,9 @@ const OrderRow = ({ orderId }: any) => {
     return <>
         {order &&
             <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td className="px-3 py-4">
+                    <p>{order.orderNumber}</p>
+                </td>
                 <td className="px-3 py-4">
                     <p>{order.cname}</p>
                 </td>

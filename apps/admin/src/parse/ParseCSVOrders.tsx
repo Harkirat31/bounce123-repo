@@ -126,18 +126,18 @@ const ParseCSVOrders = () => {
           <div className='max-h-96 overflow-y-scroll'>
 
             <h3>Parsed CSV Data:</h3>
-            <table>
-              <thead>
+            <table className="text-sm text-left w-full text-gray-500 ">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                   {csvData[0] &&
-                    Object.keys(csvData[0]).map((header) => <th key={header}>{header}</th>)}
+                    Object.keys(csvData[0]).map((header) => <th scope="col" className="px-3 py-3 w-10" key={header}>{header}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {csvData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
+                  <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600" key={rowIndex}>
                     {Object.values(row).map((cell: any, cellIndex) => (
-                      <td key={cellIndex}>{cell}</td>
+                      <td className="px-3 py-4" key={cellIndex}>{cell}</td>
                     ))}
                   </tr>
                 ))}
