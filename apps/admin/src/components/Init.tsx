@@ -3,8 +3,7 @@ import { getDriversAPI, getOrdersAPI, getPathsAPI } from "../services/ApiService
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import { driversState } from "../store/atoms/driversAtom"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
-import { savedPaths, savedPathsAtom } from "../store/atoms/pathAtom"
-import { OrderType } from "types"
+import { savedPathsAtom } from "../store/atoms/pathAtom"
 
 
 const Init = () => {

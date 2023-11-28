@@ -1,27 +1,27 @@
-name: Deploy Backend Express
+# name: Deploy Backend Express
 
-on:
-  push:
-    paths:
-      - 'apps/api/**'
-      - 'packages/types/**'
-      - 'packages/db/**'
-    branches:
-      - main
+# on:
+#   push:
+#     paths:
+#       - 'apps/api/**'
+#       - 'packages/types/**'
+#       - 'packages/db/**'
+#     branches:
+#       - main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: SSH and deploy
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > keyfile
-          chmod 600 keyfile
-          mkdir -p ~/.ssh
-          cp known_hosts ~/.ssh/known_hosts
-          ssh -t -i keyfile ubuntu@54.224.99.62  "sudo bash /home/ubuntu/bounce123/apps/api/deploy.sh"
+#       - name: SSH and deploy
+#         env:
+#           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#         run: |
+#           echo "$SSH_PRIVATE_KEY" > keyfile
+#           chmod 600 keyfile
+#           mkdir -p ~/.ssh
+#           cp known_hosts ~/.ssh/known_hosts
+#           ssh -t -i keyfile ubuntu@54.224.99.62  "sudo bash /home/ubuntu/bounce123/apps/api/deploy.sh"

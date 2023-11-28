@@ -235,7 +235,7 @@ router.post("/getPaths", authenticateJwt, (req: Request, res: Response) => {
       err: ErrorCode.WrongInputs
     });
   }
-  getPathswithDate(new Date(parsedDate)).then((paths) => {
+  getPathswithDate(new Date(parsedDate), req.body.companyId).then((paths) => {
     res.json(paths);
   }).catch(() => {
     res.status(403).json({

@@ -40,3 +40,7 @@ yarn-error.log*
 
 #secrets
 serviceAccount.json
+
+config.ts
+dist
+

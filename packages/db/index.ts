@@ -219,10 +219,10 @@ export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderT
   })
 }
 
-export const getPathswithDate = (date: Date): Promise<PathOrderType[]> => {
+export const getPathswithDate = (date: Date, companyId: string): Promise<PathOrderType[]> => {
 
   return new Promise((resolve, reject) => {
-    db.collection('paths').where("dateOfPath", "==", date).get().then((result) => {
+    db.collection('paths').where("companyId", "==", companyId).where("dateOfPath", "==", date).get().then((result) => {
       let paths = result.docs.map(
         (doc) => {
           let path = doc.data() as PathOrderType
