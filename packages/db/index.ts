@@ -226,8 +226,8 @@ export const getPathswithDate = (date: Date): Promise<PathOrderType[]> => {
       let paths = result.docs.map(
         (doc) => {
           let path = doc.data() as PathOrderType
-          path.dateOfPath = doc.data().dateOfPath.toDate(),
-            path.pathId = doc.id
+          path.dateOfPath = doc.data().dateOfPath.toDate()
+          path.pathId = doc.id
           return path
         }
       )

@@ -229,18 +229,17 @@ router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
 })
 
 router.post("/getPaths", authenticateJwt, (req: Request, res: Response) => {
-  console.log(req.body)
   let parsedDate = req.body.date
   if (!parsedDate) {
     return res.status(403).json({
-      msg: "Error in Details"
+      err: ErrorCode.WrongInputs
     });
   }
   getPathswithDate(new Date(parsedDate)).then((paths) => {
     res.json(paths);
   }).catch(() => {
     res.status(403).json({
-      msg: "Error fetching from firestore"
+      err: ErrorCode.FirebaseError
     })
   })
 })

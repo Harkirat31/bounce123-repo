@@ -65,7 +65,6 @@ export const orderSetForPathCreation = selector({
             let filteredOrderIds = newValue.filter((orderId) => {
                 let resultOrderId = true
                 allPaths.forEach((path1) => {
-                    console.log("Alredy there")
                     path1.path.forEach((id) => {
                         if (id === orderId) {
                             resultOrderId = false

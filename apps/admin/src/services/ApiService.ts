@@ -1,5 +1,6 @@
 import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
 import { BASE_URL } from "../../config";
+import axios from "axios";
 
 
 export const signupAPI = (user: UserType) => {
@@ -115,31 +116,59 @@ export const getDriversAPI = () => {
     })
 }
 
-export const getOrdersAPI = (date: Date) => {
-    return new Promise((resolve: (orders: OrderType[]) => void, reject) => {
-        const urlGetOrders = `${BASE_URL}/admin/getOrders`
-        let dateNow = date.setHours(0, 0, 0, 0)
-        fetch(urlGetOrders, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
+// export const getOrdersAPI = (date: Date) => {
+//     return new Promise((resolve: (orders: OrderType[]) => void, reject) => {
+//         const urlGetOrders = `${BASE_URL}/admin/getOrders`
+//         let dateNow = date.setHours(0, 0, 0, 0)
+//         fetch(urlGetOrders, {
+//             method: "POST",
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 Authorization: `Bearer ${localStorage.getItem('token')}`
 
+//             },
+
+//             body: JSON.stringify({ date: dateNow })
+//         }).then(result => {
+//             result.json().then(
+//                 (jsonData) => {
+//                     resolve(jsonData)
+
+//                 }
+//             ).catch((error) => {
+//                 reject(error)
+//             })
+//         }).catch((error) => reject(error))
+//     })
+// }
+
+
+export const getOrdersAPI = (date: Date) => {
+    const urlGetOrders = `${BASE_URL}/admin/getOrders`;
+    const dateNow = date.setHours(0, 0, 0, 0);
+
+    return new Promise((resolve, reject) => {
+        axios.post(
+            urlGetOrders,
+            { date: dateNow },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                timeout: 6000
             },
 
-            body: JSON.stringify({ date: dateNow })
-        }).then(result => {
-            result.json().then(
-                (jsonData) => {
-                    resolve(jsonData)
-
-                }
-            ).catch((error) => {
-                reject(error)
+        )
+            .then(response => {
+                resolve(response.data);
             })
-        }).catch((error) => reject(error))
-    })
-}
+            .catch(error => {
+                reject(error);
+            });
+    });
+};
+
 
 export const getPathsAPI = (date: Date) => {
     return new Promise((resolve, reject) => {
