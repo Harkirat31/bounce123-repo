@@ -153,11 +153,11 @@ const CreatePath = ({ setShowCreatePath }: any) => {
                     <div className="flex flex-row">
                         <button
                             onClick={() => {
-                                createPath({ show: true, path: pathOrders, dateOfPath: date }).then(async (result) => {
+                                createPath({ show: true, path: pathOrders, dateOfPath: date }).then((result) => {
                                     getPathsAPI(date).then((data: any) => {
                                         setSavedPaths([...data]);
                                         reset ? setReset(false) : setReset(true)
-                                    }).catch(() => alert("Error Saving Path"))
+                                    }).catch((err) => alert("Error Fetching Paths, Please Refresh the page"))
                                     setShowCreatePath(false)
 
                                 }).catch((error) => {

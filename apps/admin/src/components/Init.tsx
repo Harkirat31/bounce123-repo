@@ -19,30 +19,19 @@ const Init = () => {
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
-            getRentingItemsAPI().then((rentingItems: any) => {
-                setRentingItems({
-                    isLoading: false,
-                    value: rentingItems
-                })
-            })
-            getSideItemsAPI().then((sideItems: any) => {
-                setSideItems({
-                    isLoading: false,
-                    value: sideItems
-                })
-            })
-            getDriversAPI().then((drivers: any) => {
-                setDrivers({
-                    isLoading: false,
-                    value: drivers
-                })
-            })
             getOrdersAPI(orderSearchDate).then((orders: OrderType[]) => {
-                setOrders(orders)
+                getPathsAPI(orderSearchDate).then((paths: any) => {
+                    getDriversAPI().then((drivers: any) => {
+                        setOrders(orders)
+                        setPaths(paths)
+                        setDrivers({
+                            isLoading: false,
+                            value: drivers
+                        })
+                    })
+                })
             })
-            getPathsAPI(orderSearchDate).then((paths: any) => {
-                setPaths(paths)
-            })
+
         }
     }, [orderSearchDate])
 
