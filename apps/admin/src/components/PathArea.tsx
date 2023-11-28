@@ -58,7 +58,7 @@ const Paths = ({ setShowCreatePath }: any) => {
                             Assign To
                         </th>
                         <th scope="col" className="px-3 py-3">
-                            <span className="sr-only">Edit</span>
+                            Action
                         </th>
                     </tr>
                 </thead>
@@ -183,6 +183,7 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     //const setDate = useSetRecoilState(ordersSearchDate)
     const updateOrder = useSetRecoilState(updateOrders)
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
+    const navigate = useNavigate()
 
     const handleShowToggle = () => {
         if (pathData!.show) {
@@ -260,30 +261,48 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
                     </div>
                 </td>
                 <td>
-                    {(pathData!.driverId == null || pathData!.driverId == undefined) ?
-                        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
-                            <option value={"Select"}>Select</option>
-                            {drivers.map((driver: DriverType) => {
-                                return <>
-                                    <option value={driver.uid}>{driver.name}</option>
-                                </>
-                            })}
-                        </select>
-                        :
-                        <p>{pathData!.driverName}</p>
+                    {drivers.length == 0 &&
+                        <>
+                            <p>No Driver Created</p>
+                            <a className="underline text-blue-900" onClick={() => navigate('/drivers')} >Create New</a>
+                        </>
                     }
+                    {
+                        drivers.length > 0 && <>
+                            {(pathData!.driverId == null || pathData!.driverId == undefined) ?
+                                <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
+                                    <option value={"Select"}>Select</option>
+
+                                    {drivers.map((driver: DriverType) => {
+                                        return <>
+                                            <option value={driver.uid}>{driver.name}</option>
+                                        </>
+                                    })}
+                                </select>
+                                :
+                                <p>{pathData!.driverName}</p>
+                            }
+                        </>
+                    }
+
                 </td>
                 <td className="px-6 py-4 flex">
-                    {(pathData!.driverId == null || pathData!.driverId == undefined) ?
-                        <>
-                            <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                Send SMS
-                            </button>
-                            <button type="button" onClick={handleDelete} className="text-2xl"><AiFillDelete></AiFillDelete></button>
-                        </>
-                        :
-                        <p className="ml-2">Sent</p>
-                    }
+                    {drivers.length == 0 && <>
+                        N/A
+                    </>}
+                    {drivers.length > 0 && <>
+                        {(pathData!.driverId == null || pathData!.driverId == undefined) ?
+                            <>
+                                <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                    Send SMS
+                                </button>
+                                <button type="button" onClick={handleDelete} className="text-2xl"><AiFillDelete></AiFillDelete></button>
+                            </>
+                            :
+                            <p className="ml-2">Sent</p>
+                        }
+                    </>}
+
                 </td>
 
             </tr>

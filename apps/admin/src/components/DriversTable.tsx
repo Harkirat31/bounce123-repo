@@ -22,9 +22,6 @@ const DrivingTable = () => {
                                 Contact
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Vehicle Capacity
-                            </th>
-                            <th scope="col" className="px-6 py-3">
                                 Vehicle Style
                             </th>
 
@@ -45,9 +42,6 @@ const DrivingTable = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         {driver.phone}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {driver.vehicleCapacity}
                                     </td>
                                     <td className="px-6 py-4">
                                         {driver.vehicleStyle}

@@ -30,14 +30,14 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
   if (!parsedUserData.success) {
     return res.status(403).json({
       isadded: false,
-      msg: "Error in User Details"
+      err: ErrorCode.WrongInputs
     });
   }
   createDriver(parsedUserData.data).then((driver) => {
     res.json({ message: 'Sign Up successfully', isAdded: true });
   }).catch((error) => {
     return res.status(403).json({
-      msg: "Error in User Details",
+      err: error,
       isAdded: false
     });
   })

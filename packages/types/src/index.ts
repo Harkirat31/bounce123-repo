@@ -49,12 +49,12 @@ export type UserSignInType = z.infer<typeof userSignIn>
 export const driver = z.object({
     companyId: z.string().optional(),
     email: z.string().email(),
-    name: z.string(),
+    name: z.string().min(1),
     uid: z.string().optional(),
     role: z.string().optional(),
-    phone: z.string(),
+    phone: z.string().min(10),
     vehicleStyle: z.string(),
-    vehicleCapacity: z.number().min(1),
+    vehicleCapacity: z.string().min(1).optional(),
     currentLocation: location.optional(),
     isAutomaticallyTracked: z.boolean().default(false)
 })

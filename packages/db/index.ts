@@ -109,9 +109,9 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
         newDriverDetail
       ).then((result) => {
         resolve(newDriverDetail)
-      }).catch(() => reject(new Error("Error creating driver in firestore db")))
+      }).catch(() => reject(ErrorCode.FirebaseError))
     }
-    ).catch((error: admin.FirebaseError) => {
+    ).catch((error) => {
       reject(error)
     })
 
