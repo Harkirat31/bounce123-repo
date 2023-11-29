@@ -97,26 +97,41 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 }
 
 
-
 export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver
     // default password is password, reset email would be sent
-    signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
-      newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
-      newDriverDetail.uid = uidNewDriver
-      db.collection('drivers').doc(uidNewDriver).set(
-        newDriverDetail
-      ).then((result) => {
-        resolve(newDriverDetail)
-      }).catch(() => reject(ErrorCode.FirebaseError))
-    }
-    ).catch((error) => {
-      reject(error)
-    })
-
+    newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+    //newDriverDetail.uid = uidNewDriver
+    db.collection('drivers').add(
+      newDriverDetail
+    ).then((result) => {
+      newDriverDetail.uid = result.id
+      resolve(newDriverDetail)
+    }).catch(() => reject(ErrorCode.FirebaseError))
   })
 }
+
+
+// export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
+//   return new Promise((resolve, reject) => {
+//     // first new sign up is created for driver
+//     // default password is password, reset email would be sent
+//     signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
+//       newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+//       newDriverDetail.uid = uidNewDriver
+//       db.collection('drivers').doc(uidNewDriver).set(
+//         newDriverDetail
+//       ).then((result) => {
+//         resolve(newDriverDetail)
+//       }).catch(() => reject(ErrorCode.FirebaseError))
+//     }
+//     ).catch((error) => {
+//       reject(error)
+//     })
+
+//   })
+// }
 
 export const createPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {

@@ -200,9 +200,11 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     const hanldeSendSMS = () => {
 
         if (dropDownItem == "Select") {
+            alert("Please Select Driver from dropdown")
             return
         }
         if (dropDownItem.driverId == "Select") {
+            alert("Please Select Driver from dropdown")
             return
         }
 
