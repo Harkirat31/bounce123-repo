@@ -1,12 +1,14 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { signupAPI } from "../services/ApiService"
 import { useSetRecoilState } from "recoil"
 import { token } from "../store/atoms/tokenAtom"
 import { useNavigate } from "react-router-dom"
 import { ErrorCode, user } from "types"
+import { Wrapper } from "@googlemaps/react-wrapper";
+import { API_KEY } from "../../config";
 
 
-const Signup = () => {
+const Signup2 = () => {
     const [email, setEmail] = useState("")
     const [name, setName] = useState("")
     const [password, setPassword] = useState("")
@@ -16,7 +18,27 @@ const Signup = () => {
     const setToken = useSetRecoilState(token)
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState<any[]>([])
+    const addressRef: any = useRef()
 
+
+    useEffect(() => {
+        const options = {
+            fields: ["formatted_address"],
+        };
+
+        const autocomplete = new window.google.maps.places.Autocomplete(addressRef.current, options);
+        autocomplete.addListener('place_changed',
+            () => {
+                if ((autocomplete.getPlace().formatted_address) || (autocomplete.getPlace().formatted_address != null) || (autocomplete.getPlace().formatted_address != undefined)) {
+                    setErrorMessage([])
+                    setAddress((autocomplete.getPlace().formatted_address)!)
+                    console.log(autocomplete.getPlace().formatted_address)
+                }
+                else {
+                    setErrorMessage(["Enter Valid Address"])
+                }
+            })
+    }, [])
 
 
     const validateInput = (input: {}) => {
@@ -146,7 +168,8 @@ const Signup = () => {
                             id="address"
                             name="address"
                             type="text"
-                            //autoComplete="email"
+                            ref={addressRef}
+                            autoComplete="address"
                             required
                             className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             onChange={(event) => setAddress(event.target.value)}
@@ -225,4 +248,12 @@ const Signup = () => {
     )
 }
 
+
+const Signup = () => {
+    return <>
+        <Wrapper apiKey={API_KEY} version="beta" libraries={["places"]}>
+            <Signup2 ></Signup2>
+        </Wrapper>
+    </>
+}
 export default Signup

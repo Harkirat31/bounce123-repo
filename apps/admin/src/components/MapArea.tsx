@@ -14,7 +14,7 @@ import { userAtom } from "../store/atoms/userAtom";
 const MapArea = ({ user }: { user: UserType }) => {
     return (
         <div>
-            <div className='map_main'>
+            <div>
                 <Wrapper apiKey={API_KEY} version="beta" libraries={["marker"]}>
                     <MapComponent user={user}></MapComponent>
                 </Wrapper>
