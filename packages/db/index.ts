@@ -78,6 +78,17 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
   })
 }
 
+
+export const updateUser = (userDetail: UserType): Promise<UserType> => {
+  return new Promise((resolve, reject) => {
+    db.collection('users').doc(userDetail.userId!).update(
+      userDetail
+    ).then((result) => {
+      resolve(userDetail)
+    }).catch(() => reject(ErrorCode.FirebaseError))
+  })
+}
+
 export const createUser = (newUserDetail: UserType): Promise<UserType> => {
   return new Promise((resolve, reject) => {
     signUp({ email: newUserDetail.email, password: newUserDetail.password! }).then((uidNewUser) => {

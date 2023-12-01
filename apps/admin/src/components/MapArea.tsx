@@ -15,7 +15,7 @@ const MapArea = ({ user }: { user: UserType }) => {
     return (
         <div>
             <div>
-                <Wrapper apiKey={API_KEY} version="beta" libraries={["marker"]}>
+                <Wrapper apiKey={API_KEY} version="beta" libraries={["marker", "places"]}>
                     <MapComponent user={user}></MapComponent>
                 </Wrapper>
             </div>

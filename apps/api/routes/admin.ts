@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
-import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath } from "db"
+import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser } from "db"
 import axios from "axios";
 
 
@@ -268,7 +268,6 @@ router.post('/deletePath', authenticateJwt, (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)
   let parsedData = pathOrder.safeParse(req.body)
   if (!parsedData.success) {
-    console.log(parsedData.error)
     return res.status(403).json({
       err: ErrorCode.WrongInputs
     });
@@ -278,6 +277,56 @@ router.post('/deletePath', authenticateJwt, (req: Request, res: Response) => {
   }).catch((error) => res.json({ err: error }))
 })
 
+
+
+router.post("/updateUser", authenticateJwt, (req: Request, res: Response) => {
+  let parsedUserData = user.safeParse(req.body)
+  if (!parsedUserData.success) {
+    return res.status(403).json({
+      err: ErrorCode.WrongInputs
+    });
+  }
+  const apiKey = process.env.MAPS_API_KEY;
+  let location = { lat: 0, lng: 0 }
+  let placeId = ""
+  fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(parsedUserData.data.address)}&key=${apiKey}`, {
+    method: "GET"
+  }).then((respMapsApi) => respMapsApi.json().then((mapsData) => {
+    const results = mapsData.results;
+    if (results.length > 0) {
+      console.log("location")
+      location = results[0].geometry.location;
+      placeId = results[0].place_id;
+    } else {
+      //return locatin not right Error
+      return res.status(403).json({
+        err: ErrorCode.AddressError
+      });
+    }
+    if (parsedUserData.success) {
+      parsedUserData.data.userId = req.body.companyId
+      parsedUserData.data.location = location
+      parsedUserData.data.placeId = placeId
+      updateUser(parsedUserData.data).then((result) => {
+        res.json({ isUpdated: true });
+      }).catch((error) => {
+        return res.status(403).json({
+          err: error
+        });
+      })
+    }
+
+  }).catch((jsonParseError) => {
+    return res.status(403).json({
+      err: ErrorCode.JsonParseError
+    });
+  })).catch((mapsAPIError) => {
+    return res.status(403).json({
+      err: ErrorCode.FirebaseError
+    });
+  })
+
+})
 
 
 

@@ -1,14 +1,27 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import logo from "../assets/BounceLogo-Main.webp"
 import { useRecoilState } from "recoil";
 import { token } from "../store/atoms/tokenAtom";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { getUserAPI } from "../services/ApiService";
+import { userAtom } from "../store/atoms/userAtom";
 
 
 const AppBar = () => {
   const [visibility, setVisibility] = useState(false)
   const [tokenValue, setTokenValue] = useRecoilState(token)
+  const [user, setUser] = useRecoilState(userAtom)
+  const navigate = useNavigate()
 
+
+  useEffect(() => {
+    if (user == null) {
+      getUserAPI().then((user: any) => {
+        setUser(user)
+      })
+    }
+
+  }, [])
 
   const logout = () => {
     setTokenValue(null)
@@ -33,6 +46,7 @@ const AppBar = () => {
               <img src={logo} className="h-14 mr-3" alt="Bounce123 Logo" />
             </a>
             <div className="flex md:order-2">
+              {user && <button type="button" onClick={() => navigate('/account')} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3">My Acocunt</button>}
               <button type="button" onClick={logout} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Logout</button>
               <button type="button" onClick={toggleMobileNavBar} className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
                 <svg className="w-5 h-5" aria-hidden="true" fill="none" viewBox="0 0 17 14">

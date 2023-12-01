@@ -18,6 +18,22 @@ export const signupAPI = (user: UserType) => {
         })
     })
 }
+export const updateUserAPI = (user: UserType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/updateUser', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(user)
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
 
 export const signInAPI = (email: string, password: string) => {
     return new Promise((resolve, reject) => {

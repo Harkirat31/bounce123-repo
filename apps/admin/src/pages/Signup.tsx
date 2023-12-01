@@ -32,7 +32,6 @@ const Signup2 = () => {
                 if ((autocomplete.getPlace().formatted_address) || (autocomplete.getPlace().formatted_address != null) || (autocomplete.getPlace().formatted_address != undefined)) {
                     setErrorMessage([])
                     setAddress((autocomplete.getPlace().formatted_address)!)
-                    console.log(autocomplete.getPlace().formatted_address)
                 }
                 else {
                     setErrorMessage(["Enter Valid Address"])

@@ -8,12 +8,14 @@ import { userAtom } from "../store/atoms/userAtom"
 
 const Map = () => {
   const [user, setUser] = useRecoilState(userAtom)
-  useEffect(() => {
-    getUserAPI().then((user: any) => {
-      setUser(user)
-    })
+  // useEffect(() => {
+  //   if (user == null) {
+  //     getUserAPI().then((user: any) => {
+  //       setUser(user)
+  //     })
+  //   }
 
-  }, [])
+  // }, [])
   return (
     <div className="xl:grid grid-cols-11 h-screen">
       <div className="xl:col-span-8 bg-slate-100">

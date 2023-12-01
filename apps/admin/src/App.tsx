@@ -11,6 +11,7 @@ import Login from './pages/Login'
 
 import { token } from './store/atoms/tokenAtom'
 import Signup from './pages/Signup'
+import MyAccount from './pages/MyAccount'
 
 
 
@@ -29,6 +30,7 @@ function App() {
           <Route path='/drivers' element={tokenKey == null ? <Login></Login> : <Driver></Driver>} />
           <Route path='/login' element={<Login></Login>} />
           <Route path='/signup' element={<Signup></Signup>} />
+          <Route path='/account' element={tokenKey == null ? <Login></Login> : <MyAccount></MyAccount>} />
         </Routes>
       </Router>
 
