@@ -38,7 +38,7 @@ router.post("/signup", (req: Request, res: Response) => {
   const password = parsedSignInInput.data.password;
   signUp({ email, password }).then((uid) => {
 
-    res.json({ message: 'Sign Up Successfully!!', uid });
+    res.json({ message: 'Sign Up Successfully', uid });
   })
 
 })
