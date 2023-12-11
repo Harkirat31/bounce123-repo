@@ -115,7 +115,7 @@ const ParseCSVOrders = () => {
 
 
   return (
-    <div className='flex flex-col  '>
+    <div className='flex flex-col'>
       <h1 className='text-center text-xl mb-8'>Upload CSV</h1>
       <DownloadButton></DownloadButton>
       <input ref={uploadInputButtonRef} className='mb-8' type="file" accept='.csv' onChange={handleFileUpload} />
