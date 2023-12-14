@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { sideItem } from "types/src/index"
-import { BASE_URL } from "../../config"
+import { BASE_URL } from "../../../config"
 
 
 const CreateSideItem = () => {

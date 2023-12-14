@@ -1,8 +1,8 @@
 import { DriverType, OrderType } from "types";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { getDrivers } from "../store/selectors/driversSelector";
-import { assignDriver } from "../services/ApiService";
+import { getDrivers } from "../../store/selectors/driversSelector";
+import { assignDriver } from "../../services/ApiService";
 
 
 

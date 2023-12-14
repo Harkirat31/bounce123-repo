@@ -1,9 +1,9 @@
 import { useState } from "react"
 
 import { ErrorCode, driver } from "types/src/index"
-import { createDriver, getDriversAPI } from "../services/ApiService"
+import { createDriver, getDriversAPI } from "../../services/ApiService"
 import { useSetRecoilState } from "recoil"
-import { driversState } from "../store/atoms/driversAtom"
+import { driversState } from "../../store/atoms/driversAtom"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")

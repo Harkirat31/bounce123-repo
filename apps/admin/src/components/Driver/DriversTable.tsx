@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil"
 import { DriverType } from "types"
-import { getDrivers } from "../store/selectors/driversSelector"
+import { getDrivers } from "../../store/selectors/driversSelector"
 
 const DrivingTable = () => {
 

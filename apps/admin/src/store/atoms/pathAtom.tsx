@@ -61,17 +61,8 @@ export const orderSetForPathCreation = selector({
     },
     set: ({ set, get }, newValue) => {
         if (!(newValue instanceof DefaultValue)) {
-            let allPaths = get(savedPaths)
             let filteredOrderIds = newValue.filter((orderId) => {
-                let resultOrderId = true
-                allPaths.forEach((path1) => {
-                    path1.path.forEach((id) => {
-                        if (id === orderId) {
-                            resultOrderId = false
-                        }
-                    })
-                })
-                return resultOrderId
+                return true ? get(getOrder(orderId))!.currentStatus == "NotAssigned" : false
             })
             set(orderSetForAtom, filteredOrderIds)
 

@@ -1,5 +1,5 @@
-import MapArea from "../components/MapArea"
-import RouteCalculatorArea from "../components/RouteCalculatorArea"
+import MapArea from "../components/Map/MapArea"
+import RouteCalculatorArea from "../components/Map/RouteCalculatorArea"
 import { useRecoilValue } from "recoil"
 import { userAtom } from "../store/atoms/userAtom"
 

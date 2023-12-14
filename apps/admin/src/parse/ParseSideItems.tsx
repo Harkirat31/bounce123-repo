@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
-import DownloadButton from '../components/DownloadButton';
+import DownloadButton from '../components/Order/DownloadButton';
 import { order } from 'types/src/index';
 import { createOrdersApi } from '../services/ApiService';
 

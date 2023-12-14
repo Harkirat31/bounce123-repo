@@ -1,5 +1,5 @@
-import CreateOrder from "../components/CreateOrder.tsx";
-import OrdersTable from "../components/OrdersTable.tsx";
+import CreateOrder from "../components/Order/CreateOrder.tsx";
+import OrdersTable from "../components/Order/OrdersTable.tsx";
 import DatePicker from "react-datepicker"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom.ts";
 import { useRecoilState, useSetRecoilState } from "recoil";

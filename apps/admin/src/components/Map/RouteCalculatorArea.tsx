@@ -1,11 +1,11 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 import DatePicker from "react-datepicker"
-import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
-import PathArea from "./PathArea"
-import DriverDropDownForOrder from "./DriverDropDownForOrder"
-import { changePriority, getOrdersAPI } from "../services/ApiService"
-import { getOrder, getOrderIds, sortOrders } from "../store/selectors/orderSelector"
+import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom"
+import PathArea from "../Path/PathArea"
+import DriverDropDownForOrder from "../Order/DriverDropDownForOrder"
+import { changePriority, getOrdersAPI } from "../../services/ApiService"
+import { getOrder, getOrderIds, sortOrders } from "../../store/selectors/orderSelector"
 import { OrderType } from "types"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";

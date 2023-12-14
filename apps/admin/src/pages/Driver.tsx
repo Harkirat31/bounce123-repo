@@ -1,6 +1,6 @@
 
-import CreateDriver from "../components/CreateDriver.tsx";
-import DriversTable from "../components/DriversTable.tsx";
+import CreateDriver from "../components/Driver/CreateDriver.tsx";
+import DriversTable from "../components/Driver/DriversTable.tsx";
 
 
 const Driver = () => {

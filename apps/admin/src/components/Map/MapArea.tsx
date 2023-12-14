@@ -1,12 +1,12 @@
 import { Wrapper } from "@googlemaps/react-wrapper";
-import { API_KEY } from "../../config";
+import { API_KEY } from "../../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { getOrder, getOrderIds, getOrders } from "../store/selectors/orderSelector";
+import { getOrder, getOrderIds, getOrders } from "../../store/selectors/orderSelector";
 import { OrderType, PathOrderType, UserType } from "types";
-import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, darkColors } from "../utils/constants";
-import { createPathAtom, getSavedPathById, savedPaths } from "../store/atoms/pathAtom";
-import { userAtom } from "../store/atoms/userAtom";
+import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, darkColors } from "../../utils/constants";
+import { createPathAtom, getSavedPathById, savedPaths } from "../../store/atoms/pathAtom";
+import { userAtom } from "../../store/atoms/userAtom";
 
 
 

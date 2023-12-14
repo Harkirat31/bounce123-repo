@@ -1,8 +1,8 @@
 import { useRecoilState, useRecoilValue } from "recoil"
-import { getOrder, getOrderIds } from "../store/selectors/orderSelector"
-import { ordersSearchDate, rowsToBeDeleted } from "../store/atoms/orderAtom"
+import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
+import { ordersSearchDate, rowsToBeDeleted } from "../../store/atoms/orderAtom"
 import { OrderType } from "types"
-import { deleteOrders } from "../services/ApiService"
+import { deleteOrders } from "../../services/ApiService"
 
 const OrdersTable = () => {
 

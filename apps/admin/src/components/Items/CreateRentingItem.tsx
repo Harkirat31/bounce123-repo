@@ -1,8 +1,8 @@
 import { useRef, useState } from "react"
 import { useRecoilValue } from "recoil"
-import { getSideItems } from "../store/selectors/sideItemsSelector"
+import { getSideItems } from "../../store/selectors/sideItemsSelector"
 import { SideItemType, rentingItem } from "types/src/index"
-import { BASE_URL } from "../../config"
+import { BASE_URL } from "../../../config"
 import { TiDelete } from "react-icons/ti"
 import UploadItemsCSV from "./UploadItemsCSV"
 

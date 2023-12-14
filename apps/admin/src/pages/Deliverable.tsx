@@ -1,9 +1,9 @@
 import { useState } from "react"
 
-import RentingItemsTable from "../components/RentingItemsTable.tsx";
-import CreateRentingItem from "../components/CreateRentingItem.tsx";
-import CreateSideItem from "../components/CreateSideItem.tsx";
-import SideItemsTable from "../components/SideItemsTable.tsx";
+import RentingItemsTable from "../components/Items/RentingItemsTable.tsx";
+import CreateRentingItem from "../components/Items/CreateRentingItem.tsx";
+import CreateSideItem from "../components/Items/CreateSideItem.tsx";
+import SideItemsTable from "../components/Items/SideItemsTable.tsx";
 
 
 

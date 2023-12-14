@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import Papa from 'papaparse';
 import { rentingItem } from 'types/src/index';
 import { createMainItemsApi } from '../services/ApiService';
-import DownloadButtonMainItems from '../components/DownloadButtonMainItems';
+import DownloadButtonMainItems from '../components/Items/DownloadButtonMainItems';
 
 const ParseMainItems = () => {
     const [csvData, setCSVData] = useState<any[]>([]);

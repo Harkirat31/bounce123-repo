@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ParseMainItems from "../parse/ParseMainItems";
+import ParseMainItems from "../../parse/ParseMainItems";
 
 
 const UploadItemsCSV = () => {
