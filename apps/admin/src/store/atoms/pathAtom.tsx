@@ -3,9 +3,9 @@ import { OrderType, PathOrderType } from "types";
 import { getOrder } from "../selectors/orderSelector";
 
 
-export const createPathAtom = atom<(string)[]>({
+export const createPathAtom = atom<{ path: string[], pathId: string | undefined }>({
     key: "createPathAtom",
-    default: []
+    default: { path: [], pathId: undefined }
 })
 
 export const savedPathsAtom = atom<PathOrderType[]>({

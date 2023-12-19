@@ -115,9 +115,9 @@ const CreatePolygonWhileCreatingPath = ({ map, user }: { map: any, user: UserTyp
             strokeWeight: 2,
             icons: [{ icon: lineSymbol, offset: "100%", }]
         });
-        if (createPathOrders.length > 0) {
+        if (createPathOrders.path.length > 0) {
             let cordinates: any = [user?.location] //initialize the array of path with starting from comapany address
-            createPathOrders.forEach((orderId) => {
+            createPathOrders.path.forEach((orderId) => {
                 let order = orders.find((order) => order.orderId === orderId)
                 cordinates.push(order?.location)
             })
