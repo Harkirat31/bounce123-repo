@@ -12,7 +12,6 @@ import { userAtom } from "../../store/atoms/userAtom";
 
 /* Left Side of of the map page . Google maps API is integrated in this component to render orders and path data 
    Used React wrapper for google maps API.
-   
 */
 const MapArea = ({ user }: { user: UserType }) => {
     return (
