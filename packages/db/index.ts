@@ -144,6 +144,28 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
 //   })
 // }
 
+
+export const updatePath = (newPath: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await db.collection("paths").doc(newPath.pathId!).update(newPath)
+      newPath.path.forEach(async (orderId) => {
+        await db.collection("orders").doc(orderId).update({
+          assignedPathId: newPath.pathId!,
+          currentStatus: "PathAssigned"
+        })
+      })
+      resolve("Success")
+
+    }
+    catch {
+      reject("Error")
+    }
+
+  })
+}
+
+
 export const createPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {

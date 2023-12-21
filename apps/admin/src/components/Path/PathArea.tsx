@@ -1,32 +1,40 @@
 import { ChangeEvent, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { DriverType, PathOrderType } from "types"
-import { savedPaths, updateOrders } from "../../store/atoms/pathAtom"
+import { createPathAtom, savedPaths, updateOrders } from "../../store/atoms/pathAtom"
 import { assignPathAPI, deletePath } from "../../services/ApiService"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
+import { MdEdit } from "react-icons/md";
+import { RiMailSendFill } from "react-icons/ri";
 import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 
 const PathArea = () => {
-    const [showCreatePath, setShowCreatePath] = useState(false)
+    const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
     return (
         <div className="border-t-2 border-grey-600">
             <div className="flex justify-center">
-                <button onClick={() => setShowCreatePath(false)} type="button" className={`m-2 text-sm ${showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
-                <button onClick={() => setShowCreatePath(true)} type="button" className={`m-2 text-sm ${!showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
+                <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
+                <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
             </div>
-            {showCreatePath && <CreatePath setShowCreatePath={setShowCreatePath}></CreatePath>}
-            {!showCreatePath && <Paths setShowCreatePath={setShowCreatePath}></Paths>}
+            {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>}
+            {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
         </div>
     )
 }
 
 export default PathArea
 
-const Paths = ({ setShowCreatePath }: any) => {
+const Paths = ({ showCreatePath, setShowCreatePath }: {
+    showCreatePath: { flag: boolean, toBeEditedPath: any },
+    setShowCreatePath: React.Dispatch<React.SetStateAction<{
+        flag: boolean;
+        toBeEditedPath: any;
+    }>>
+}) => {
     const paths = useRecoilValue(savedPaths)
     const orderIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
@@ -42,22 +50,22 @@ const Paths = ({ setShowCreatePath }: any) => {
         </div>}
         {orderIds.length !== 0 && paths.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
             <p>No Path is created!!</p>
-            <a className="underline text-blue-900" onClick={() => setShowCreatePath(true)} >Create a Path</a>
+            <a className="underline text-blue-900" onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} >Create a Path</a>
         </div>}
         {orderIds.length > 0 && paths.length > 0 &&
             <table className="text-sm  text-center text-gray-500 ">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
-                        <th scope="col" className="px-3 py-3 ">
+                        <th scope="col" className="px-1 py-1 ">
                             Show
                         </th>
-                        <th scope="col" className="text-left px-1 py-3">
+                        <th scope="col" className="px-1 py-3">
                             Path
                         </th>
-                        <th scope="col" className="px-1 py-3">
+                        <th scope="col" className="py-3">
                             Assign To
                         </th>
-                        <th scope="col" className="px-3 py-3">
+                        <th scope="col" className="px-1 py-3">
                             Action
                         </th>
                     </tr>
@@ -65,7 +73,7 @@ const Paths = ({ setShowCreatePath }: any) => {
                 <tbody>
                     {paths.length > 0 &&
                         paths.map((pathElement) => {
-                            return <PathRow path={pathElement} callbackToCalculateSrNo={getSrNoFororderId}></PathRow>
+                            return <PathRow path={pathElement} callbackToCalculateSrNo={getSrNoFororderId} edit={setShowCreatePath} ></PathRow>
                         })
                     }
                 </tbody>
@@ -78,7 +86,12 @@ const Paths = ({ setShowCreatePath }: any) => {
 
 
 
-const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number }) => {
+const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
+    path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number, edit: React.Dispatch<React.SetStateAction<{
+        flag: boolean;
+        toBeEditedPath: any;
+    }>>
+}) => {
     const [pathData, setPathData] = useRecoilState(getPathById(path.pathId!))
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
@@ -86,6 +99,8 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
     const updateOrder = useSetRecoilState(updateOrders)
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
     const navigate = useNavigate()
+    const setCreatePath = useSetRecoilState(createPathAtom)
+
 
     const handleShowToggle = () => {
         if (pathData!.show) {
@@ -149,19 +164,25 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
         )
     }
 
+    const handleEdit = () => {
+        if (pathData != null) {
+            setPathData({ ...pathData, show: false })
+            setCreatePath({ path: pathData!.path, pathId: pathData!.pathId! })
+            edit({ flag: true, toBeEditedPath: [pathData, setPathData] })
+
+        }
+
+    }
     if (pathData) {
         return <>
             <tr className="border-b-2 border-gray-100">
                 <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
                 <td>
-                    <div className="grid grid-cols-5 justify-between">
-
+                    <div className="grid grid-cols-4">
                         {pathData!.path.map((node) => {
-                            return <div>
-                                <p className="text-center w-5 h-5 mx-2 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
-                            </div>
-                        })}
+                            return <p className="text-center w-5 h-5 mx-2 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{callbackToCalculateSrNo(node)}</p>
 
+                        })}
                     </div>
                 </td>
                 <td>
@@ -197,10 +218,15 @@ const PathRow = ({ path, callbackToCalculateSrNo }: { path: PathOrderType, callb
                     {drivers.length > 0 && <>
                         {(pathData!.driverId == null || pathData!.driverId == undefined) ?
                             <>
-                                <button onClick={hanldeSendSMS} className="text-xs font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                    Send SMS
+
+                                <button onClick={hanldeSendSMS} className="text-s">
+                                    <div className="flex flex-row items-center border-gray-300 border-r-2 p-1 ">
+                                        Send
+                                        <RiMailSendFill />
+                                    </div>
                                 </button>
-                                <button type="button" onClick={handleDelete} className="text-2xl"><AiFillDelete></AiFillDelete></button>
+                                <button type="button" onClick={handleDelete} className="text-2xl border-gray-300 border-r-2 p-1"><AiFillDelete></AiFillDelete></button>
+                                <button type="button" onClick={handleEdit} className="text-2xl border-gray-300 border-r-2 p-1"><MdEdit /></button>
                             </>
                             :
                             <p className="ml-2">Sent</p>

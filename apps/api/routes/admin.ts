@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath } from "db"
 import axios from "axios";
 
 
@@ -53,9 +53,17 @@ router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in  Details"
     });
   }
-  createPath(parsedData.data).then((result) => {
-    res.json({ isAdded: true });
-  }).catch((error) => res.json({ isAdded: false }))
+  if (parsedData.data.pathId) {
+    updatePath(parsedData.data).then((result) => {
+      res.json({ isAdded: true });
+    }).catch((error) => res.json({ isAdded: false }))
+  }
+  else {
+    createPath(parsedData.data).then((result) => {
+      res.json({ isAdded: true });
+    }).catch((error) => res.json({ isAdded: false }))
+  }
+
 })
 
 router.post("/createOrder", authenticateJwt, async (req: Request, res: Response) => {
