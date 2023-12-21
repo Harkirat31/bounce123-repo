@@ -15,17 +15,28 @@ export const getPathById = selectorFamily({
 
     set: (id: string) => ({ get, set }, newValue) => {
         let pathState = get(getSavedPathById(id))
-        if (!(newValue instanceof DefaultValue) && pathState?.show != newValue?.show) {
-            set(getSavedPathById(id), newValue);
-        }
-        else {
-            set(getSavedPathById(id), newValue);
-            if (!(newValue instanceof DefaultValue)) {
-                newValue?.path.forEach((pathNode) => {
-                    let order = get(getOrder(pathNode))
-                    set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "SentToDriver" } as OrderType)
-                })
-            }
+
+        set(getSavedPathById(id), newValue);
+
+        if (!(newValue instanceof DefaultValue)) {
+            let oldPathSet = new Set(pathState?.path)
+            let newPathSet = new Set(newValue?.path)
+            newValue?.path.forEach((pathNode) => {
+                let order = get(getOrder(pathNode))
+                set(getOrder(pathNode), { ...order, driverId: newValue.driverId, driverName: newValue.driverName, currentStatus: "SentToDriver" } as OrderType)
+            })
+            //set difference
+            newPathSet.forEach((value) => {
+                if (oldPathSet.has(value)) {
+                    oldPathSet.delete(value)
+                }
+            })
+            //change status to not assigned
+            oldPathSet.forEach((pathNode) => {
+                let order = get(getOrder(pathNode))
+                set(getOrder(pathNode), { ...order, currentStatus: "NotAssigned" } as OrderType)
+            })
+
         }
 
     },

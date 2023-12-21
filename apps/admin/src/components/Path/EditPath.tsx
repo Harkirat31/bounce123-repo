@@ -8,13 +8,7 @@ import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
 
 
-const CreatePath = ({ showCreatePath, setShowCreatePath }: {
-    showCreatePath: { flag: boolean, toBeEditedPath: any },
-    setShowCreatePath: React.Dispatch<React.SetStateAction<{
-        flag: boolean;
-        toBeEditedPath: any;
-    }>>
-}) => {
+const EditPath = ({ setShowCreatePath }: any) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
     const orderIds = useRecoilValue(getOrderIds)
@@ -52,18 +46,12 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                 setSavedPaths([...data]);
                 reset ? setReset(false) : setReset(true)
                 setSaving(false)
-                if (showCreatePath.toBeEditedPath) {
-                    let pathData = { ...showCreatePath.toBeEditedPath[0], show: true, path: pathOrders.path }
-                    showCreatePath.toBeEditedPath[1](pathData)
-                }
-                setShowCreatePath({ toBeEditedPath: null, flag: false })
             }).catch(
                 (err) => {
                     alert("Error Fetching Paths, Please Refresh the page")
                     setSaving(false)
-                    setShowCreatePath({ toBeEditedPath: null, flag: false })
                 })
-
+            setShowCreatePath(false)
 
         }).catch((error) => {
             alert(error)
@@ -221,4 +209,4 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     </div>
 }
 
-export default CreatePath
+export default EditPath

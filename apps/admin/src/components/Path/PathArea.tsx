@@ -13,22 +13,28 @@ import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 
 const PathArea = () => {
-    const [showCreatePath, setShowCreatePath] = useState(false)
+    const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
     return (
         <div className="border-t-2 border-grey-600">
             <div className="flex justify-center">
-                <button onClick={() => setShowCreatePath(false)} type="button" className={`m-2 text-sm ${showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
-                <button onClick={() => setShowCreatePath(true)} type="button" className={`m-2 text-sm ${!showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
+                <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
+                <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
             </div>
-            {showCreatePath && <CreatePath setShowCreatePath={setShowCreatePath}></CreatePath>}
-            {!showCreatePath && <Paths setShowCreatePath={setShowCreatePath}></Paths>}
+            {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>}
+            {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
         </div>
     )
 }
 
 export default PathArea
 
-const Paths = ({ setShowCreatePath }: { setShowCreatePath: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const Paths = ({ showCreatePath, setShowCreatePath }: {
+    showCreatePath: { flag: boolean, toBeEditedPath: any },
+    setShowCreatePath: React.Dispatch<React.SetStateAction<{
+        flag: boolean;
+        toBeEditedPath: any;
+    }>>
+}) => {
     const paths = useRecoilValue(savedPaths)
     const orderIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
@@ -44,7 +50,7 @@ const Paths = ({ setShowCreatePath }: { setShowCreatePath: React.Dispatch<React.
         </div>}
         {orderIds.length !== 0 && paths.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
             <p>No Path is created!!</p>
-            <a className="underline text-blue-900" onClick={() => setShowCreatePath(true)} >Create a Path</a>
+            <a className="underline text-blue-900" onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} >Create a Path</a>
         </div>}
         {orderIds.length > 0 && paths.length > 0 &&
             <table className="text-sm  text-center text-gray-500 ">
@@ -80,7 +86,12 @@ const Paths = ({ setShowCreatePath }: { setShowCreatePath: React.Dispatch<React.
 
 
 
-const PathRow = ({ path, callbackToCalculateSrNo, edit }: { path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number, edit: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
+    path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number, edit: React.Dispatch<React.SetStateAction<{
+        flag: boolean;
+        toBeEditedPath: any;
+    }>>
+}) => {
     const [pathData, setPathData] = useRecoilState(getPathById(path.pathId!))
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
@@ -89,6 +100,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: { path: PathOrderType,
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
     const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
+
 
     const handleShowToggle = () => {
         if (pathData!.show) {
@@ -153,8 +165,13 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: { path: PathOrderType,
     }
 
     const handleEdit = () => {
-        setCreatePath({ path: pathData!.path, pathId: pathData!.pathId! })
-        edit(true)
+        if (pathData != null) {
+            setPathData({ ...pathData, show: false })
+            setCreatePath({ path: pathData!.path, pathId: pathData!.pathId! })
+            edit({ flag: true, toBeEditedPath: [pathData, setPathData] })
+
+        }
+
     }
     if (pathData) {
         return <>

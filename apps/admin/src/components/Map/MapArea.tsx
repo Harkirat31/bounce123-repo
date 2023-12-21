@@ -79,9 +79,9 @@ const CreateSinglePath = ({ map, pathElement, orders, index, user }: { map: any,
         let flightPath = new window.google.maps.Polyline({
             geodesic: true,
             strokeColor: darkColors[index % darkColors.length],
-            strokeOpacity: 1.0,
+            strokeOpacity: 1,
             strokeWeight: 2,
-            icons: [{ icon: lineSymbol, offset: "100%", repeat: "20%" }]
+            icons: [{ icon: lineSymbol, offset: "100%", repeat: "15%" }]
         });
         if (pathData.path.length > 0) {
             let cordinates: any = [user?.location] //
@@ -112,8 +112,8 @@ const CreatePolygonWhileCreatingPath = ({ map, user }: { map: any, user: UserTyp
             geodesic: true,
             strokeColor: "#FF0000",
             strokeOpacity: 1.0,
-            strokeWeight: 2,
-            icons: [{ icon: lineSymbol, offset: "100%", }]
+            strokeWeight: 3,
+            icons: [{ icon: lineSymbol, offset: "100%", repeat: "15%" }]
         });
         if (createPathOrders.path.length > 0) {
             let cordinates: any = [user?.location] //initialize the array of path with starting from comapany address
