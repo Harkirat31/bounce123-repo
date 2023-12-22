@@ -148,6 +148,25 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
 export const updatePath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let oldPath = (await db.collection("paths").doc(newPath.pathId!).get()).data() as PathOrderType
+      let oldPathSet = new Set(oldPath.path)
+      let newPathSet = new Set(newPath.path)
+      //delete nodes which are not in new path
+
+      //set difference
+      newPathSet.forEach((value) => {
+        if (oldPathSet.has(value)) {
+          oldPathSet.delete(value)
+        }
+      })
+      //change status to not assigned
+      oldPathSet.forEach(async (pathNode) => {
+        await db.collection("orders").doc(pathNode).update({
+          assignedPathId: "",
+          currentStatus: "NotAssigned"
+        })
+      })
+
       let result = await db.collection("paths").doc(newPath.pathId!).update(newPath)
       newPath.path.forEach(async (orderId) => {
         await db.collection("orders").doc(orderId).update({

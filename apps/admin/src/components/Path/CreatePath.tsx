@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { createPathAtom, orderSetForPathCreation, savedPaths } from "../../store/atoms/pathAtom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPaths } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
 import { ordersSearchDate } from "../../store/atoms/orderAtom";
 import { createPath, getPathsAPI } from "../../services/ApiService";
 import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
+import { AiFillDelete } from 'react-icons/ai';
 
 
 const CreatePath = ({ showCreatePath, setShowCreatePath }: {
@@ -28,10 +29,13 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const user = useRecoilValue(userAtom)
     const [isEnd, setEnd] = useState(false)
     const isInitialRender = useRef(true);
+    const changeCreatePathOrderSet = useSetRecoilState(orderSetForAtom)
+
 
 
     useEffect(() => {
         setorderSetForPath([...orderIds] as string[])
+
         return () => {
             if (isInitialRender.current) {
                 isInitialRender.current = false
@@ -79,7 +83,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
             setSelectDropdownError(false)
         }
         setPathOrders({ path: [...pathOrders.path, orderIds[dropDownValue - 1]!], pathId: pathOrders.pathId })
-        let newSet = orderSetForPath.filter((orderId) => orderId != orderIds[dropDownValue - 1]!)
+        let newSet = orderSetForPath.filter((orderId: any) => orderId != orderIds[dropDownValue - 1]!)
         console.log(newSet)
         setorderSetForPath([...newSet])
         if (newSet.length > 0) {
@@ -122,6 +126,23 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
 
     }
 
+    const handleDeleteNode = (ev: any) => {
+        try {
+            let index = parseInt(ev.currentTarget.getAttribute('data-id-node'))
+            let updatedPath = [...pathOrders.path]
+            let deleteNodeValue = updatedPath[index]
+            updatedPath.splice(index, 1)
+            let updatedPathOrders = { path: updatedPath, pathId: pathOrders.pathId }
+            setPathOrders(updatedPathOrders)
+            //main atom of creating path has been updated
+            changeCreatePathOrderSet([deleteNodeValue, ...orderSetForPath])
+        }
+        catch (error) {
+
+        }
+
+    }
+
     return <div className="text-sm flex flex-col items-center">
         <div className="mx-2 mt-2 flex flex-col justify-center items-center">
             {orderSetForPath.length == 0 &&
@@ -150,6 +171,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                                     <p data-id={`${index}`} className="text-center px-2">
                                         {`Sr. No. ${getSrNoFororderId(pathnode)}`}
                                     </p>
+                                    <button data-id={`${index}`} data-id-node={`${index}`} onClick={handleDeleteNode} className="relative text-red-500"> <AiFillDelete /></button>
                                 </div>
                                 {<FaLongArrowAltDown />}
                             </div>
@@ -168,7 +190,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                             <p>{`Add order at position ${pathOrders.path.length + 1} :`}</p>
                             <select ref={selectRef} value={dropDownValue} onChange={(event) => { setDropDownValue(parseInt(event.target.value)) }} className={`ml-2   ${selectdropdoenError ? "border-red-500 border-4" : "border-blue-900 border-2"}`} >
                                 <option value="Select" >Select</option>
-                                {orderSetForPath.map((orderId) => {
+                                {orderSetForPath.map((orderId: any) => {
                                     return <>
                                         <option value={getSrNoFororderId(orderId!)}>{`Sr.No ${getSrNoFororderId(orderId!)}`}</option>
                                     </>
