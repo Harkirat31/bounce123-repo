@@ -85,7 +85,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
         setPathOrders({ path: [...pathOrders.path, orderIds[dropDownValue - 1]!], pathId: pathOrders.pathId })
         let newSet = orderSetForPath.filter((orderId: any) => orderId != orderIds[dropDownValue - 1]!)
         console.log(newSet)
-        setorderSetForPath([...newSet])
+        changeCreatePathOrderSet([...newSet])
         if (newSet.length > 0) {
             setDropDownValue("Select")
         }
@@ -95,7 +95,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const onDropHandler = (ev: any) => {
         const data = ev.dataTransfer.getData("application/my-app");
         try {
-            let startPosition = parseInt((ev.target).getAttribute('data-id'))
+            let startPosition = parseInt((ev.currentTarget).getAttribute('data-id'))
             let removedElementPosition = parseInt(data)
             if (startPosition == removedElementPosition) {
                 ev.preventDefault();
