@@ -33,7 +33,7 @@ export const getPathById = selectorFamily({
                     let order = get(getOrder(node))
                     set(getOrder(node), { ...order, currentStatus: "PathAssigned", assignedPathId: newValue.pathId } as OrderType)
                 })
-                //set difference to find deleted nodes and next updating their respective atom .
+                //set difference to find deleted nodes and next updating their respective atom
                 newPathSet.forEach((value) => {
                     if (oldPathSet.has(value)) {
                         oldPathSet.delete(value)
