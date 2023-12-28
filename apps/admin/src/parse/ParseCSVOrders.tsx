@@ -5,6 +5,7 @@ import { ErrorCode, order } from 'types/src/index';
 import { createOrder, } from '../services/ApiService';
 import { useRecoilState } from 'recoil';
 import { ordersSearchDate } from '../store/atoms/orderAtom';
+import { convertToUTC } from '../utils/UTCdate';
 
 
 const ParseCSVOrders = () => {
@@ -37,7 +38,8 @@ const ParseCSVOrders = () => {
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
-      orderobject['deliveryDate'] = new Date(new Date(orderobject[orderAttributes[5]]).setHours(0, 0, 0, 0))
+      let newDate = convertToUTC(new Date(orderobject[orderAttributes[5]]))
+      orderobject['deliveryDate'] = newDate
 
       if (!orderobject['priority']) {
         orderobject['priority'] = "Medium"

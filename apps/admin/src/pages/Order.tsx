@@ -1,23 +1,16 @@
 import CreateOrder from "../components/Order/CreateOrder.tsx";
 import OrdersTable from "../components/Order/OrdersTable.tsx";
 import DatePicker from "react-datepicker"
-import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom.ts";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { getOrdersAPI } from "../services/ApiService.ts";
+import { ordersSearchDate } from "../store/atoms/orderAtom.ts";
+import { useRecoilState } from "recoil";
+
 
 
 const Order = () => {
   const [date, setDate] = useRecoilState(ordersSearchDate)
-  const setOrders = useSetRecoilState(ordersAtom)
 
   const OnDateChangeHandler = (date: Date) => {
-
-    getOrdersAPI(date).then((result: any) => {
-      setDate(new Date(date.setHours(0, 0, 0, 0)))
-      setOrders(result)
-    }).catch((_error) => {
-      alert("Unable to fetch the orders of this date")
-    })
+    setDate(date)
   }
 
 

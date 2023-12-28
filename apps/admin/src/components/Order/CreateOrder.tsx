@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
 //import { getSideItems } from "../store/selectors/sideItemsSelector"
 import { ErrorCode, order } from "types/src/index"
@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import UploadOrdersCSV from "./UploadOrdersCSV"
 import { createOrder, getOrdersAPI } from "../../services/ApiService"
 import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom"
+import { convertToUTC } from "../../utils/UTCdate";
 
 
 const CreateOrder = () => {
@@ -21,28 +22,24 @@ const CreateOrder = () => {
     const [date, setDate] = useState<Date | null>(_searchDate)
     const [specialInstructions, setSpecialInstructions] = useState("")
     const [itemsDetail, setItemsDetail] = useState("")
-    //const [sideItems, setSideItems] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }[]>([])
-    // const sideItemsFromDb: any = useRecoilValue(getSideItems)
-    // const [dropDownItem, setDropDownItem] = useState<{ sideItemId: string, sideItemTitle: string, count: number, }>({ sideItemId: '', sideItemTitle: 'Select', count: 1 })
-    // const rentingItemsFromDB: any = useRecoilValue(getRentingItems)
-    // const [dropDownRentingItem, setDropDownRentingItem] = useState<{ rentingItemId: string, rentingItemTitle: string }>({ rentingItemId: '', rentingItemTitle: 'Select' })
-    // const selectRef = useRef<HTMLSelectElement | null>(null);
-    // const selectRefExtras = useRef<HTMLSelectElement | null>(null);
-    //const [rentingItems, setRentingItems] = useState<{ rentingItemId: string, rentingItemTitle: string, }[]>([])
     const [priority, setPriority] = useState("Medium")
-    const setOrders = useSetRecoilState(ordersAtom)
     const [errorMessage, setErrorMessage] = useState<any[]>([])
+
 
     function saveOrder() {
 
-        //let parsedOrder = order.safeParse({ cname: cName, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), extraItems: sideItems, rentingItems, priority, specialInstructions })
         setErrorMessage([])
         let parsedOrder: any = {}
+        if (date == null) {
+            return
+        }
+        let newDate = convertToUTC(date)
+
         if (cemail == "") {
-            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, address, deliveryDate: newDate, priority, specialInstructions, itemsDetail })
         }
         else {
-            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, cemail, address, deliveryDate: new Date(date!.setHours(0, 0, 0, 0)), priority, specialInstructions, itemsDetail })
+            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, cemail, address, deliveryDate: newDate, priority, specialInstructions, itemsDetail })
         }
 
 
@@ -51,12 +48,8 @@ const CreateOrder = () => {
         }
         createOrder(parsedOrder).then((result: any) => {
             if (date) {
-                getOrdersAPI(date).then((orders: any) => {
-                    resetInputs()
-                    setOrders(orders)
-                    setSearchDate(date)
-
-                })
+                resetInputs()
+                setSearchDate(new Date(date)) // setting date will triger useEffect in Init component
             }
             if (result.err != null || result.err != undefined) {
                 if (result.err == ErrorCode.WrongInputs) {

@@ -7,6 +7,7 @@ import { createPath, getPathsAPI } from "../../services/ApiService";
 import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { AiFillDelete } from 'react-icons/ai';
+import { convertToUTC } from "../../utils/UTCdate";
 
 
 const CreatePath = ({ showCreatePath, setShowCreatePath }: {
@@ -50,9 +51,10 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     }
 
     const onSaveClick = () => {
+        let newDate = convertToUTC(date)
         setSaving(true)
-        createPath({ show: true, path: pathOrders.path, dateOfPath: date, pathId: pathOrders.pathId }).then((result) => {
-            getPathsAPI(date).then((data: any) => {
+        createPath({ show: true, path: pathOrders.path, dateOfPath: newDate, pathId: pathOrders.pathId }).then((result) => {
+            getPathsAPI(newDate).then((data: any) => {
                 setSavedPaths([...data]);
                 reset ? setReset(false) : setReset(true)
                 setSaving(false)
@@ -84,7 +86,6 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
         }
         setPathOrders({ path: [...pathOrders.path, orderIds[dropDownValue - 1]!], pathId: pathOrders.pathId })
         let newSet = orderSetForPath.filter((orderId: any) => orderId != orderIds[dropDownValue - 1]!)
-        console.log(newSet)
         changeCreatePathOrderSet([...newSet])
         if (newSet.length > 0) {
             setDropDownValue("Select")

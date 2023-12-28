@@ -80,6 +80,11 @@ const OrdersTable = () => {
 
 const OrderRow = ({ orderId }: any) => {
     const order = useRecoilValue(getOrder(orderId))
+    let date = new Date()
+    if (order) {
+        date = new Date(order.deliveryDate)
+        date.setDate(date.getUTCDate())
+    }
     return <>
         {order &&
             <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
@@ -96,7 +101,7 @@ const OrderRow = ({ orderId }: any) => {
                     {order.cphone}
                 </td>
                 <td className="px-1 py-4">
-                    {new Date(order.deliveryDate).toDateString()}
+                    {date.toDateString()}
                 </td>
                 <td className="px-1 py-4">
                     {order.priority}
@@ -148,7 +153,7 @@ const DeleteRows = () => {
     const onDeleteHandle = () => {
         console.log(rows)
         deleteOrders([...rows]).then(() => {
-            setSearchDate(new Date(searchDate.setHours(0, 0, 0, 0)))
+            setSearchDate(new Date(searchDate))
         })
         setRows(new Set())
     }

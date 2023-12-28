@@ -4,6 +4,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil"
 import { driversState } from "../store/atoms/driversAtom"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { savedPathsAtom } from "../store/atoms/pathAtom"
+import { convertToUTC } from "../utils/UTCdate"
 
 
 const Init = () => {
@@ -14,8 +15,9 @@ const Init = () => {
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
-            getOrdersAPI(orderSearchDate).then((orders: any) => {
-                getPathsAPI(orderSearchDate).then((paths: any) => {
+            let date = convertToUTC(orderSearchDate)
+            getOrdersAPI(date).then((orders: any) => {
+                getPathsAPI(date).then((paths: any) => {
                     getDriversAPI().then((drivers: any) => {
                         setOrders(orders)
                         setPaths(paths)

@@ -13,18 +13,12 @@ import { BiSortAlt2 } from "react-icons/bi";
 
 
 const RouteCalculatorArea = () => {
-    const setOrders = useSetRecoilState(ordersAtom)
     const [date, setDate] = useRecoilState(ordersSearchDate)
     const ordersIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
     const setSortOrders = useSetRecoilState(sortOrders(""))
     const OnDateChangeHandler = (date1: Date) => {
-        getOrdersAPI(date1).then((result: any) => {
-            setDate(date1)
-            setOrders(result)
-        }).catch((error) => {
-            alert("Unable to fetch the orders of this date")
-        })
+        setDate(date1) //setting date will triger useEffect in Init component
     }
 
     const sortHandle = () => {
