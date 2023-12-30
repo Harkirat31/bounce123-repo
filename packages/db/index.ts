@@ -5,6 +5,7 @@ import { homedir } from 'os'
 
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode } from "types"
 import { API_KEY_SIGNIN } from './config';
+import { error } from 'console';
 // Initialize Firebase Admin SDK
 
 const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
@@ -52,10 +53,12 @@ export const signIn = async (email: string, password: string) => {
 }
 
 
-export const getDriver = async (uid: string): Promise<DriverType> => {
+export const getDriver = async (uid: string, companyId: string): Promise<DriverType> => {
   return new Promise((resolve, reject) => {
-    db.collection("drivers").doc(uid).get().then((documentSnapshot) => {
-      resolve(Object(documentSnapshot.data()))
+    db.collection("driver_company").where("uid", "==", uid).where("companyId", "==", companyId).get().then((documentSnapshot) => {
+      resolve(Object(documentSnapshot.docs[0].data()))
+    }).catch((error) => {
+      reject(ErrorCode.FirebaseError)
     })
   })
 }
@@ -75,6 +78,15 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
 
       }
     )
+  })
+}
+
+export const getAuthUserRecord = (email: string) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().getUserByEmail(email).then((firebaseUser) => resolve(firebaseUser.uid))
+      .catch((error) =>
+        reject(ErrorCode.UserNotExists)
+      )
   })
 }
 
@@ -108,41 +120,68 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 }
 
 
-export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
-  return new Promise((resolve, reject) => {
-    // first new sign up is created for driver
-    // default password is password, reset email would be sent
-    newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
-    //newDriverDetail.uid = uidNewDriver
-    db.collection('drivers').add(
-      newDriverDetail
-    ).then((result) => {
-      newDriverDetail.uid = result.id
-      resolve(newDriverDetail)
-    }).catch(() => reject(ErrorCode.FirebaseError))
-  })
-}
-
-
 // export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
 //   return new Promise((resolve, reject) => {
 //     // first new sign up is created for driver
 //     // default password is password, reset email would be sent
-//     signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
-//       newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
-//       newDriverDetail.uid = uidNewDriver
-//       db.collection('drivers').doc(uidNewDriver).set(
-//         newDriverDetail
-//       ).then((result) => {
-//         resolve(newDriverDetail)
-//       }).catch(() => reject(ErrorCode.FirebaseError))
-//     }
-//     ).catch((error) => {
-//       reject(error)
-//     })
-
+//     newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+//     //newDriverDetail.uid = uidNewDriver
+//     db.collection('drivers').add(
+//       newDriverDetail
+//     ).then((result) => {
+//       newDriverDetail.uid = result.id
+//       resolve(newDriverDetail)
+//     }).catch(() => reject(ErrorCode.FirebaseError))
 //   })
 // }
+
+
+export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
+  return new Promise((resolve, reject) => {
+    // first new sign up is created for driver
+    // default password is password, reset email would be sent
+    signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
+      newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+      newDriverDetail.uid = uidNewDriver
+      db.collection("driver_company").add(
+        newDriverDetail
+      ).then((res) => {
+        resolve(newDriverDetail)
+      }).catch((error) => {
+        reject(ErrorCode.FirebaseError)
+      })
+    }
+    ).catch((error) => {
+      if (error == ErrorCode.EmailAlreadyExist) {
+        getAuthUserRecord(newDriverDetail.email).then((userId) => {
+          db.collection("driver_company").where("email", "==", newDriverDetail.email).where("companyId", "==", newDriverDetail.companyId!).count().get().then((c) => {
+            let exist = c.data().count
+            if (exist > 0) {
+              reject(ErrorCode.EmailAlreadyExist)
+            } else {
+              newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
+              newDriverDetail.uid = userId as string
+              db.collection("driver_company").add(
+                newDriverDetail
+              ).then((res) => {
+                resolve(newDriverDetail)
+              }).catch((error) => {
+                reject(ErrorCode.FirebaseError)
+              })
+            }
+          })
+
+        }).catch((error) => {
+          reject(error)
+        })
+      }
+      else {
+        reject(error)
+      }
+    })
+
+  })
+}
 
 
 export const updatePath = (newPath: PathOrderType) => {
@@ -381,7 +420,7 @@ export const getSideItems = () => {
 
 export const getDrivers = (companyId: string) => {
   return new Promise((resolve, reject) => {
-    db.collection("drivers").where("companyId", "==", companyId).get().then(
+    db.collection("driver_company").where("companyId", "==", companyId).get().then(
       (result) => {
         let drivers = result.docs.map((doc) => {
           let driver = doc.data() as DriverType

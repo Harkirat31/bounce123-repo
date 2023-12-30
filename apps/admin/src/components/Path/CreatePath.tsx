@@ -22,7 +22,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const orderIds = useRecoilValue(getOrderIds)
     const [dropDownValue, setDropDownValue] = useState<number | "Select">("Select")
     const [orderSetForPath, setorderSetForPath] = useRecoilState(orderSetForPathCreation)
-    const [reset, setReset] = useState(true)
+    const [reset, setReset] = useState(false)
     const [_paths, setSavedPaths] = useRecoilState(savedPaths)
     const date = useRecoilValue(ordersSearchDate)
     const [saving, setSaving] = useState(false)
@@ -31,20 +31,31 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const [isEnd, setEnd] = useState(false)
     const isInitialRender = useRef(true);
     const changeCreatePathOrderSet = useSetRecoilState(orderSetForAtom)
+    const saved = useRef(false) // weather path saved or not 
 
 
 
     useEffect(() => {
         setorderSetForPath([...orderIds] as string[])
-
+        if (reset) {
+            setPathOrders({ path: [], pathId: undefined })
+            if (showCreatePath.toBeEditedPath) {
+                showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
+            }
+            setShowCreatePath({ flag: true, toBeEditedPath: null })
+        }
         return () => {
             if (isInitialRender.current) {
                 isInitialRender.current = false
             } else {
+                if (showCreatePath.toBeEditedPath && !saved.current) {
+                    showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
+                }
                 setPathOrders({ path: [], pathId: undefined })
             }
         };
     }, [date, reset])
+
 
     const getSrNoFororderId = (orderId: string) => {
         return orderIds.findIndex((x) => x === orderId) + 1
@@ -56,8 +67,8 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
         createPath({ show: true, path: pathOrders.path, dateOfPath: newDate, pathId: pathOrders.pathId }).then((result) => {
             getPathsAPI(newDate).then((data: any) => {
                 setSavedPaths([...data]);
-                reset ? setReset(false) : setReset(true)
                 setSaving(false)
+                saved.current = true
                 if (showCreatePath.toBeEditedPath) {
                     let pathData = { ...showCreatePath.toBeEditedPath[0], show: true, path: pathOrders.path }
                     showCreatePath.toBeEditedPath[1](pathData)

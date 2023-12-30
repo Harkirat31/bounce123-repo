@@ -155,7 +155,8 @@ export enum ErrorCode {
     FirebaseError,
     MapsApiError,
     JsonParseError,
-    WrongInputs
+    WrongInputs,
+    UserNotExists
 }
 
 
