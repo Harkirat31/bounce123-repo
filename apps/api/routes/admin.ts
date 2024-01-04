@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver } from "db"
 import axios from "axios";
 
 
@@ -43,6 +43,26 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
   })
 
 })
+
+
+router.post('/deleteDriver', authenticateJwt, (req: Request, res: Response) => {
+  if (req.body.driverId) {
+    deleteDriver(req.body.driverId, req.body.companyId).then((_) => {
+      res.json({ isDeleted: true });
+    }).catch((_) => {
+      res.status(403).json({
+        isDeleted: false
+      })
+    })
+  }
+  else {
+    res.status(403).json({
+      isDeleted: false
+    })
+  }
+})
+
+
 
 router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)

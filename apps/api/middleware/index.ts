@@ -13,7 +13,6 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
         jwt.verify(token, secretKey!, (err, user) => {
             if (err) {
                 return res.sendStatus(401);
-                console.log("Here")
             }
             req.body.jwtDetails = user;
             req.body.companyId = req.body.jwtDetails.user.userId
@@ -21,7 +20,6 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
         });
     }
     else {
-        console.log("Here")
         return res.sendStatus(401);
     }
 }

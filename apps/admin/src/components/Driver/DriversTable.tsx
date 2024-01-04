@@ -1,12 +1,34 @@
-import { useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { DriverType } from "types"
-import { getDrivers } from "../../store/selectors/driversSelector"
+import { deleteDriver, getDriversAPI } from "../../services/ApiService"
+import { driversState } from "../../store/atoms/driversAtom"
 
 const DrivingTable = () => {
 
     // let items: number[] = [1, 2, 3];
-    const drivers = useRecoilValue(getDrivers)
-    if (drivers != null && (drivers as []).length > 0) {
+    const [drivers, setDrivers] = useRecoilState(driversState)
+
+    const onDelete = (ev: any) => {
+        let driverId = ev.currentTarget.getAttribute('data-id')
+        deleteDriver(driverId).then((res: any) => {
+            if (res.isDeleted) {
+                alert("Deleted Succesfully")
+            }
+            else {
+                alert("Error")
+            }
+            getDriversAPI().then((drivers: any) => {
+                setDrivers({
+                    isLoading: false,
+                    value: drivers
+                })
+            })
+        }).catch((_) => {
+            alert("Error")
+        })
+
+    }
+    if (drivers != null && (drivers.value as []).length > 0) {
         return <>
             <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -26,12 +48,12 @@ const DrivingTable = () => {
                             </th>
 
                             <th scope="col" className="px-6 py-3">
-                                <span className="sr-only">Edit</span>
+                                <span className="sr-only">Delete</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {(drivers as []).map((driver: DriverType) => {
+                        {(drivers.value as []).map((driver: DriverType) => {
                             return <>
                                 <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -48,7 +70,7 @@ const DrivingTable = () => {
                                     </td>
 
                                     <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                        <button data-id={`${driver.uid}`} onClick={onDelete} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</button>
                                     </td>
                                 </tr>
                             </>

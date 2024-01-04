@@ -133,6 +133,28 @@ export const getDriversAPI = () => {
     })
 }
 
+export const deleteDriver = (driverId: string) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/deleteDriver', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ driverId })
+        }).then((response) => response.json().then((jsonData) => {
+            if (response.status == 200) {
+                resolve({ isDeleted: true })
+            }
+            else {
+                reject({ isDeleted: false })
+            }
+        }).catch((error) => reject(error))).catch((error) => {
+            reject({ isDeleted: false })
+        })
+    })
+}
+
 
 export const getOrdersAPI = (date: Date) => {
     const urlGetOrders = `${BASE_URL}/admin/getOrders`;

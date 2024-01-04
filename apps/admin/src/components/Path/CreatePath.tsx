@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPaths } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
-import { ordersSearchDate } from "../../store/atoms/orderAtom";
+import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom";
 import { createPath, getPathsAPI } from "../../services/ApiService";
 import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
@@ -20,6 +20,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [pathOrders, setPathOrders] = useRecoilState(createPathAtom)
     const orderIds = useRecoilValue(getOrderIds)
+    const orders = useRecoilValue(ordersAtom)
     const [dropDownValue, setDropDownValue] = useState<number | "Select">("Select")
     const [orderSetForPath, setorderSetForPath] = useRecoilState(orderSetForPathCreation)
     const [reset, setReset] = useState(false)
@@ -59,6 +60,9 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
 
     const getSrNoFororderId = (orderId: string) => {
         return orderIds.findIndex((x) => x === orderId) + 1
+    }
+    const getOrderNumberFororderId = (orderId: string) => {
+        return orders.find((x) => x.orderId === orderId)?.orderNumber
     }
 
     const onSaveClick = () => {
@@ -181,7 +185,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                                     className="flex flex-row items-center border-2 rounded-xl p-0.5">
                                     <p data-id={`${index}`} >{`Order`}</p>
                                     <p data-id={`${index}`} className="text-center px-2">
-                                        {`Sr. No. ${getSrNoFororderId(pathnode)}`}
+                                        {`Id. ${getOrderNumberFororderId(pathnode)}`}
                                     </p>
                                     <button data-id={`${index}`} data-id-node={`${index}`} onClick={handleDeleteNode} className="relative text-red-500"> <AiFillDelete /></button>
                                 </div>
@@ -204,7 +208,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                                 <option value="Select" >Select</option>
                                 {orderSetForPath.map((orderId: any) => {
                                     return <>
-                                        <option value={getSrNoFororderId(orderId!)}>{`Sr.No ${getSrNoFororderId(orderId!)}`}</option>
+                                        <option value={getSrNoFororderId(orderId!)}>{`Ord Id ${getOrderNumberFororderId(orderId!)}`}</option>
                                     </>
                                 })}
                             </select>

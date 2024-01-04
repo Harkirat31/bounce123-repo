@@ -133,14 +133,28 @@ const CreatePolygonWhileCreatingPath = ({ map, user }: { map: any, user: UserTyp
     </>
 }
 
+const getOrderLabel = (orderData: OrderType | undefined) => {
+    if (orderData == null) {
+        return "NA"
+    }
+    if (orderData.orderNumber) {
+        let label = orderData.orderNumber.length < 4 ? orderData.orderNumber : `..${orderData.orderNumber.slice(-2)}`
+        return label
+    } else {
+        return "NA"
+    }
+
+
+}
 
 const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: number }) => {
     const [orderData, _setOrderData] = useRecoilState(getOrder(orderId))
     const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({
-            glyph: srNo.toString(),
-            glyphColor: 'white',
+            glyph: getOrderLabel(orderData),
+            // glyph: srNo.toString(),
+            glyphColor: 'black',
             background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : LOW_PRIORITY_COLOR,
             borderColor: "DarkSlateGrey"
         });
@@ -211,8 +225,10 @@ const PickUpMarker = ({ map }: any) => {
 }
 
 function getInfoWindowContent(order: OrderType) {
-    return `<p>Name : ${order.cname}</p>
+    return `<p>Order ID : ${order.orderNumber}</p>
+    <p>Name : ${order.cname}</p>
     <p>Address : ${order.address}</p>
+    <p>Priority : ${order.priority}</p>
     <p>Status : ${order.currentStatus}</p>
     <p>Assigned To : ${order.driverName ? order.driverName : "No Driver Assigned"}</p>
     <p>Item Details : ${order.itemsDetail}</p>`

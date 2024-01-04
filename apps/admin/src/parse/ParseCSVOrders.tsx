@@ -16,10 +16,12 @@ const ParseCSVOrders = () => {
   const [date, setDate] = useRecoilState(ordersSearchDate)
 
 
+  const isDateFormatValid = (dateString: string) => {
+    const pattern: RegExp = /^(0?[1-9]|1[0-2])\/\d{2}\/\d{4}$/;
+    return pattern.test(dateString);
+  }
 
   const handleSubmitCSV = () => {
-
-
     const resetStates = () => {
       if (statusOfUploading.length === csvData.length) {
         setCreateOrdersStatus(statusOfUploading)
@@ -38,6 +40,13 @@ const ParseCSVOrders = () => {
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
       })
+      if (!isDateFormatValid(orderobject[orderAttributes[5]])) {
+        statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Date format must be MM/DD/YYYY" })
+        if (statusOfUploading.length === csvData.length) {
+          resetStates()
+        }
+        return
+      }
       let newDate = convertToUTC(new Date(orderobject[orderAttributes[5]]))
       orderobject['deliveryDate'] = newDate
 

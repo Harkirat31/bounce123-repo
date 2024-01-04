@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 
 import DatePicker from "react-datepicker"
-import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom"
+import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import PathArea from "../Path/PathArea"
 import DriverDropDownForOrder from "../Order/DriverDropDownForOrder"
 import { changePriority, getOrdersAPI } from "../../services/ApiService"
@@ -41,9 +41,9 @@ const RouteCalculatorArea = () => {
                     <table className="w-full text-xs text-center text-gray-500 ">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <th scope="col" className="px-1 py-3">
+                                {/* <th scope="col" className="px-1 py-3">
                                     Sr. No
-                                </th>
+                                </th> */}
                                 <th scope="col" className="px-1 py-3">
                                     Ord. Id
                                 </th>
@@ -87,9 +87,9 @@ const OrderRow = (props: { orderId: string, index: number }) => {
     const [order, setOrder] = useRecoilState(getOrder(props.orderId))
     return (
         <tr className="border-b-2 border-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td className="px-1 py-4">
+            {/* <td className="px-1 py-4">
                 <p>{props.index}</p>
-            </td>
+            </td> */}
             <td className="px-1 py-4">
                 <p>{order!.orderNumber}</p>
             </td>

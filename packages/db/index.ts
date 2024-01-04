@@ -424,7 +424,6 @@ export const getDrivers = (companyId: string) => {
       (result) => {
         let drivers = result.docs.map((doc) => {
           let driver = doc.data() as DriverType
-          driver.uid = doc.id
           return driver
         })
         if (drivers.length > 0) {
@@ -480,6 +479,24 @@ export const deleteOrders = (orders: string[]) => {
           resolve("deleted")
         }
       }
+    })
+  })
+}
+
+
+export const deleteDriver = (driverId: string, companyId: string) => {
+  console.log(`${driverId} and ${companyId}`)
+  return new Promise((resolve, reject) => {
+    db.collection("driver_company").where("uid", "==", driverId).where("companyId", "==", companyId).get().then((document) => {
+      let driverDoc = document.docs[0].id
+      db.collection("driver_company").doc(driverDoc).delete().then((res) => {
+        resolve("Deleted")
+      }).catch((e) => {
+        reject(ErrorCode.FirebaseError)
+      })
+    }).catch((e) => {
+      console.log(e)
+      reject(ErrorCode.FirebaseError)
     })
   })
 }
