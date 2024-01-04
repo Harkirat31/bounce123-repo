@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { getDrivers } from "../../store/selectors/driversSelector";
 import { assignDriver } from "../../services/ApiService";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -11,6 +12,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const drivers: any = useRecoilValue(getDrivers)
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const order = props.order
+    const navigate = useNavigate()
     useEffect(() => {
         setDropDownItem({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
     }, [order])
@@ -76,6 +78,12 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
         return <div>
             <p>{props.order.driverName}</p>
         </div>
+    }
+    if (drivers.length == 0) {
+        return <>
+            <p>No Driver Created</p>
+            <a className="underline text-blue-900" onClick={() => navigate('/drivers')} >Create New</a>
+        </>
     }
     return <>
         <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >

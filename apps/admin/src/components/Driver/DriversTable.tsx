@@ -11,18 +11,18 @@ const DrivingTable = () => {
     const onDelete = (ev: any) => {
         let driverId = ev.currentTarget.getAttribute('data-id')
         deleteDriver(driverId).then((res: any) => {
-            if (res.isDeleted) {
-                alert("Deleted Succesfully")
-            }
-            else {
-                alert("Error")
-            }
             getDriversAPI().then((drivers: any) => {
                 setDrivers({
                     isLoading: false,
                     value: drivers
                 })
             })
+            if (res.isDeleted) {
+                alert("Deleted Succesfully")
+            }
+            else {
+                alert("Error")
+            }
         }).catch((_) => {
             alert("Error")
         })
