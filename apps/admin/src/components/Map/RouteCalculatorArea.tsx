@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker"
 import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import PathArea from "../Path/PathArea"
 import DriverDropDownForOrder from "../Order/DriverDropDownForOrder"
-import { changePriority, getOrdersAPI } from "../../services/ApiService"
+import { changePriority, } from "../../services/ApiService"
 import { getOrder, getOrderIds, sortOrders } from "../../store/selectors/orderSelector"
 import { OrderType } from "types"
 import { useState } from "react"
@@ -73,7 +73,7 @@ const RouteCalculatorArea = () => {
 
             </div>
             <div className="h-full overflow-y-scroll">
-                <PathArea></PathArea>
+                <PathArea ></PathArea>
             </div>
 
         </div>

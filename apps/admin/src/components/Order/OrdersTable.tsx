@@ -83,7 +83,8 @@ const OrderRow = ({ orderId }: any) => {
     let date = new Date()
     if (order) {
         date = new Date(order.deliveryDate)
-        date.setDate(date.getUTCDate())
+        //date.setDate(date.getUTCDate())
+
     }
     return <>
         {order &&
@@ -101,7 +102,7 @@ const OrderRow = ({ orderId }: any) => {
                     {order.cphone}
                 </td>
                 <td className="px-1 py-4">
-                    {date.toDateString()}
+                    {date.toUTCString().slice(0, 16)}
                 </td>
                 <td className="px-1 py-4">
                     {order.priority}

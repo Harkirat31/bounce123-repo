@@ -1,7 +1,7 @@
-import { ChangeEvent, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, savedPaths, updateOrders } from "../../store/atoms/pathAtom"
+import { createPathAtom, savedPaths, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
 import { assignPathAPI, deletePath } from "../../services/ApiService"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
@@ -14,6 +14,11 @@ import CreatePath from "./CreatePath"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
+    const paths = useRecoilValue(savedPathsAtom)
+    // when user assign order directly to the driver , and also middle of creating some path, this refreshes
+    useEffect(() => {
+        setShowCreatePath({ flag: false, toBeEditedPath: null })
+    }, [paths])
     return (
         <div className="border-t-2 border-grey-600">
             <div className="flex justify-center">
