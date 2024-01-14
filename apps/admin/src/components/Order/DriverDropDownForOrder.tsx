@@ -1,9 +1,10 @@
-import { DriverType, OrderType } from "types";
+import { DriverType, OrderType, PathOrderType } from "types";
 import { useEffect, useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { getDrivers } from "../../store/selectors/driversSelector";
-import { assignDriver } from "../../services/ApiService";
+import { assignOrderAndPath, getPathsAPI } from "../../services/ApiService";
 import { useNavigate } from "react-router-dom";
+import { savedPathsAtom } from "../../store/atoms/pathAtom";
 
 
 
@@ -12,6 +13,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const drivers: any = useRecoilValue(getDrivers)
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const order = props.order
+    const setSavedPathsAtom = useSetRecoilState(savedPathsAtom)
     const navigate = useNavigate()
     useEffect(() => {
         setDropDownItem({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
@@ -52,11 +54,14 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
         }
 
 
-        let params = { orderId: order!.orderId, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
+        let params: PathOrderType = { dateOfPath: order.deliveryDate, show: true, path: [order!.orderId!], driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
 
-        assignDriver(params.orderId!, params.driverId, params.driverName).then((response: any) => {
+        assignOrderAndPath(params).then((response: any) => {
             if (response.isAdded == true) {
-                props.setOrder(({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
+                props.setOrder(({ ...order, assignedPathId: response.pathId, driverId: params.driverId, driverName: params.driverName, currentStatus: "SentToDriver" }) as OrderType)
+                getPathsAPI(order.deliveryDate).then((data: any) => {
+                    setSavedPathsAtom([...data]);
+                });
             }
             else {
                 console.log("Error, Order Not updated")

@@ -244,6 +244,26 @@ export const createPath = (newPath: PathOrderType) => {
   })
 }
 
+export const assignOrderAndPath = (newPath: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await db.collection("paths").add(newPath)
+      newPath.path.forEach(async (orderId) => {
+        await db.collection("orders").doc(orderId).update({
+          assignedPathId: result.id,
+          currentStatus: "SentToDriver",
+          driverId: newPath.driverId,
+          driverName: newPath.driverName
+        })
+      })
+      resolve({ result: "Success", pathId: result.id })
+    }
+    catch {
+      reject("Error")
+    }
+  })
+}
+
 export const deletePath = (path: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {

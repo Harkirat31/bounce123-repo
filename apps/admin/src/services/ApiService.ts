@@ -202,6 +202,29 @@ export const getPathsAPI = (date: Date) => {
     })
 }
 
+// this method handle situation when order directly assign to driver , thus it create path and then assign to driver
+export const assignOrderAndPath = (path: PathOrderType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/assignOrderAndPath', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(path)
+        }).then((response) => response.json().then((jsonData) => {
+            if (response.status == 200) {
+                resolve(jsonData)
+            }
+            else {
+                reject("error")
+            }
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 export const createPath = (path: PathOrderType) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + '/admin/createPath', {

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath } from "db"
 import axios from "axios";
 
 
@@ -81,6 +81,28 @@ router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
   else {
     createPath(parsedData.data).then((result) => {
       res.json({ isAdded: true });
+    }).catch((error) => res.json({ isAdded: false }))
+  }
+
+})
+// this route handle situatoion when order directly assign to driver , thus it create path and then assign to driver
+router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response) => {
+  req.body.dateOfPath = new Date(req.body.dateOfPath)
+  let parsedData = pathOrder.safeParse(req.body)
+  if (!parsedData.success) {
+    console.log(parsedData.error)
+    return res.status(403).json({
+      msg: "Error in  Details"
+    });
+  }
+  if (parsedData.data.pathId) {
+    updatePath(parsedData.data).then((result) => {
+      res.json({ isAdded: true });
+    }).catch((error) => res.json({ isAdded: false }))
+  }
+  else {
+    assignOrderAndPath(parsedData.data).then((result: any) => {
+      res.json({ isAdded: true, pathId: result.pathId });
     }).catch((error) => res.json({ isAdded: false }))
   }
 

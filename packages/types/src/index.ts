@@ -115,6 +115,7 @@ export enum deliveryStatus {
     PathAssigned,
     SentToDriver,
     OnTheWay,
+    Accepted,
     Delivered,
     Picked,
     Returned,
