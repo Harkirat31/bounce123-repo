@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil"
+import { useRecoilState } from "recoil"
 import { DriverType } from "types"
 import { deleteDriver, getDriversAPI } from "../../services/ApiService"
 import { driversState } from "../../store/atoms/driversAtom"

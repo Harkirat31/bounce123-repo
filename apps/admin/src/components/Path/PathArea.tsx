@@ -246,5 +246,5 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 const DisplayOrderNumber = ({ orderId }: { orderId: string }) => {
     const order = useRecoilValue(getOrder(orderId))
 
-    return <p className="text-center w-fit p-0.5 h-5 mx-0.5 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{order ? order.orderNumber! : "NA"}</p>
+    return <p className="text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
 }

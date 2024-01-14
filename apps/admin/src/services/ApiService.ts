@@ -1,7 +1,6 @@
 import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
 import { BASE_URL } from "../../config";
 import axios from "axios";
-import { convertToUTC } from "../utils/UTCdate";
 
 
 export const signupAPI = (user: UserType) => {

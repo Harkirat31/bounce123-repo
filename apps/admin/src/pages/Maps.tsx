@@ -9,7 +9,7 @@ const Map = () => {
   return (
     <div className="xl:grid grid-cols-11 h-screen">
       <div className="xl:col-span-8 bg-slate-100">
-        {user == null && <p>Map is Loading....</p>}
+        {user == null && <p className="h-screen">Map is Loading....</p>}
         {user != null && <MapArea user={user}></MapArea>}
       </div>
       <div className="xl:col-span-3 overflow-y-scroll">
