@@ -48,6 +48,8 @@ export type UserSignInType = z.infer<typeof userSignIn>
 
 export const driver = z.object({
     companyId: z.string().optional(),
+    companyName: z.string().optional(),
+    companyLocation: location.optional(),
     email: z.string().email(),
     name: z.string().min(1),
     uid: z.string().optional(),

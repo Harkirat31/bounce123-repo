@@ -33,6 +33,7 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
       err: ErrorCode.WrongInputs
     });
   }
+  console.log(parsedUserData.data)
   createDriver(parsedUserData.data).then((driver) => {
     res.json({ message: 'Sign Up successfully', isAdded: true });
   }).catch((error) => {

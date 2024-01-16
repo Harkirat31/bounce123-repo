@@ -52,6 +52,64 @@ export const signIn = async (email: string, password: string) => {
   })
 }
 
+export const signInDriver = async (email: string, password: string) => {
+  return new Promise((resolve, reject) => {
+    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
+    }).then(response => {
+      response.json().then((responseData) => {
+        if (response.status !== 200) {
+          return reject(responseData)
+        }
+        if (!responseData.localId) {
+          return reject(new Error("Error Parsing response from google SignIn Api"))
+        }
+        resolve(responseData.localId)
+      }).catch((error) => {
+        reject(new Error("Json Parsing Error" + error))
+      })
+    })
+      .catch((error) => {
+        reject(new Error("Error in sign in through Google Api"))
+      })
+  })
+}
+
+
+export const getDriverWithPaths = (uid: string) => {
+  return new Promise((resolve, reject) => {
+    let driverCompanyList: DriverType[] = []
+    let paths: PathOrderType[] = []
+    let orders: OrderType[] = []
+    db.collection("driver_company").where("uid", "==", uid).get().then((documentSnapshot) => {
+      documentSnapshot.docs.forEach((doc) => {
+        let driverCompany = doc.data() as DriverType
+        console.log(driverCompany)
+        driverCompanyList.push(driverCompany)
+      })
+      db.collection("paths").where("driverId", "==", uid).get().then((pathsSnapshot) => {
+        pathsSnapshot.docs.forEach((path) => {
+          let pathObject: PathOrderType = path.data() as PathOrderType
+          pathObject.pathId = path.id
+          paths.push(pathObject)
+        })
+        getOrders(uid).then((ordersData) => {
+          orders = ordersData
+          resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
+        }).catch((error) => {
+          reject(ErrorCode.FirebaseError)
+        })
+      }).catch((error) => {
+        reject(ErrorCode.FirebaseError)
+      })
+    }).catch((error) => {
+      reject(ErrorCode.FirebaseError)
+    })
+  })
+}
+
 
 export const getDriver = async (uid: string, companyId: string): Promise<DriverType> => {
   return new Promise((resolve, reject) => {

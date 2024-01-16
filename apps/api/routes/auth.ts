@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, signIn, signUp } from "db"
+import { createUser, signIn, signInDriver, signUp } from "db"
 
 const router = express.Router();
 
@@ -21,7 +21,29 @@ router.post("/signin", (req: Request, res: Response) => {
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
   }).catch((error) => {
-    return res.status(401).json({
+    res.status(401).json({
+      err: ErrorCode.WorngCredentials
+    });
+  })
+
+})
+
+
+router.post("/signinDriver", (req: Request, res: Response) => {
+  let parsedSignInInput = userSignIn.safeParse(req.body)
+  if (!parsedSignInInput.success) {
+    return res.status(403).json({
+      err: ErrorCode.WrongInputs
+    });
+  }
+  const email = parsedSignInInput.data.email;
+  const password = parsedSignInInput.data.password;
+  signInDriver(email, password).then((uid: any) => {
+    const secretKey = process.env.JWT_SECRET;
+    const token = jwt.sign({ uid }, secretKey!, { expiresIn: '30 days', });
+    res.json({ message: 'Login successfully', token });
+  }).catch((error) => {
+    res.status(401).json({
       err: ErrorCode.WorngCredentials
     });
   })

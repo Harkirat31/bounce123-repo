@@ -1,18 +1,29 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
-import { authenticateJwt } from "../middleware"
+import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder } from "types";
-import { getOrders, updateCurrentLocation, updateOrderStatus } from "db"
+import { getDriverWithPaths, getOrders, updateCurrentLocation, updateOrderStatus } from "db"
 
 const router = express.Router();
+
+router.get("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
+    getDriverWithPaths(req.body.uid).then((data) => {
+        res.status(200).json(data)
+    }).catch((error) => {
+        res.status(403).json({
+            err: "Error"
+        })
+    })
+
+})
+
 router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
-    console.log(req.body)
     let parsedDriverId = userId.safeParse(req.body)
     if (!parsedDriverId.success) {
         return res.status(403).json({
             msg: "Error in Driver Id"
-        });
+        })
     }
     getOrders(parsedDriverId.data.uid).then((orders) => {
         res.json({ orders: orders });
