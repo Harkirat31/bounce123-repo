@@ -42,10 +42,18 @@ router.post("/signinDriver", (req: Request, res: Response) => {
     const secretKey = process.env.JWT_SECRET;
     const token = jwt.sign({ uid }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
-  }).catch((error) => {
-    res.status(401).json({
-      err: ErrorCode.WorngCredentials
-    });
+  }).catch((error: any) => {
+    if (error.error.code == 400) {
+      res.status(401).json({
+        err: ErrorCode.WorngCredentials
+      });
+    }
+    else {
+      res.status(401).json({
+        err: ErrorCode.FirebaseError
+      });
+    }
+
   })
 
 })

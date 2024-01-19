@@ -68,11 +68,12 @@ export const signInDriver = async (email: string, password: string) => {
         }
         resolve(responseData.localId)
       }).catch((error) => {
-        reject(new Error("Json Parsing Error" + error))
+        reject(error)
       })
     })
       .catch((error) => {
-        reject(new Error("Error in sign in through Google Api"))
+        console.log(error)
+        reject(error)
       })
   })
 }
