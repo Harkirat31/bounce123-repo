@@ -49,7 +49,8 @@ router.post("/updateCurrentLocation", authenticateJwt, (req: Request, res: Respo
     })
 })
 
-router.post("/updateOrderStatus", authenticateJwt, (req: Request, res: Response) => {
+router.post("/updateOrderStatus", authenticateJwtDriver, (req: Request, res: Response) => {
+    console.log(req.body)
     let parsedData = updateStatusOfOrder.safeParse(req.body)
     if (!parsedData.success) {
         return res.status(403).json({
@@ -60,6 +61,10 @@ router.post("/updateOrderStatus", authenticateJwt, (req: Request, res: Response)
     updateOrderStatus(parsedData.data.orderId, parsedData.data.currentStatus).then((result) => {
         return res.json({
             isUpdated: true
+        })
+    }).catch((error) => {
+        return res.json({
+            isUpdated: false
         })
     })
 

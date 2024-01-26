@@ -21,6 +21,7 @@ router.post("/signin", (req: Request, res: Response) => {
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
   }).catch((error) => {
+    console.log(error)
     res.status(401).json({
       err: ErrorCode.WorngCredentials
     });
@@ -43,16 +44,25 @@ router.post("/signinDriver", (req: Request, res: Response) => {
     const token = jwt.sign({ uid }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
   }).catch((error: any) => {
-    if (error.error.code == 400) {
-      res.status(401).json({
-        err: ErrorCode.WorngCredentials
-      });
+    console.log(error)
+    try {
+      if (error.error.code == 400) {
+        res.status(401).json({
+          err: ErrorCode.WorngCredentials
+        });
+      }
+      else {
+        res.status(401).json({
+          err: ErrorCode.FirebaseError
+        });
+      }
     }
-    else {
+    catch (e) {
       res.status(401).json({
         err: ErrorCode.FirebaseError
       });
     }
+
 
   })
 

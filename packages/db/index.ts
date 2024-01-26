@@ -25,7 +25,7 @@ async function getData() {
 
 export const signIn = async (email: string, password: string) => {
   return new Promise((resolve, reject) => {
-    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
+    fetch(`/https://identitytoolkit.googleapis.comv1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
@@ -47,6 +47,7 @@ export const signIn = async (email: string, password: string) => {
       })
     })
       .catch((error) => {
+        console.log(error)
         reject(new Error("Error in sign in through Google Api"))
       })
   })
@@ -68,10 +69,13 @@ export const signInDriver = async (email: string, password: string) => {
         }
         resolve(responseData.localId)
       }).catch((error) => {
+        console.log("H")
+        console.log(error)
         reject(error)
       })
     })
       .catch((error) => {
+        console.log("G")
         console.log(error)
         reject(error)
       })
@@ -98,6 +102,7 @@ export const getDriverWithPaths = (uid: string) => {
         })
         getOrders(uid).then((ordersData) => {
           orders = ordersData
+          console.log(orders)
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         }).catch((error) => {
           reject(ErrorCode.FirebaseError)
@@ -372,7 +377,11 @@ export const createOrder = (orderData: OrderType) => {
 export const getOrders = (driverId: string): Promise<OrderType[]> => {
   return new Promise((resolve, reject) => {
     db.collection('orders').where("driverId", "==", driverId).get().then((result) => {
-      let orders = result.docs.map((doc) => doc.data() as OrderType)
+      let orders = result.docs.map((doc) => {
+        let o = doc.data() as OrderType
+        o.orderId = doc.id
+        return o;
+      })
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
   })
