@@ -31,6 +31,7 @@ router.post("/signin", (req: Request, res: Response) => {
 
 
 router.post("/signinDriver", (req: Request, res: Response) => {
+  console.log(req.body);
   let parsedSignInInput = userSignIn.safeParse(req.body)
   if (!parsedSignInInput.success) {
     return res.status(403).json({

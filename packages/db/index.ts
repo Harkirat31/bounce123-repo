@@ -25,7 +25,7 @@ async function getData() {
 
 export const signIn = async (email: string, password: string) => {
   return new Promise((resolve, reject) => {
-    fetch(`/https://identitytoolkit.googleapis.comv1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
+    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
