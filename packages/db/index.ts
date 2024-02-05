@@ -85,11 +85,9 @@ export const signInDriver = async (email: string, password: string) => {
 export const sendResetEmail = (email: string) => {
   return new Promise((resolve, reject) => {
     admin.auth().generatePasswordResetLink(email).then((result) => {
-
-      console.log(result)
-      resolve(true)
+      resolve(result)
     }).catch((error) => {
-      reject(false)
+      reject(error)
     })
   });
 }

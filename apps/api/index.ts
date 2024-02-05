@@ -15,6 +15,7 @@ app.use(cors());
 
 const port = process.env.PORT
 
+
 app.use(express.json())
 app.use("/driver", driverRouter)
 app.use("/auth", authRouter)

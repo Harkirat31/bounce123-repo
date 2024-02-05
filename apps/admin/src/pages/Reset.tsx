@@ -14,10 +14,15 @@ const Reset = () => {
         if (email.length == 0) {
             setErrorMessage("Enter Email")
         }
-        resetPasswordAPI(email).then((result) => {
-            if (result) {
-                setErrorMessage("Reset password Email Sent. Please check your Email")
+        resetPasswordAPI(email).then((result: any) => {
+            console.log(result)
+            if (result.reset) {
+                setErrorMessage("Reset password Email Sent. Please check your Email / Spam")
+            } else {
+                setErrorMessage("Email Not exists / Server Error")
             }
+        }).catch((error) => {
+            setErrorMessage("Email Not exists / Server Error")
         })
     }
 

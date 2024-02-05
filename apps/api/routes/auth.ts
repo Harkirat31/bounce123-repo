@@ -2,16 +2,42 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, sendResetEmail, signIn, signInDriver, signUp } from "db"
+import { createUser, getAuthUserRecord, sendResetEmail, signIn, signInDriver, signUp } from "db"
+import sgMail from "@sendgrid/mail"
+import dotenv from "dotenv"
+dotenv.config();
+
+
+const SEND_GRID_API = process.env.SEND_GRID_API
+
+sgMail.setApiKey(SEND_GRID_API!)
+
 
 const router = express.Router();
 
 router.post("/resetPassword", (req: Request, res: Response) => {
   const email = req.body.email;
   if (email) {
-    sendResetEmail(email).then((result) => {
-      res.json({ reset: true })
+    // getAuthUserRecord(email).then((user) => {
+    sendResetEmail(email).then((result: any) => {
+      console.log(result)
+      const msg = {
+        to: email, // Change to your recipient
+        from: 'info@easeyourtasks.com', // Change to your verified sender
+        subject: 'Reset Password',
+        html: `<p>Hi </br>   </p> <a href="${result}"> Click this link to generate new Password</a>`,
+      }
+      sgMail.send(msg).then((result2) => {
+        console.log(result2)
+        res.json({ reset: true })
+      }).catch((error) => {
+        console.log(error)
+        res.status(401).json({
+          reset: false
+        });
+      })
     }).catch((error) => {
+      console.log(error)
       res.status(401).json({
         reset: false
       });
