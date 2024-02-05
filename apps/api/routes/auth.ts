@@ -2,9 +2,22 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, signIn, signInDriver, signUp } from "db"
+import { createUser, sendResetEmail, signIn, signInDriver, signUp } from "db"
 
 const router = express.Router();
+
+router.post("/resetPassword", (req: Request, res: Response) => {
+  const email = req.body.email;
+  if (email) {
+    sendResetEmail(email).then((result) => {
+      res.json({ reset: true })
+    }).catch((error) => {
+      res.status(401).json({
+        reset: false
+      });
+    })
+  }
+})
 
 
 router.post("/signin", (req: Request, res: Response) => {
@@ -31,7 +44,6 @@ router.post("/signin", (req: Request, res: Response) => {
 
 
 router.post("/signinDriver", (req: Request, res: Response) => {
-  console.log(req.body);
   let parsedSignInInput = userSignIn.safeParse(req.body)
   if (!parsedSignInInput.success) {
     return res.status(403).json({

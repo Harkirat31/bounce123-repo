@@ -1,4 +1,4 @@
-import path from 'path';
+import path, { resolve } from 'path';
 
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
@@ -80,6 +80,18 @@ export const signInDriver = async (email: string, password: string) => {
         reject(error)
       })
   })
+}
+
+export const sendResetEmail = (email: string) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().generatePasswordResetLink(email).then((result) => {
+
+      console.log(result)
+      resolve(true)
+    }).catch((error) => {
+      reject(false)
+    })
+  });
 }
 
 

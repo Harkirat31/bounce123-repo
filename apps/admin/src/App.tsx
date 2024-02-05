@@ -12,6 +12,7 @@ import Login from './pages/Login'
 import { token } from './store/atoms/tokenAtom'
 import Signup from './pages/Signup'
 import MyAccount from './pages/MyAccount'
+import Reset from './pages/Reset'
 
 
 
@@ -29,6 +30,7 @@ function App() {
           <Route path='/delerables' element={tokenKey == null ? <Login></Login> : <Deliverable></Deliverable>} />
           <Route path='/drivers' element={tokenKey == null ? <Login></Login> : <Driver></Driver>} />
           <Route path='/login' element={<Login></Login>} />
+          <Route path='/reset' element={<Reset></Reset>} />
           <Route path='/signup' element={<Signup></Signup>} />
           <Route path='/account' element={tokenKey == null ? <Login></Login> : <MyAccount></MyAccount>} />
         </Routes>
