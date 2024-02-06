@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
-
 import { ErrorCode, user, userSignIn } from "types";
 import { createUser, getAuthUserRecord, sendResetEmail, signIn, signInDriver, signUp } from "db"
 import sgMail from "@sendgrid/mail"
@@ -8,7 +7,9 @@ import dotenv from "dotenv"
 dotenv.config();
 
 
+
 const SEND_GRID_API = process.env.SEND_GRID_API
+
 
 sgMail.setApiKey(SEND_GRID_API!)
 
@@ -18,7 +19,6 @@ const router = express.Router();
 router.post("/resetPassword", (req: Request, res: Response) => {
   const email = req.body.email;
   if (email) {
-    // getAuthUserRecord(email).then((user) => {
     sendResetEmail(email).then((result: any) => {
       console.log(result)
       const msg = {
