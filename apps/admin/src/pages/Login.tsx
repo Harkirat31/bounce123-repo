@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { signInAPI } from "../services/ApiService"
+import { signInAPI, verifyEmailAPI } from "../services/ApiService"
 import { useSetRecoilState } from "recoil"
 import { token } from "../store/atoms/tokenAtom"
 import { useNavigate } from "react-router-dom"
@@ -13,6 +13,7 @@ const Login = () => {
     const setToken = useSetRecoilState(token)
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState<any[]>([])
+    const [emailVerified, setEmailVerified] = useState(false)
 
 
 
@@ -37,6 +38,21 @@ const Login = () => {
         }
     }
 
+    const handleVerifyEmail = () => {
+        if (email == "") {
+            setErrorMessage(["Enter Email"])
+            return
+        }
+        setErrorMessage(["Please Wait ..."])
+        verifyEmailAPI(email).then((result: any) => {
+            if (result.sent) {
+                navigate('/verify')
+            } else {
+                setErrorMessage(["Server Error (Email Verification)"])
+            }
+        })
+    }
+
     const handleSubmit = () => {
 
         setIsLoading(true)
@@ -54,8 +70,13 @@ const Login = () => {
 
             } else {
                 if (result.err != null || result.err != undefined) {
+                    console.log(result.err)
                     if (result.err == ErrorCode.WorngCredentials) {
                         setErrorMessage(["Wrong Credentials, Please check again"])
+                    }
+                    else if (result.err == ErrorCode.EmailNotVerified) {
+                        setErrorMessage(["Email Not Verified"])
+                        setEmailVerified(true)
                     }
                     else {
                         setErrorMessage(["Server Error, Please try again after some time"])
@@ -106,7 +127,7 @@ const Login = () => {
                             Password
                         </label>
                         <div className="text-sm">
-                            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                            <a onClick={() => navigate('/reset')} className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
                                 Forgot password?
                             </a>
                         </div>
@@ -147,6 +168,9 @@ const Login = () => {
                         return <p className="text-red-600 text-xs mt-2">{error}</p>
                     })
                 }
+                {emailVerified && <a onClick={handleVerifyEmail} className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
+                    Send Verification link
+                </a>}
 
 
                 <p className="mt-10 text-center text-sm text-gray-500">

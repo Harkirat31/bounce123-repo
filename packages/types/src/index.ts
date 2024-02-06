@@ -159,7 +159,8 @@ export enum ErrorCode {
     MapsApiError,
     JsonParseError,
     WrongInputs,
-    UserNotExists
+    UserNotExists,
+    EmailNotVerified
 }
 
 

@@ -35,6 +35,22 @@ export const updateUserAPI = (user: UserType) => {
     })
 }
 
+export const verifyEmailAPI = (email: string) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/auth/verifyEmail', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email })
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 
 export const resetPasswordAPI = (email: string) => {
     return new Promise((resolve, reject) => {

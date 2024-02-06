@@ -57,13 +57,7 @@ const Reset = () => {
             </div>
 
             <div>
-                <div className="flex items-center justify-between">
-                    <div className="text-sm">
-                        <a onClick={() => navigate('/signin')} className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer">
-                            Sign In
-                        </a>
-                    </div>
-                </div>
+
 
             </div>
             <div className="mt-3">
@@ -83,6 +77,13 @@ const Reset = () => {
                         Reset
                     </button>
                 }
+                <button
+                    type="button"
+                    className="mt-2 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    onClick={() => navigate('/signin')}
+                >
+                    Sign In
+                </button>
             </div>
             {errorMessage.length > 0 &&
                 <p className="text-red-600 text-xs mt-2">{errorMessage}</p>

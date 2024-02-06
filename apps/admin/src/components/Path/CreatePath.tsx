@@ -46,15 +46,12 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
             setShowCreatePath({ flag: true, toBeEditedPath: null })
         }
         return () => {
-            if (isInitialRender.current) {
-                isInitialRender.current = false
-            } else {
-                if (showCreatePath.toBeEditedPath && !saved.current) {
-                    showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
-                }
-                setPathOrders({ path: [], pathId: undefined })
+
+            if (showCreatePath.toBeEditedPath && !saved.current) {
+                showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
             }
-        };
+            setPathOrders({ path: [], pathId: undefined })
+        }
     }, [date, reset])
 
 

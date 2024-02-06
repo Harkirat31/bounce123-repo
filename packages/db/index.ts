@@ -20,7 +20,6 @@ const db = admin.firestore();
 
 async function getData() {
   const x = await db.collection('test').doc("1").get()
-  console.log(x);
 }
 
 export const signIn = async (email: string, password: string) => {
@@ -30,25 +29,31 @@ export const signIn = async (email: string, password: string) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
     }).then(response => {
-      response.json().then((responseData) => {
+      response.json().then(async (responseData) => {
         if (response.status !== 200) {
-          return reject(responseData)
+          return reject(ErrorCode.JsonParseError)
         }
         if (!responseData.localId) {
-          return reject(new Error("Error Parsing response from google SignIn Api"))
+          return reject(ErrorCode.JsonParseError)
+        }
+        let isVerified: boolean = (await admin.auth().getUser(responseData.localId)).emailVerified
+        console.log(isVerified)
+        if (!isVerified) {
+          return reject(ErrorCode.EmailNotVerified)
         }
         getUser(responseData.localId).then((user) => {
           resolve(user)
         }).catch((error) => {
-          return reject(new Error("Error Fetching User from getUser Method"))
+          return reject(ErrorCode.FirebaseError)
         })
       }).catch((error) => {
-        reject(new Error("Json Parsing Error" + error))
+        reject(ErrorCode.JsonParseError)
       })
     })
       .catch((error) => {
         console.log(error)
-        reject(new Error("Error in sign in through Google Api"))
+        //reject(new Error("Error in sign in through Google Api"))
+        reject(ErrorCode.MapsApiError)
       })
   })
 }
@@ -69,13 +74,11 @@ export const signInDriver = async (email: string, password: string) => {
         }
         resolve(responseData.localId)
       }).catch((error) => {
-        console.log("H")
         console.log(error)
         reject(error)
       })
     })
       .catch((error) => {
-        console.log("G")
         console.log(error)
         reject(error)
       })
@@ -91,6 +94,18 @@ export const sendResetEmail = (email: string) => {
     })
   });
 }
+
+
+export const generateEmailVerifyLink = (email: string) => {
+  return new Promise((resolve, reject) => {
+    admin.auth().generateEmailVerificationLink(email).then((result) => {
+      resolve(result)
+    }).catch((error) => {
+      reject(error)
+    })
+  });
+}
+
 
 
 export const getDriverWithPaths = (uid: string) => {

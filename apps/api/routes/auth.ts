@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, getAuthUserRecord, sendResetEmail, signIn, signInDriver, signUp } from "db"
+import { createUser, generateEmailVerifyLink, getAuthUserRecord, sendResetEmail, signIn, signInDriver, signUp } from "db"
 import sgMail from "@sendgrid/mail"
 import dotenv from "dotenv"
 dotenv.config();
@@ -16,11 +16,42 @@ sgMail.setApiKey(SEND_GRID_API!)
 
 const router = express.Router();
 
+
+router.post("/verifyEmail", (req: Request, res: Response) => {
+  const email = req.body.email
+  if (email) {
+    generateEmailVerifyLink(email).then((result) => {
+      const msg = {
+        to: email, // Change to your recipient
+        from: 'info@easeyourtasks.com', // Change to your verified sender
+        subject: 'Email Verification',
+        html: `<p>Hi </br>   </p> <a href="${result}"> Click this link to verify the Email</a>`,
+      }
+      sgMail.send(msg).then((result2) => {
+        res.json({ sent: true })
+      }).catch((error) => {
+        console.log(error)
+        res.status(401).json({
+          sent: false
+        });
+      })
+    }).catch((error) => {
+      res.status(401).json({
+        sent: false
+      });
+    })
+  } else {
+    res.status(401).json({
+      sent: false
+    });
+  }
+})
+
+
 router.post("/resetPassword", (req: Request, res: Response) => {
   const email = req.body.email;
   if (email) {
     sendResetEmail(email).then((result: any) => {
-      console.log(result)
       const msg = {
         to: email, // Change to your recipient
         from: 'info@easeyourtasks.com', // Change to your verified sender
@@ -37,11 +68,14 @@ router.post("/resetPassword", (req: Request, res: Response) => {
         });
       })
     }).catch((error) => {
-      console.log(error)
       res.status(401).json({
         reset: false
       });
     })
+  } else {
+    res.status(401).json({
+      reset: false
+    });
   }
 })
 
@@ -60,10 +94,15 @@ router.post("/signin", (req: Request, res: Response) => {
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
   }).catch((error) => {
-    console.log(error)
-    res.status(401).json({
-      err: ErrorCode.WorngCredentials
-    });
+    if (error == ErrorCode.EmailNotVerified) {
+      res.status(401).json({
+        err: ErrorCode.EmailNotVerified
+      })
+    } else {
+      res.status(401).json({
+        err: ErrorCode.WorngCredentials
+      })
+    }
   })
 
 })
@@ -149,9 +188,9 @@ router.post("/createUser", (req: Request, res: Response) => {
       parsedUserData.data.location = location
       parsedUserData.data.placeId = placeId
       createUser(parsedUserData.data).then((result) => {
-        const secretKey = process.env.JWT_SECRET;
-        const token = jwt.sign({ user: result }, secretKey!, { expiresIn: '30 days', });
-        res.json({ message: 'Login successfully', token });
+        //  const secretKey = process.env.JWT_SECRET;
+        //  const token = jwt.sign({ user: result }, secretKey!, { expiresIn: '30 days', });
+        res.json({ message: 'Login successfully', success: true });
       }).catch((error) => {
         return res.status(403).json({
           err: error
