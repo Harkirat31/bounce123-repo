@@ -2,10 +2,24 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
-import { userId, updateLocation, updateStatusOfOrder } from "types";
-import { getDriverWithPaths, getOrders, updateCurrentLocation, updateOrderStatus } from "db"
+import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
+import { getDriverWithPaths, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus } from "db"
 
 const router = express.Router();
+
+
+router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response) => {
+    saveFCMToken(req.body.uid, req.body.FCMToken).then((data) => {
+        console.log(data)
+        res.status(200).json({ isAdded: true })
+    }).catch((error) => {
+        console.log(error)
+        res.status(403).json({
+            isAdded: false,
+            err: ErrorCode.FirebaseError
+        })
+    })
+})
 
 router.get("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
     getDriverWithPaths(req.body.uid).then((data) => {

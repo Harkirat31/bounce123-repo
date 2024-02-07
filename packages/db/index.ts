@@ -16,10 +16,37 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+export const saveFCMToken = (uid: string, fcmToken: string) => {
+  return new Promise((resolve, reject) => {
+    db.collection('fcm_tokens').doc(uid).set({
+      'fcmTokens': admin.firestore.FieldValue.arrayUnion(fcmToken),
+    }, { merge: true }).then((res) => {
 
+      const message = {
+        data: {
+          score: '850',
+          time: '2:45'
+        },
+        token: fcmToken
+      };
 
-async function getData() {
-  const x = await db.collection('test').doc("1").get()
+      // Send a message to the device corresponding to the provided
+      // registration token.
+      admin.messaging().send(message)
+        .then((response) => {
+          // Response is a message ID string.
+          console.log('Successfully sent message:', response);
+        })
+        .catch((error) => {
+          console.log('Error sending message:', error);
+        });
+
+      resolve(true)
+    }).catch((error) => {
+      reject(false)
+    })
+  })
+
 }
 
 export const signIn = async (email: string, password: string) => {
@@ -116,7 +143,6 @@ export const getDriverWithPaths = (uid: string) => {
     db.collection("driver_company").where("uid", "==", uid).get().then((documentSnapshot) => {
       documentSnapshot.docs.forEach((doc) => {
         let driverCompany = doc.data() as DriverType
-        console.log(driverCompany)
         driverCompanyList.push(driverCompany)
       })
       db.collection("paths").where("driverId", "==", uid).get().then((pathsSnapshot) => {
@@ -127,7 +153,6 @@ export const getDriverWithPaths = (uid: string) => {
         })
         getOrders(uid).then((ordersData) => {
           orders = ordersData
-          console.log(orders)
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         }).catch((error) => {
           reject(ErrorCode.FirebaseError)
