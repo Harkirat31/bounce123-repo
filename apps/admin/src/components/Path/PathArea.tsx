@@ -11,6 +11,7 @@ import { RiMailSendFill } from "react-icons/ri";
 import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
+import { loadingState } from "../../store/atoms/loadingStateAtom"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
@@ -105,6 +106,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
     const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
+    const setLoading = useSetRecoilState(loadingState)
 
 
     const handleShowToggle = () => {
@@ -148,6 +150,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     }
 
     const handleDelete = () => {
+        setLoading(true)
         deletePath(pathData).then((result: any) => {
             if (result.isDeleted) {
                 // Reather than setting date, fetch paths and set paths
@@ -161,12 +164,17 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                 })
                 setAllPaths(allPathsCopy)
                 updateOrder(pathData!.path)
+
             }
             if (result.err != null || result.err != undefined) {
                 alert("Error Deleting Path")
             }
+            setLoading(false)
         }
-        )
+        ).catch((error) => {
+            alert("Error Deleting Path")
+            setLoading(false)
+        })
     }
 
     const handleEdit = () => {

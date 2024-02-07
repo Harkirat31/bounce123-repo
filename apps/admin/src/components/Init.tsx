@@ -5,6 +5,8 @@ import { driversState } from "../store/atoms/driversAtom"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { savedPathsAtom } from "../store/atoms/pathAtom"
 import { convertToUTC } from "../utils/UTCdate"
+import Loading from "./Loading"
+import { loadingState } from "../store/atoms/loadingStateAtom"
 
 
 const Init = () => {
@@ -12,6 +14,7 @@ const Init = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const setPaths = useSetRecoilState(savedPathsAtom)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
+    const loading = useRecoilValue(loadingState)
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
@@ -40,7 +43,7 @@ const Init = () => {
 
     return (
         <div>
-
+            {loading && <Loading></Loading>}
         </div>
     )
 }
