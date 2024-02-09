@@ -90,19 +90,34 @@ router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
 router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)
   let parsedData = pathOrder.safeParse(req.body)
+  let driverId: string | undefined;
   if (!parsedData.success) {
     console.log(parsedData.error)
     return res.status(403).json({
       msg: "Error in  Details"
     });
   }
+  driverId = parsedData.data.driverId
   if (parsedData.data.pathId) {
     updatePath(parsedData.data).then((result) => {
       res.json({ isAdded: true });
     }).catch((error) => res.json({ isAdded: false }))
   }
   else {
-    assignOrderAndPath(parsedData.data).then((result: any) => {
+    assignOrderAndPath(parsedData.data).then(async (result: any) => {
+      //sending mesage
+      let orders = await getOrdersWithPathId(result.pathId)
+      let driver = await getDriver(driverId!, req.body.companyId)
+      let company = await getUser(driver.companyId!)
+      let message = `Orders for ${req.body.dateOfPath.toLocaleDateString()}: \n\n`
+      orders.forEach((order, index) => {
+        message = message + `Order Sr No ${index + 1} \n`
+        message = message + `Name: ${order.cname} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
+
+      })
+      sendTextMessage(message, driver.phone);
+      //sending notification
+      sendNotification(driverId!, { companyName: company.companyName, message: "New Order has been Assigned" })
       res.json({ isAdded: true, pathId: result.pathId });
     }).catch((error) => res.json({ isAdded: false }))
   }
@@ -202,18 +217,23 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
       message = message + `Name: ${order.cname} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
 
     })
-    axios.post('https://textbelt.com/text', {
-      phone: driver.phone,
-      message: message,
-      key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
-    }).then(response => {
-      console.log(response.data);
-    })
+    //sendindd text message
+    sendTextMessage(message, driver.phone)
     //sending Notification
     sendNotification(driverId!, { companyName: company.companyName, message: "New Order has been assigned" })
     res.json({ isAdded: true })
   }).catch((errro) => res.json({ isAdded: false }))
 })
+
+const sendTextMessage = (mess: string, contact: string) => {
+  axios.post('https://textbelt.com/text', {
+    phone: contact,
+    message: mess,
+    key: '938113449037b129ba9966d882fa3de627c5a7b1HEm6hpQSEnEHKqztObgLzg3tn',
+  }).then(response => {
+    console.log(response.data);
+  })
+}
 
 
 

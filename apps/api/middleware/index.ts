@@ -16,8 +16,6 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
             }
             req.body.jwtDetails = user;
             req.body.companyId = req.body.jwtDetails.user.userId
-            req.body.companyName = req.body.jwtDetails.user.companyName
-            req.body.companyLocation = req.body.jwtDetails.user.location
             next();
         });
     }
