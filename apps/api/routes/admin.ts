@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification } from "db"
 import axios from "axios";
 
 
@@ -195,9 +195,9 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
   assignPathToDriver(assignPathParams.data).then(async (result) => {
     let orders = await getOrdersWithPathId(pathId!)
     let driver = await getDriver(driverId!, req.body.companyId)
+    let company = await getUser(driver.companyId!)
     let message = `Orders for ${pathDate.toLocaleDateString()}: \n\n`
     orders.forEach((order, index) => {
-      //message = message + "https://minipunjabincanada/update/322323233232323"
       message = message + `Order Sr No ${index + 1} \n`
       message = message + `Name: ${order.cname} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
 
@@ -209,6 +209,8 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
     }).then(response => {
       console.log(response.data);
     })
+    //sending Notification
+    sendNotification(driverId!, { companyName: company.companyName, message: "New Order has been assigned" })
     res.json({ isAdded: true })
   }).catch((errro) => res.json({ isAdded: false }))
 })

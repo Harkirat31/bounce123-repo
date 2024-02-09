@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage } from "types"
 import { API_KEY_SIGNIN } from './config';
 import { error } from 'console';
 // Initialize Firebase Admin SDK
@@ -21,26 +21,6 @@ export const saveFCMToken = (uid: string, fcmToken: string) => {
     db.collection('fcm_tokens').doc(uid).set({
       'fcmTokens': admin.firestore.FieldValue.arrayUnion(fcmToken),
     }, { merge: true }).then((res) => {
-
-      const message = {
-        data: {
-          score: '850',
-          time: '2:45'
-        },
-        token: fcmToken
-      };
-
-      // Send a message to the device corresponding to the provided
-      // registration token.
-      admin.messaging().send(message)
-        .then((response) => {
-          // Response is a message ID string.
-          console.log('Successfully sent message:', response);
-        })
-        .catch((error) => {
-          console.log('Error sending message:', error);
-        });
-
       resolve(true)
     }).catch((error) => {
       reject(false)
@@ -140,11 +120,17 @@ export const getDriverWithPaths = (uid: string) => {
     let driverCompanyList: DriverType[] = []
     let paths: PathOrderType[] = []
     let orders: OrderType[] = []
-    db.collection("driver_company").where("uid", "==", uid).get().then((documentSnapshot) => {
+    db.collection("driver_company").where("uid", "==", uid).get().then(async (documentSnapshot) => {
       documentSnapshot.docs.forEach((doc) => {
         let driverCompany = doc.data() as DriverType
         driverCompanyList.push(driverCompany)
       })
+      let companyNames = new Map<string, string>()
+      for (const element in driverCompanyList) {
+        let company = await db.collection('users').doc(driverCompanyList[element].companyId!).get()
+        driverCompanyList[element].companyName = (company.data() as UserType).companyName
+        driverCompanyList[element].companyLocation = (company.data() as UserType).location
+      }
       db.collection("paths").where("driverId", "==", uid).get().then((pathsSnapshot) => {
         pathsSnapshot.docs.forEach((path) => {
           let pathObject: PathOrderType = path.data() as PathOrderType
@@ -153,6 +139,7 @@ export const getDriverWithPaths = (uid: string) => {
         })
         getOrders(uid).then((ordersData) => {
           orders = ordersData
+
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         }).catch((error) => {
           reject(ErrorCode.FirebaseError)
@@ -576,7 +563,7 @@ export const getDrivers = (companyId: string) => {
 }
 
 export const getUser = (userId: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<UserType>((resolve, reject) => {
     db.collection("users").doc(userId).get().then((result) => {
       let user = result.data() as UserType
       user.userId = userId
@@ -603,6 +590,39 @@ export const assignPathToDriver = (path: PathOrderType) => {
     }).catch((error) => reject(new Error("Error")))
   })
 }
+
+export const getFCMTokens = (uid: string) => {
+  return new Promise<string[]>((resolve, reject) => {
+    db.collection('fcm_tokens').doc(uid).get().then((result) => {
+      let data = result.data() as { fcmTokens: string[] }
+      resolve(data.fcmTokens)
+    }).catch((error) => {
+      reject(error)
+    })
+  })
+}
+
+export const sendNotification = async (driverId: string, notificationMessage: NotificationMessage) => {
+  let fcmTokens = await getFCMTokens(driverId);
+  fcmTokens.forEach((token) => {
+    const message = {
+      token: token,
+      notification: {
+        title: notificationMessage.companyName,
+        body: notificationMessage.message,
+      },
+    };
+    admin.messaging().send(message)
+      .then((response) => {
+        console.log('Successfully sent message:', response);
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
+  })
+
+}
+
 export const deleteOrders = (orders: string[]) => {
   return new Promise((resolve, reject) => {
     orders.forEach(async (order, index) => {

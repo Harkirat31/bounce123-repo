@@ -136,6 +136,12 @@ export const pathOrder = z.object({
 
 export type PathOrderType = z.infer<typeof pathOrder>
 
+export const notificationMessage = z.object({
+    companyName: z.string(),
+    message: z.string()
+})
+
+export type NotificationMessage = z.infer<typeof notificationMessage>
 
 export const user = z.object({
     userId: z.string().optional(),
