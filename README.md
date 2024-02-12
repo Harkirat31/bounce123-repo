@@ -6,6 +6,11 @@ https://delivery.easeyourtasks.com
 3. Paths can be assigned to drivers and become visible in drivers mobile app.
 4. Deleveries orders can be uploaded through csv file
 5. Drivers can be created.
+
+FRONT END
+Implemented in React js 
+State management library (Recoil.js) is used
+
    
 ![Deleviers](https://github.com/Harkirat31/bounce123-repo/assets/26318290/034814db-8af5-4f9b-9027-5c881a0d544f)
 
