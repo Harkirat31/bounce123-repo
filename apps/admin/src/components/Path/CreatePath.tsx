@@ -30,7 +30,6 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const [selectdropdoenError, setSelectDropdownError] = useState(false)
     const user = useRecoilValue(userAtom)
     const [isEnd, setEnd] = useState(false)
-    const isInitialRender = useRef(true);
     const changeCreatePathOrderSet = useSetRecoilState(orderSetForAtom)
     const saved = useRef(false) // weather path saved or not 
 

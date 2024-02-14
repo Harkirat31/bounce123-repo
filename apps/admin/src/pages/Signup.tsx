@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { signupAPI, verifyEmailAPI } from "../services/ApiService"
-import { useSetRecoilState } from "recoil"
-import { token } from "../store/atoms/tokenAtom"
 import { useNavigate } from "react-router-dom"
 import { ErrorCode, user } from "types"
 import { Wrapper } from "@googlemaps/react-wrapper";
@@ -15,7 +13,6 @@ const Signup2 = () => {
     const [address, setAddress] = useState("")
     const [phone, setPhone] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const setToken = useSetRecoilState(token)
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState<any[]>([])
     const addressRef: any = useRef()

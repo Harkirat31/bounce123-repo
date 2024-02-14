@@ -6,7 +6,15 @@ import { homedir } from 'os'
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage } from "types"
 import { API_KEY_SIGNIN } from './config';
 import { error } from 'console';
+
+import { MongoClient } from "mongodb";
+const connectionString = process.env.ATLAS_URI || "mongodb+srv://appbounce123:NjMdWnbIIfuGcW12@cluster0.sdkyenx.mongodb.net/ngodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(connectionString);
+
+
+
 // Initialize Firebase Admin SDK
+
 
 const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
 
@@ -15,6 +23,26 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+
+let conn: MongoClient | null = null
+
+const getConnection = async () => {
+  if (conn != null) {
+    return conn
+  }
+  else {
+    try {
+      conn = await client.connect();
+      await client.db("admin").command({ ping: 1 });
+      console.log("Pinged your deployment. You successfully connected to MongoDB!");
+      return conn
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+}
 
 export const saveFCMToken = (uid: string, fcmToken: string) => {
   return new Promise((resolve, reject) => {
@@ -238,6 +266,9 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 
 
 export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
+
+
+
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver
     // default password is password, reset email would be sent
@@ -543,12 +574,25 @@ export const getSideItems = () => {
   })
 }
 
-export const getDrivers = (companyId: string) => {
+export const getDrivers = async (companyId: string) => {
+  let c = await getConnection();
+  c!.db('app').collection("users").findOne({}).then((result) => {
+    console.log(result?._id)
+  }).catch((err) => {
+    console.log(err)
+  })
   return new Promise((resolve, reject) => {
     db.collection("driver_company").where("companyId", "==", companyId).get().then(
       (result) => {
         let drivers = result.docs.map((doc) => {
           let driver = doc.data() as DriverType
+          c!.db('app').collection("drivers").findOne({}).then((result) => {
+            let driver2 = { ...result } as DriverType
+            console.log(driver2)
+          }).catch((err) => {
+            console.log(err)
+          })
+
           return driver
         })
         if (drivers.length > 0) {

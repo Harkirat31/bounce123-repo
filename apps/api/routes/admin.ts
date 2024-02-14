@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";

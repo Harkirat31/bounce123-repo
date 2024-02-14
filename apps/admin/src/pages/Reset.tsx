@@ -7,7 +7,7 @@ const Reset = () => {
 
     const [email, setEmail] = useState("")
     const navigate = useNavigate()
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, _setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
 
     const handleSubmit = () => {

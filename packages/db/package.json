@@ -12,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.1",
-    "firebase-admin": "^11.11.0"
+    "firebase-admin": "^11.11.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.2"
