@@ -4,7 +4,7 @@ https://delivery.easeyourtasks.com
 1. Populating Delivery addresses over the map to make more informed decision while assigning orders to the drivers.
 2. Provides interface for drawing paths or route on the maps.
 3. Paths can be assigned to drivers and become visible in drivers mobile app.
-4. Deleveries orders can be uploaded through csv file
+4. Deleveries orders can be uploaded through csv file.
 5. Drivers can be created.
 
 FRONT END
