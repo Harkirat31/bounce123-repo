@@ -263,8 +263,10 @@ router.post('/changePriority', authenticateJwt, (req: Request, res: Response) =>
 })
 
 router.get('/getUser', authenticateJwt, (req: Request, res: Response) => {
-  getUser(req.body.companyId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
-  )
+  getUser(req.body.companyId).then((result) => res.json(result)).catch((e) => {
+    console.log(e)
+    res.status(403).json({ msg: "Error" })
+  })
 })
 
 router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {

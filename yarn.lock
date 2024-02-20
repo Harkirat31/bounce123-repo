@@ -2230,8 +2230,9 @@ db@*, "db@file:C:\\Users\\harki\\dev\\projects\\bounce123\\packages\\db":
   version "1.0.0"
   resolved "file:packages/db"
   dependencies:
-    dotenv "^16.4.1"
+    dotenv "^16.4.4"
     firebase-admin "^11.11.0"
+    mongodb "^6.3.0"
     mongoose "^8.1.2"
 
 debug@^3.2.7:
@@ -2427,10 +2428,10 @@ dotenv@^16.3.1:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.3.1.tgz"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
 
-dotenv@^16.4.1:
-  version "16.4.1"
-  resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.1.tgz"
-  integrity sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==
+dotenv@^16.4.4:
+  version "16.4.4"
+  resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.4.tgz"
+  integrity sha512-XvPXc8XAQThSjAbY6cQ/9PcBXmFoWuw1sQ3b8HqUCR6ziGXjkTi//kB9SWa2UwqlgdAIuRqAa/9hVljzPehbYg==
 
 dotenv@16.0.3:
   version "16.0.3"

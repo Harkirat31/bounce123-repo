@@ -6,18 +6,28 @@ import { homedir } from 'os'
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage } from "types"
 import { API_KEY_SIGNIN } from './config';
 
+import dotenv from "dotenv"
+dotenv.config();
 
 
+const firebase_secret = {
+  "project_id": process.env.PROJECT_ID!,
+  "private_key": process.env.PRIVATE_KEY!,
+  "client_email": process.env.CLIENT_EMAIL!,
+}
+
+//const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert({ clientEmail: firebase_secret.client_email, privateKey: firebase_secret.private_key, projectId: firebase_secret.project_id }),
+    // credential: admin.credential.cert(serviceaccountPath),
+  });
+}
+catch (e) {
+  console.log(e)
+}
 
 
-// Initialize Firebase Admin SDK
-
-
-const serviceaccountPath = path.join(homedir(), './', 'firebase_secret/serviceAccount.json')
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceaccountPath),
-});
 
 const db = admin.firestore();
 
@@ -579,7 +589,7 @@ export const getUser = (userId: string) => {
       user.userId = userId
       resolve(user)
     }
-    ).catch((error) => reject(new Error("Error Fetching Data")))
+    ).catch((error) => reject(new Error(error.toString())))
   })
 }
 
