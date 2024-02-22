@@ -9,7 +9,7 @@ https://delivery.easeyourtasks.com
 
 FRONT END
 Implemented in React js 
-State management library (Recoil.js) is used
+State management library (Recoil.js) is used.
 
    
 ![Deleviers](https://github.com/Harkirat31/bounce123-repo/assets/26318290/034814db-8af5-4f9b-9027-5c881a0d544f)
