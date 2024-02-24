@@ -16,7 +16,7 @@ const Init = () => {
     const setPaths = useSetRecoilState(savedPathsAtom)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     const loading = useRecoilValue(loadingState)
-    const [tokenValue, setTokenValue] = useRecoilState(token)
+    const [_tokenValue, setTokenValue] = useRecoilState(token)
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
