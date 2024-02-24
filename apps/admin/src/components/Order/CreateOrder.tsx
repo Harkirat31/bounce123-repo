@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useSetRecoilState } from "recoil"
 //import { getSideItems } from "../store/selectors/sideItemsSelector"
 import { ErrorCode, order } from "types/src/index"
 //import { TiDelete } from "react-icons/ti"
@@ -10,6 +10,7 @@ import UploadOrdersCSV from "./UploadOrdersCSV"
 import { createOrder } from "../../services/ApiService"
 import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import { convertToUTC } from "../../utils/UTCdate";
+import { loadingState } from "../../store/atoms/loadingStateAtom";
 
 
 const CreateOrder = () => {
@@ -24,6 +25,7 @@ const CreateOrder = () => {
     const [itemsDetail, setItemsDetail] = useState("")
     const [priority, setPriority] = useState("Medium")
     const [errorMessage, setErrorMessage] = useState<any[]>([])
+    const setLoading = useSetRecoilState(loadingState)
 
 
     function saveOrder() {
@@ -46,6 +48,7 @@ const CreateOrder = () => {
         if (parsedOrder == null) {
             return
         }
+        setLoading(true)
         createOrder(parsedOrder).then((result: any) => {
             if (date) {
                 resetInputs()
@@ -59,6 +62,9 @@ const CreateOrder = () => {
                     setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
                 }
             }
+            setLoading(false)
+        }).catch((error) => {
+            setLoading(true)
         })
     }
 

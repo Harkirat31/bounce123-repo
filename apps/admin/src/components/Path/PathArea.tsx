@@ -138,15 +138,15 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
         }
 
         let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
-
+        setLoading(true)
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
             setPathData(pathArgs as PathOrderType)
-            //alert("Assigned and Sent to driver")
+            setLoading(false)
+            alert("Assigned and Sent to driver")
         }).catch((_error) => {
+            setLoading(false)
             alert("Error")
         })
-
-
     }
 
     const handleDelete = () => {

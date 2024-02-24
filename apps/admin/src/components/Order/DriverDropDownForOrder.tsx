@@ -5,6 +5,7 @@ import { getDrivers } from "../../store/selectors/driversSelector";
 import { assignOrderAndPath, getPathsAPI } from "../../services/ApiService";
 import { useNavigate } from "react-router-dom";
 import { savedPathsAtom } from "../../store/atoms/pathAtom";
+import { loadingState } from "../../store/atoms/loadingStateAtom";
 
 
 
@@ -15,6 +16,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const order = props.order
     const setSavedPathsAtom = useSetRecoilState(savedPathsAtom)
     const navigate = useNavigate()
+    const setLoading = useSetRecoilState(loadingState)
     useEffect(() => {
         setDropDownItem({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
     }, [order])
@@ -53,7 +55,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
             return
         }
 
-
+        setLoading(true)
         let params: PathOrderType = { dateOfPath: order.deliveryDate, show: true, path: [order!.orderId!], driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
 
         assignOrderAndPath(params).then((response: any) => {
@@ -66,18 +68,12 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
             else {
                 console.log("Error, Order Not updated")
             }
+
+            setLoading(false)
+        }).catch((error) => {
+            alert(error)
+            setLoading(false)
         })
-
-        // let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
-
-        // assignPathAPI(pathArgs as PathOrderType).then((result) => {
-        //     setPathData(pathArgs as PathOrderType)
-        //     //alert("Assigned and Sent to driver")
-        // }).catch((_error) => {
-        //     alert("Error")
-        // })
-
-
     }
     if (props.order.driverId) {
         return <div>

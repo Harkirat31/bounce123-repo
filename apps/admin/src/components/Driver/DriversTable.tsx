@@ -1,14 +1,17 @@
-import { useRecoilState } from "recoil"
+import { useRecoilState, useSetRecoilState } from "recoil"
 import { DriverType } from "types"
 import { deleteDriver, getDriversAPI } from "../../services/ApiService"
 import { driversState } from "../../store/atoms/driversAtom"
+import { loadingState } from "../../store/atoms/loadingStateAtom"
 
 const DrivingTable = () => {
 
     // let items: number[] = [1, 2, 3];
     const [drivers, setDrivers] = useRecoilState(driversState)
+    const setLoading = useSetRecoilState(loadingState)
 
     const onDelete = (ev: any) => {
+        setLoading(true)
         let driverId = ev.currentTarget.getAttribute('data-id')
         deleteDriver(driverId).then((res: any) => {
             getDriversAPI().then((drivers: any) => {
@@ -16,6 +19,7 @@ const DrivingTable = () => {
                     isLoading: false,
                     value: drivers
                 })
+                setLoading(false)
             })
             if (res.isDeleted) {
                 alert("Deleted Succesfully")
@@ -23,8 +27,10 @@ const DrivingTable = () => {
             else {
                 alert("Error")
             }
+            setLoading(false)
         }).catch((_) => {
             alert("Error")
+            setLoading(false)
         })
 
     }

@@ -1,12 +1,13 @@
 import { useEffect } from "react"
 import { getDriversAPI, getOrdersAPI, getPathsAPI } from "../services/ApiService"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { driversState } from "../store/atoms/driversAtom"
 import { ordersAtom, ordersSearchDate } from "../store/atoms/orderAtom"
 import { savedPathsAtom } from "../store/atoms/pathAtom"
 import { convertToUTC } from "../utils/UTCdate"
 import Loading from "./Loading"
 import { loadingState } from "../store/atoms/loadingStateAtom"
+import { token } from "../store/atoms/tokenAtom"
 
 
 const Init = () => {
@@ -15,6 +16,7 @@ const Init = () => {
     const setPaths = useSetRecoilState(savedPathsAtom)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     const loading = useRecoilValue(loadingState)
+    const [tokenValue, setTokenValue] = useRecoilState(token)
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
@@ -29,13 +31,16 @@ const Init = () => {
                             value: drivers
                         })
                     }).catch((err) => {
-                        alert("Error Fetching Data, Please check internet or refresh the page agin")
+                        alert("Error1 Fetching Data, Please check internet or refresh the page agin")
                     })
                 }).catch((err) => {
-                    alert("Error Fetching Data, Please check internet or refresh the page agin")
+                    alert("Error2 Fetching Data, Please check internet or refresh the page agin")
                 })
             }).catch((err) => {
-                alert("Error Fetching Data, Please check internet or refresh the page agin")
+                console.log(err)
+                alert("Error Fetching Data, Please check internet or login again")
+                setTokenValue(null)
+                window.location.assign("/")
             })
 
         }

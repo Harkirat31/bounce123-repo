@@ -4,6 +4,7 @@ import { ErrorCode, driver } from "types/src/index"
 import { createDriver, getDriversAPI } from "../../services/ApiService"
 import { useSetRecoilState } from "recoil"
 import { driversState } from "../../store/atoms/driversAtom"
+import { loadingState } from "../../store/atoms/loadingStateAtom"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")
@@ -13,12 +14,15 @@ const CreateDriver = () => {
     const [vehicleStyle, setVehicleStyle] = useState("Pick Up")
     const setDrivers = useSetRecoilState(driversState)
     const [errorMessage, setErrorMessage] = useState<any[]>([])
+    const setLoading = useSetRecoilState(loadingState)
+
 
     function saveDriver() {
         let parsedDriverData = validateInput({ name, email, vehicleStyle, phone })
         if (parsedDriverData == null) {
             return
         }
+        setLoading(true)
         createDriver(parsedDriverData).then((result: any) => {
             if (result.isAdded) {
                 getDriversAPI().then((drivers: any) => {
@@ -37,7 +41,9 @@ const CreateDriver = () => {
                     setErrorMessage(["Driver of this Email already Exists"])
                 }
             }
+            setLoading(false)
         }).catch((result) => {
+            setLoading(false)
             alert("Not Added, Errors in Detail or Internet is down")
         })
     }

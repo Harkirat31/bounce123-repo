@@ -91,7 +91,7 @@ const OrderRow = (props: { orderId: string, index: number }) => {
                 <p>{props.index}</p>
             </td> */}
             <td className="px-1 py-4">
-                <p>{order!.orderNumber}</p>
+                <p>{order!.orderNumber == "" ? "NA" : order!.orderNumber}</p>
             </td>
             <td className="px-1 py-4">
                 {order!.currentStatus}
