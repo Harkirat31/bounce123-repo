@@ -317,6 +317,23 @@ export const assignPathAPI = (path: PathOrderType) => {
     })
 }
 
+export const cancelPathAPI = (path: PathOrderType) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/cancelPath', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(path)
+        }).then((response) => response.json().then((jsonData) => {
+            resolve(jsonData)
+        }).catch((error) => reject(error))).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
 
 export const createOrdersApi = (orders: OrderType[]) => {
     let createOrderStatuses: any = []

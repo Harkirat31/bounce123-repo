@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder } from "types"
 import { API_KEY_SIGNIN } from './config';
 
 import dotenv from "dotenv"
@@ -608,6 +608,53 @@ export const assignPathToDriver = (path: PathOrderType) => {
       })
       resolve(result)
     }).catch((error) => reject(new Error("Error")))
+  })
+}
+export const cancelPath = (path: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const nonDeliveredOrdersDocs = (await db.collection('orders').where("assignedPathId", "==", path.pathId).where("currentStatus", "!=", "Delivered").get()).docs
+      const nonDeliveredOrders: OrderType[] = []
+      const nonDeliveredOrderIds = new Set<string>()
+      nonDeliveredOrdersDocs.forEach((doc) => {
+        console.log(doc.data() as OrderType)
+        nonDeliveredOrders.push(doc.data() as OrderType)
+        nonDeliveredOrderIds.add(doc.id)
+      })
+      const modifiedPath = path.path.filter((p) => {
+        if (nonDeliveredOrderIds.has(p)) {
+          return false
+        }
+        else {
+          return true
+        }
+      })
+
+      for (const order of nonDeliveredOrderIds) {
+        await db.collection("orders").doc(order).update({
+          "driverId": admin.firestore.FieldValue.delete(),
+          "driverName": admin.firestore.FieldValue.delete(),
+          "assignedPathId": admin.firestore.FieldValue.delete(),
+          "currentStatus": "NotAssigned"
+        })
+      }
+      //if modified path length is ZERO, delete path
+      if (modifiedPath.length == 0) {
+        await db.collection("paths").doc(path.pathId!).delete()
+        resolve({ result: true, isPathDeleted: true })
+      }
+      else {
+        await db.collection("paths").doc(path.pathId!).update({
+          path: modifiedPath
+        })
+        resolve({ result: true, isPathDeleted: false, modifiedPath: modifiedPath })
+      }
+    }
+    catch (error) {
+      console.log(error)
+      reject({ result: false, isPathDeleted: false })
+    }
+
   })
 }
 

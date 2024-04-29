@@ -73,17 +73,17 @@ export const sortOrders = selectorFamily({
 // export const getOrder = selectorFamily({
 //     key: "getOrder",
 //     get: (id: string) => ({ get }) => {
-//         return getOrderAtom(id)
+//         const orders = get(ordersAtom)
+//         return orders.find((order) => order.orderId === id)
 //     },
 //     set: (id: string) => ({ get, set }, newValue) => {
-//         set(getOrderAtom(id), newValue)
-//         // if (!(newValue instanceof DefaultValue)) {
-//         //     let orders = get(ordersAtom)
-//         //     let ordersCopy = [...orders]
-//         //     let index = ordersCopy.findIndex((order) => order.orderId === newValue!.orderId)
-//         //     ordersCopy[index] = newValue as OrderType
-//         //     set(ordersAtom, ordersCopy)
-//         // }
+//         if (!(newValue instanceof DefaultValue)) {
+//             let orders = get(ordersAtom)
+//             let ordersCopy = [...orders]
+//             let index = ordersCopy.findIndex((order) => order.orderId === newValue!.orderId)
+//             ordersCopy[index] = newValue as OrderType
+//             set(ordersAtom, ordersCopy)
+//         }
 //     },
 // })
 

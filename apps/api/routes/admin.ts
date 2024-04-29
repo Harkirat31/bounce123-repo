@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification } from "db"
+import { signIn, signUp, createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification, cancelPath } from "db"
 import axios from "axios";
 
 
@@ -209,7 +209,7 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
   assignPathToDriver(assignPathParams.data).then(async (result) => {
     let orders = await getOrdersWithPathId(pathId!)
     let driver = await getDriver(driverId!, req.body.companyId)
-    let company = await getUser(driver.companyId!)
+    let company = await getUser(driver.companyId!)//User is equivalent to Company
     let message = `Orders for ${pathDate.toLocaleDateString()}: \n\n`
     orders.forEach((order, index) => {
       message = message + `Order Sr No ${index + 1} \n`
@@ -222,6 +222,36 @@ router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
     sendNotification(driverId!, { companyName: company.companyName, message: "New Order has been assigned" })
     res.json({ isAdded: true })
   }).catch((errro) => res.json({ isAdded: false }))
+})
+
+
+router.post('/cancelPath', authenticateJwt, (req: Request, res: Response) => {
+  if (req.body.dateOfPath) {
+    try {
+      req.body.dateOfPath = new Date(req.body.dateOfPath)
+    }
+    catch (_error) {
+      return res.status(403).json({
+        isAdded: false,
+        msg: "Error in Parameters"
+      })
+    }
+  }
+  let assignPathParams = pathOrder.safeParse(req.body)
+
+  if (!assignPathParams.success) {
+    console.log(assignPathParams.error)
+    return res.status(403).json({
+      isCancelled: false,
+      msg: "Error in Parameters"
+    })
+  }
+  cancelPath(assignPathParams.data).then((result: any) => {
+    res.json({ isCancelled: result, isPathDeleted: result.isPathDeleted, modifiedPath: result.modifiedPath })
+  }).catch((error) => {
+    res.json({ isCancelled: false, isPathDeleted: false })
+  })
+
 })
 
 const sendTextMessage = (mess: string, contact: string) => {

@@ -1,8 +1,8 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, savedPaths, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
-import { assignPathAPI, deletePath } from "../../services/ApiService"
+import { createPathAtom, getSavedPathById, savedPaths, savedPathsAtom, updateOrders, updateOrdersAfterCancel } from "../../store/atoms/pathAtom"
+import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
@@ -12,6 +12,7 @@ import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
+import { TiDelete } from "react-icons/ti"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
@@ -99,10 +100,13 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     }>>
 }) => {
     const [pathData, setPathData] = useRecoilState(getPathById(path.pathId!))
+    const setPathDataAtom = useSetRecoilState(getSavedPathById(path.pathId!))
+
     const drivers = useRecoilValue(getDrivers)
     const selectRef = useRef<HTMLSelectElement | null>(null);
-    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">({ driverId: pathData!.driverId ? pathData!.driverId : "Select", driverName: pathData?.driverName ? pathData?.driverName : "Select" })
+    const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const updateOrder = useSetRecoilState(updateOrders)
+    const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
     const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
@@ -176,6 +180,38 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
             setLoading(false)
         })
     }
+    const [undo, setUndo] = useState(false)
+
+    const handleUndo = () => {
+        setLoading(true)
+        cancelPathAPI({ ...pathData! }).then((result: any) => {
+            setUndo(false)
+            if (result.isCancelled) {
+                //if all orders are not delivered , then path is deleted in db, so need to delete path at front end
+                if (result.isPathDeleted) {
+                    let allPathsCopy = allPaths.filter((path) => {
+                        //removed path which is deleted
+                        if (path.pathId == pathData!.pathId) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    })
+                    setAllPaths(allPathsCopy)
+                    updateOrder(pathData!.path)
+                }
+                else {
+                    updateAfterCancel(pathData!.path)
+                    setPathDataAtom({ ...pathData!, path: result.modifiedPath })
+                }
+            }
+
+        }).catch((error) => {
+            alert("Failed")
+        }).finally(() => {
+            setLoading(false)
+        })
+    }
 
     const handleEdit = () => {
         if (pathData != null) {
@@ -187,8 +223,24 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 
     }
     if (pathData) {
+
         return <>
-            <tr className="border-b-2 border-gray-100">
+            {/* pop up for cancelation of path, display is fixed */}
+            {undo &&
+                <div className={`${undo ? "flex" : "hidden"} z-50 left-0 top-0 flex-col justify-center items-center bottom-0 h-full fixed w-full  bg-black/40`}>
+                    <div className="bg-white relative text-lg w-fit">
+                        <TiDelete onClick={() => { setUndo(false) }} size={32} className="absolute right-0 top-0 cursor-pointer" />
+                        <div className="pt-10 text-white   flex flex-wrap items-center justify-center">
+                            {pathData.path.map((node) => {
+                                return <div className="mt-2">
+                                    <DisplayOrderData orderId={node}></DisplayOrderData>
+                                </div>
+                            })}
+                        </div>
+                        <button onClick={() => handleUndo()} className="bg-blue-700 text my-10 text-white p-2">Cancel Assignment</button>
+                    </div>
+                </div>}
+            <tr className="border-b-2 border-gray-100 relative">
                 <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
                 <td>
                     <div className="grid grid-cols-3">
@@ -240,7 +292,11 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                             <button type="button" onClick={handleEdit} className="text-2xl border-gray-300 border-r-2 p-1"><MdEdit /></button>
                         </>
                         :
-                        <p className="ml-2">Sent</p>
+                        <div className="flex flex-row">
+                            <p className="ml-2 mr-2">Sent</p>
+                            <button onClick={() => setUndo(true)} className=" border-gray-300 text-red-500 underline font-bold"> Undo</button>
+                        </div>
+
                     }
 
 
@@ -260,4 +316,22 @@ const DisplayOrderNumber = ({ orderId }: { orderId: string }) => {
     const order = useRecoilValue(getOrder(orderId))
 
     return <p className="text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
+}
+
+const DisplayOrderData = ({ orderId }: { orderId: string }) => {
+    const order = useRecoilValue(getOrder(orderId))
+
+    return <div className="flex flex-col bg-blue-700 mx-1 p-2 text-center justify-center  border-gray-300">
+        <div className="flex flex-row justify-center">
+            <p className=" font-bold underline ">Order Id: </p>
+            <p className="ml-2">{order?.orderNumber}</p>
+        </div>
+        <p className="">{order?.address}</p>
+        <p className="">{order?.itemsDetail}</p>
+        <div className="flex flex-row justify-center">
+            <p className=" font-bold underline ">Order Status: </p>
+            <p className="ml-2">{order?.currentStatus}</p>
+        </div>
+        <p className="text-sm">{order?.currentStatus == "Delivered" ? "(Delivered order cannot be cancelled)" : ""}</p>
+    </div>
 }

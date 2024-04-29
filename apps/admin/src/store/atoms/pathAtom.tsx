@@ -74,6 +74,7 @@ export const orderSetForPathCreation = selector({
     }
 })
 
+//update after undo
 export const updateOrders = selector<string[]>({
     key: "updateOrders",
     get: ({ get }) => {
@@ -85,7 +86,33 @@ export const updateOrders = selector<string[]>({
                 let order = { ...get(getOrder(orderId)) }
                 order!.currentStatus = "NotAssigned"
                 order!.assignedPathId = ""
+                order!.driverId = undefined
+                order!.driverName = undefined
                 set(getOrder(orderId), { ...order as OrderType })
+            })
+
+        }
+
+    }
+})
+
+
+export const updateOrdersAfterCancel = selector<string[]>({
+    key: "updateOrdersAfterCancel",
+    get: ({ get }) => {
+        return []
+    },
+    set: ({ set, get }, newValue) => {
+        if (!(newValue instanceof DefaultValue)) {
+            newValue.forEach((orderId) => {
+                let order = { ...get(getOrder(orderId)) }
+                if (order!.currentStatus != "Delivered") {
+                    order!.currentStatus = "NotAssigned"
+                    order!.assignedPathId = ""
+                    order!.driverId = undefined
+                    order!.driverName = undefined
+                    set(getOrder(orderId), { ...order as OrderType })
+                }
             })
 
         }

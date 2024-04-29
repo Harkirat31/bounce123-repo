@@ -127,6 +127,7 @@ export enum deliveryStatus {
 export const pathOrder = z.object({
     pathId: z.string().optional(),
     companyId: z.string().optional(),
+    pickupLocationIndex: z.number().default(0),
     show: z.boolean(),
     path: z.array(z.string()),
     dateOfPath: z.date(),
