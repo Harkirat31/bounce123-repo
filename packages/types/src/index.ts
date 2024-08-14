@@ -83,7 +83,7 @@ export const order = z.object({
     specialInstructions: z.string().optional(),
     deliverTimeRangeStart: z.number().min(1).max(24).optional(),
     deliverTimeRangeEnd: z.number().min(1).max(24).optional(),
-    priority: z.enum(["High", "Medium", "Low"]).default("Medium"),
+    priority: z.enum(["High", "Medium", "Low", "Special"]).default("Medium"),
     extraItems: z.array(z.object({ sideItemId: z.string(), sideItemTitle: z.string(), count: z.number() })).optional(),
 })
 
@@ -127,7 +127,6 @@ export enum deliveryStatus {
 export const pathOrder = z.object({
     pathId: z.string().optional(),
     companyId: z.string().optional(),
-    pickupLocationIndex: z.number().default(0),
     show: z.boolean(),
     path: z.array(z.string()),
     dateOfPath: z.date(),
@@ -153,7 +152,8 @@ export const user = z.object({
     phone: z.string().min(10),
     location: location.optional(),
     ordersCountForMonth: z.number().optional(),
-    placeId: z.string().optional()
+    placeId: z.string().optional(),
+    availableCount: z.number().optional().default(0)
 })
 export type UserType = z.infer<typeof user>
 

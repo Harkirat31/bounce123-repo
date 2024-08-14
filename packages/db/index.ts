@@ -224,6 +224,8 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
     signUp({ email: newUserDetail.email, password: newUserDetail.password! }).then((uidNewUser) => {
       newUserDetail.userId = uidNewUser
       newUserDetail.password = ""
+      newUserDetail.availableCount = parseInt(process.env.TRIAL_COUNT ?? "200")
+
       db.collection('users').doc(uidNewUser).set(
         newUserDetail
       ).then((result) => {

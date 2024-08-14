@@ -175,7 +175,6 @@ router.post("/createUser", (req: Request, res: Response) => {
   }).then((respMapsApi) => respMapsApi.json().then((mapsData) => {
     const results = mapsData.results;
     if (results.length > 0) {
-      console.log("location")
       location = results[0].geometry.location;
       placeId = results[0].place_id;
     } else {
@@ -188,8 +187,6 @@ router.post("/createUser", (req: Request, res: Response) => {
       parsedUserData.data.location = location
       parsedUserData.data.placeId = placeId
       createUser(parsedUserData.data).then((result) => {
-        //  const secretKey = process.env.JWT_SECRET;
-        //  const token = jwt.sign({ user: result }, secretKey!, { expiresIn: '30 days', });
         res.json({ message: 'Login successfully', success: true });
       }).catch((error) => {
         return res.status(403).json({

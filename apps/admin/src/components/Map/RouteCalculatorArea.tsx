@@ -116,7 +116,7 @@ const DropdownForPriority = ({ order, setOrder }: { order: OrderType, setOrder: 
     const [priority, setPriority] = useState(order.priority)
     return <>
         <select value={priority} onChange={(event) => {
-            if (event.target.value === "Low" || event.target.value === "High" || event.target.value === "Medium") {
+            if (event.target.value === "Special" || event.target.value === "Low" || event.target.value === "High" || event.target.value === "Medium") {
                 setPriority(event.target.value)
                 changePriority(order.orderId!, event.target.value).then(
                     (result: any) => {
@@ -127,6 +127,7 @@ const DropdownForPriority = ({ order, setOrder }: { order: OrderType, setOrder: 
                 ).catch((_) => { })
             }
         }}>
+            <option value={"Special"}>Special</option>
             <option value={"Low"}>Low</option>
             <option value={"Medium"}>Medium</option>
             <option value={"High"}>High</option>

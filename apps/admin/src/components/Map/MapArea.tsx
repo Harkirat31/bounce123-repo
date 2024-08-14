@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrder, getOrderIds, getOrders } from "../../store/selectors/orderSelector";
 import { OrderType, PathOrderType, UserType } from "types";
-import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, darkColors } from "../../utils/constants";
+import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, VERY_LOW_PRIORITY_COLOR, darkColors } from "../../utils/constants";
 import { createPathAtom, getSavedPathById, savedPaths } from "../../store/atoms/pathAtom";
 import { userAtom } from "../../store/atoms/userAtom";
 
@@ -155,7 +155,7 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: 
             glyph: getOrderLabel(orderData),
             // glyph: srNo.toString(),
             glyphColor: 'black',
-            background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : LOW_PRIORITY_COLOR,
+            background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : orderData?.priority === "Low" ? LOW_PRIORITY_COLOR : VERY_LOW_PRIORITY_COLOR,
             borderColor: "DarkSlateGrey"
         });
 
