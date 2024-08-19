@@ -318,6 +318,7 @@ router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
 
 router.post("/getOrders", authenticateJwt, (req: Request, res: Response) => {
   let parsedDate = req.body.date
+  console.log(parsedDate)
   if (!parsedDate) {
     return res.status(403).json({
       msg: "Error in  Details "

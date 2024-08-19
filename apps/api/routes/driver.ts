@@ -22,9 +22,11 @@ router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response
 })
 
 router.post("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
-    getDriverWithPaths(req.body.uid,req.body.date).then((data) => {
+    console.log(req.body.date)
+    getDriverWithPaths(req.body.uid,new Date(req.body.date)).then((data) => {
         res.status(200).json(data)
     }).catch((error) => {
+        console.log(error)
         res.status(403).json({
             err: "Error"
         })
