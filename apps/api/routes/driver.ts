@@ -21,7 +21,7 @@ router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response
     })
 })
 
-router.get("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
+router.post("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
     getDriverWithPaths(req.body.uid,req.body.date).then((data) => {
         res.status(200).json(data)
     }).catch((error) => {
