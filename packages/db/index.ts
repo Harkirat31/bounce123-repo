@@ -132,7 +132,7 @@ export const generateEmailVerifyLink = (email: string) => {
 
 
 
-export const getDriverWithPaths = (uid: string) => {
+export const getDriverWithPaths = (uid: string,date:Date) => {
   return new Promise((resolve, reject) => {
     let driverCompanyList: DriverType[] = []
     let paths: PathOrderType[] = []
@@ -148,13 +148,13 @@ export const getDriverWithPaths = (uid: string) => {
         driverCompanyList[element].companyName = (company.data() as UserType).companyName
         driverCompanyList[element].companyLocation = (company.data() as UserType).location
       }
-      db.collection("paths").where("driverId", "==", uid).get().then((pathsSnapshot) => {
+      db.collection("paths").where("driverId", "==", uid).where("dateOfPath","==",date).get().then((pathsSnapshot) => {
         pathsSnapshot.docs.forEach((path) => {
           let pathObject: PathOrderType = path.data() as PathOrderType
           pathObject.pathId = path.id
           paths.push(pathObject)
         })
-        getOrders(uid).then((ordersData) => {
+        getOrdersByDate(uid,date).then((ordersData) => {
           orders = ordersData
 
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
@@ -436,6 +436,19 @@ export const createOrder = (orderData: OrderType) => {
 export const getOrders = (driverId: string): Promise<OrderType[]> => {
   return new Promise((resolve, reject) => {
     db.collection('orders').where("driverId", "==", driverId).get().then((result) => {
+      let orders = result.docs.map((doc) => {
+        let o = doc.data() as OrderType
+        o.orderId = doc.id
+        return o;
+      })
+      resolve(orders)
+    }).catch((error) => reject(new Error("Error fetching orders of driver")))
+  })
+}
+
+export const getOrdersByDate = (driverId: string,date:Date): Promise<OrderType[]> => {
+  return new Promise((resolve, reject) => {
+    db.collection('orders').where("driverId", "==", driverId).where("deliveryDate","==",date).get().then((result) => {
       let orders = result.docs.map((doc) => {
         let o = doc.data() as OrderType
         o.orderId = doc.id
