@@ -59,7 +59,6 @@ router.post("/resetPassword", (req: Request, res: Response) => {
         html: `<p>Hi </br>   </p> <a href="${result}"> Click this link to generate new Password</a>`,
       }
       sgMail.send(msg).then((result2) => {
-        console.log(result2)
         res.json({ reset: true })
       }).catch((error) => {
         console.log(error)
