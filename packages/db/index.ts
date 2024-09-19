@@ -131,6 +131,25 @@ export const generateEmailVerifyLink = (email: string) => {
 }
 
 
+export const getFuturePathDates = (uid: string,date:Date) => {
+  return new Promise((resolve, reject) => {
+    let futureDates: Date[] = []
+      db.collection("paths").where("driverId", "==", uid).where("dateOfPath",">",date).get().then((pathsSnapshot) => {
+        console.log(pathsSnapshot.docs.length)
+        pathsSnapshot.docs.forEach((path) => {
+          let pathObject: PathOrderType = path.data() as PathOrderType    
+          futureDates.push(pathObject.dateOfPath)
+        })
+        resolve(futureDates)
+      }).catch((error) => {
+        console.log(error)
+        reject(ErrorCode.FirebaseError)
+      })
+  
+  })
+}
+
+
 
 export const getDriverWithPaths = (uid: string,date:Date) => {
   return new Promise((resolve, reject) => {
@@ -469,7 +488,6 @@ export const getOrdersWithPathId = (pathId: string): Promise<OrderType[]> => {
 }
 
 export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderType[]> => {
-
   return new Promise((resolve, reject) => {
     db.collection('orders').where("companyId", "==", companyId).where("deliveryDate", "==", date).get().then((result) => {
       let orders = result.docs.map(
@@ -686,7 +704,7 @@ export const getFCMTokens = (uid: string) => {
 
 export const sendNotification = async (driverId: string, notificationMessage: NotificationMessage) => {
   let fcmTokens = await getFCMTokens(driverId);
-  fcmTokens.forEach((token) => {
+  fcmTokens.forEach((token) => {  
     const message = {
       token: token,
       notification: {
