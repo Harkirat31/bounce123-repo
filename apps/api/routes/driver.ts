@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
-import { getDriverWithPaths, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus } from "db"
+import { getDriverWithPaths, getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus } from "db"
 
 const router = express.Router();
 
@@ -22,8 +22,18 @@ router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response
 })
 
 router.post("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
-    console.log(req.body.date)
     getDriverWithPaths(req.body.uid,new Date(req.body.date)).then((data) => {
+        res.status(200).json(data)
+    }).catch((error) => {
+        console.log(error)
+        res.status(403).json({
+            err: "Error"
+        })
+    })
+
+})
+router.post("/getFuturePathDates",authenticateJwtDriver,(req: Request, res: Response) => {
+    getFuturePathDates(req.body.uid,new Date(req.body.date)).then((data) => {
         res.status(200).json(data)
     }).catch((error) => {
         console.log(error)
