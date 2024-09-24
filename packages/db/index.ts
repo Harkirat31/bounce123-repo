@@ -134,7 +134,7 @@ export const generateEmailVerifyLink = (email: string) => {
 export const getFuturePathDates = (uid: string,date:Date) => {
   return new Promise((resolve, reject) => {
     let futureDates: Date[] = []
-      db.collection("paths").where("driverId", "==", uid).where("dateOfPath",">",date).get().then((pathsSnapshot) => {
+      db.collection("paths").where("driverId", "==", uid).where("dateOfPath",">=",date).get().then((pathsSnapshot) => {
         console.log(pathsSnapshot.docs.length)
         pathsSnapshot.docs.forEach((path) => {
           let pathObject: PathOrderType = path.data() as PathOrderType    
@@ -142,7 +142,6 @@ export const getFuturePathDates = (uid: string,date:Date) => {
         })
         resolve(futureDates)
       }).catch((error) => {
-        console.log(error)
         reject(ErrorCode.FirebaseError)
       })
   
