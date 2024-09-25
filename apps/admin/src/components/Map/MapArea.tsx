@@ -1,5 +1,5 @@
 import { Wrapper } from "@googlemaps/react-wrapper";
-import { API_KEY } from "../../../config";
+//import { API_KEY } from "../../../config";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrder, getOrderIds, getOrders } from "../../store/selectors/orderSelector";
@@ -14,6 +14,7 @@ import { userAtom } from "../../store/atoms/userAtom";
    Used React wrapper for google maps API.
    
 */
+const API_KEY = import.meta.env.VITE_API_KEY
 const MapArea = ({ user }: { user: UserType }) => {
     return (
         <div>

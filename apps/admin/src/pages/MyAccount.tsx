@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react"
 import { useRecoilState } from "recoil"
 import { ErrorCode, user } from "types"
 import { Wrapper } from "@googlemaps/react-wrapper"
-import { API_KEY } from "../../config"
+//import { API_KEY } from "../../config"
 import { userAtom } from "../store/atoms/userAtom"
 import { getUserAPI, updateUserAPI } from "../services/ApiService"
 
-
+const API_KEY = import.meta.env.VITE_API_KEY
 const MyAccount = () => {
     return <>
         <Wrapper apiKey={API_KEY} version="beta" libraries={["marker", "places"]}>

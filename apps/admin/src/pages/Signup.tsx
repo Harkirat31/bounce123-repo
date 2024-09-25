@@ -3,9 +3,9 @@ import { signupAPI, verifyEmailAPI } from "../services/ApiService"
 import { useNavigate } from "react-router-dom"
 import { ErrorCode, user } from "types"
 import { Wrapper } from "@googlemaps/react-wrapper";
-import { API_KEY } from "../../config";
+//import { API_KEY } from "../../config";
 
-
+const API_KEY = import.meta.env.VITE_API_KEY
 const Signup2 = () => {
     const [email, setEmail] = useState("")
     const [name, setName] = useState("")

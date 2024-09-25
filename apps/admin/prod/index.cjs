@@ -5,7 +5,6 @@ const app = express();
 app.use(express.static(path.join(__dirname, '../dist/')));
 
 app.get('/src/assets/sample_order_creation_file.csv', (req, res) => {
-  console.log("Hellos")
   res.header('Content-Type', 'text/csv');
   res.download(path.join(__dirname, '../', '/src/assets/',"sample_order_creation_file.csv"))
 });
