@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
 import { TiDelete } from "react-icons/ti"
+import { ordersSearchDate } from "../../store/atoms/orderAtom"
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
@@ -106,19 +107,20 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const updateOrder = useSetRecoilState(updateOrders)
-    const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
+    //const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
     const [allPaths, setAllPaths] = useRecoilState(savedPaths)
     const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
     const setLoading = useSetRecoilState(loadingState)
+    const [orderSearchDate,setOrderSearchDate] = useRecoilState(ordersSearchDate)
 
 
     const handleShowToggle = () => {
         if (pathData!.show) {
-            setPathData({ ...pathData!, show: false })
+            setPathDataAtom({ ...pathData!, show: false })
         }
         else {
-            setPathData({ ...pathData!, show: true })
+            setPathDataAtom({ ...pathData!, show: true })
         }
     }
     function handleDropdownChanged(event: ChangeEvent<HTMLSelectElement>): void {
@@ -186,25 +188,30 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
         setLoading(true)
         cancelPathAPI({ ...pathData! }).then((result: any) => {
             setUndo(false)
-            if (result.isCancelled) {
-                //if all orders are not delivered , then path is deleted in db, so need to delete path at front end
-                if (result.isPathDeleted) {
-                    let allPathsCopy = allPaths.filter((path) => {
-                        //removed path which is deleted
-                        if (path.pathId == pathData!.pathId) {
-                            return false
-                        } else {
-                            return true
-                        }
-                    })
-                    setAllPaths(allPathsCopy)
-                    updateOrder(pathData!.path)
-                }
-                else {
-                    updateAfterCancel(pathData!.path)
-                    setPathDataAtom({ ...pathData!, path: result.modifiedPath })
-                }
-            }
+            
+            // if (result.isCancelled) {
+            //     //if all orders are not delivered , then path is deleted in db, so need to delete path at front end
+            //     if (result.isPathDeleted) {
+            //         let allPathsCopy = allPaths.filter((path) => {
+            //             //removed path which is deleted
+            //             if (path.pathId == pathData!.pathId) {
+            //                 return false
+            //             } else {
+            //                 return true
+            //             }
+            //         })
+            //         setAllPaths(allPathsCopy)
+            //         updateOrder(pathData!.path)
+            //     }
+            //     else {
+            //         updateAfterCancel(pathData!.path)
+            //         setPathDataAtom({ ...pathData!, path: result.modifiedPath })
+            //     }
+            // }
+
+
+            //this refresh the orders, paths
+            setOrderSearchDate(new Date(orderSearchDate))
 
         }).catch((error) => {
             alert("Failed")

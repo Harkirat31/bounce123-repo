@@ -8,6 +8,7 @@ import { convertToUTC } from "../utils/UTCdate"
 import Loading from "./Loading"
 import { loadingState } from "../store/atoms/loadingStateAtom"
 import { token } from "../store/atoms/tokenAtom"
+import { refresh } from "../store/atoms/refreshAtom"
 
 
 const Init = () => {
@@ -17,6 +18,7 @@ const Init = () => {
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     const loading = useRecoilValue(loadingState)
     const [_tokenValue, setTokenValue] = useRecoilState(token)
+    const setRefresh = useSetRecoilState(refresh("d"))
 
     useEffect(() => {
         if (window.localStorage.getItem("token")) {
@@ -30,6 +32,8 @@ const Init = () => {
                             isLoading: false,
                             value: drivers
                         })
+                        setRefresh()
+                        
                     }).catch((err) => {
                         alert("Error1 Fetching Data, Please check internet or refresh the page agin")
                     })
