@@ -111,7 +111,7 @@ router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response
       let message = `Orders for ${req.body.dateOfPath.toLocaleDateString()}: \n\n`
       orders.forEach((order, index) => {
         message = message + `Order Sr No ${index + 1} \n`
-        message = message + `Name: ${order.cname} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
+        message = message + `Name: ${order.cname} \n  Phone: ${order.cphone} \n Address: ${order.address} \n Delivery Items: ${order.itemsDetail} \n Instructions: ${order.specialInstructions} \n\n`
 
       })
       sendTextMessage(message, driver.phone);

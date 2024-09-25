@@ -231,7 +231,9 @@ function getInfoWindowContent(order: OrderType) {
     <p>Priority : ${order.priority}</p>
     <p>Status : ${order.currentStatus}</p>
     <p>Assigned To : ${order.driverName ? order.driverName : "No Driver Assigned"}</p>
-    <p>Item Details : ${order.itemsDetail}</p>`
+    <p>Item Details : ${order.itemsDetail}</p>
+    <p>Special Instructions : ${order.specialInstructions}</p>`
+    
 }
 
 export default MapArea
