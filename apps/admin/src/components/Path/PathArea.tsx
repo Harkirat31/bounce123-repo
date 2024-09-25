@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, getSavedPathById, savedPaths, savedPathsAtom, updateOrders, updateOrdersAfterCancel } from "../../store/atoms/pathAtom"
+import { createPathAtom, getSavedPathById, savedPaths, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
 import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
