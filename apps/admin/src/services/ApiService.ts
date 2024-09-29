@@ -1,6 +1,8 @@
 import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
-import { BASE_URL } from "../../config";
 import axios from "axios";
+
+
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 
 export const signupAPI = (user: UserType) => {

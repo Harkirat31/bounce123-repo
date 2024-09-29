@@ -4,7 +4,7 @@ import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
 import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder } from "types"
-import { API_KEY_SIGNIN } from './config';
+//import { API_KEY_SIGNIN } from './config';
 
 import dotenv from "dotenv"
 dotenv.config();
@@ -48,7 +48,7 @@ export const saveFCMToken = (uid: string, fcmToken: string) => {
 
 export const signIn = async (email: string, password: string) => {
   return new Promise((resolve, reject) => {
-    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
+    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.API_KEY_SIGNIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
@@ -84,7 +84,7 @@ export const signIn = async (email: string, password: string) => {
 
 export const signInDriver = async (email: string, password: string) => {
   return new Promise((resolve, reject) => {
-    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY_SIGNIN}`, {
+    fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.API_KEY_SIGNIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ "email": email, "password": password, "returnSecureToken": true })
