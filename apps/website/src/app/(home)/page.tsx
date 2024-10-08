@@ -1,6 +1,8 @@
 import Image from "next/image"
 import { FaArrowRight } from "react-icons/fa6"
 import FeatureBox from "../components/home/feature_box"
+import FeatureBoxDetailed from "../components/home/feature_box_detailed"
+import { map_view_list, route_drawing_list } from "../constants/home_constants"
 
 const Home = () => {
     return (    
@@ -49,74 +51,30 @@ const Home = () => {
                     <Image fill={true} objectFit="cover" src="/home/3.png" alt="1"></Image>
                 </div> */}
             </div>
-
+            <div className="mt-20">
+                <FeatureBoxDetailed
+                    heading="Map View"
+                    image="/home/2.png"
+                    list={map_view_list}
+                ></FeatureBoxDetailed>
+            </div>
 
             <div className="mt-20">
-                    <div className="flex flex-row justify-between">
-                        <div className="relative w-[40%] aspect-square">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/2.png" alt="1"></Image>    
-                        </div>
-                        <div className="w-[60%] flex flex-col justify-start items-center">
-                            <h1 className="text-2xl">
-                                Map View
-                            </h1>
+                <FeatureBoxDetailed
+                    heading="Draw Routes, Optimize deliveries"
+                    image="/home/3.png"
+                    list={route_drawing_list}
+                    flip={true}
+                ></FeatureBoxDetailed>
+            </div>
 
-                        </div>
-
-
-                    </div>
+            <div className="mt-20">
+                  
 
             </div>
 
             <div className="mt-20">
-                    <div className="flex flex-row justify-between">
-                        <div className="relative w-[40%] aspect-square">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/2.png" alt="1"></Image>    
-                        </div>
-                        <div className="w-[60%] flex flex-col justify-start items-center">
-                            <h1 className="text-2xl">
-                                Map View
-                            </h1>
-
-                        </div>
-
-
-                    </div>
-
-            </div>
-
-            <div className="mt-20">
-                    <div className="flex flex-row justify-between">
-                        <div className="relative w-[40%] aspect-square">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/2.png" alt="1"></Image>    
-                        </div>
-                        <div className="w-[60%] flex flex-col justify-start items-center">
-                            <h1 className="text-2xl">
-                                Map View
-                            </h1>
-
-                        </div>
-
-
-                    </div>
-
-            </div>
-
-            <div className="mt-20">
-                    <div className="flex flex-row justify-between">
-                        <div className="relative w-[40%] aspect-square">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/2.png" alt="1"></Image>    
-                        </div>
-                        <div className="w-[60%] flex flex-col justify-start items-center">
-                            <h1 className="text-2xl">
-                                Map View
-                            </h1>
-
-                        </div>
-
-
-                    </div>
-
+                    
             </div>
         </div>
     

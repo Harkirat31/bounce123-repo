@@ -764,7 +764,12 @@ export const deleteDriver = (driverId: string, companyId: string) => {
 
 
 
+
+
 const test = async () => {
+
+  // await createTestOrder()
+  // console.log("done")
 
 
   //const c = new Date().getMilliseconds()
