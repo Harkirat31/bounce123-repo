@@ -26,9 +26,13 @@ export default function RootLayout({
           <div className="px-16">
           {children}
           </div>
+          <footer className="py-4 px-16" >
+        <Navbar></Navbar>
+        </footer>
         </div>
+        
         </div>
-        <footer></footer>
+        
       </body>
     </html>
   );

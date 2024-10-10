@@ -12,4 +12,10 @@ const route_drawing_list = [
     "Make informed decision while assigning deliveries to the drivers"
 ]
 
- export {map_view_list,route_drawing_list}
+const mobile_app_list = [
+    "Deliveries At-a-Glance",
+    "Real-time Order Notifications",
+    "Delivery Details of the orders",
+    "Navigation and Mapping",]
+
+ export {map_view_list,route_drawing_list,mobile_app_list}

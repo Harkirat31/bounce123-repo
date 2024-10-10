@@ -2,7 +2,7 @@ import Image from "next/image"
 import { FaArrowRight } from "react-icons/fa6"
 import FeatureBox from "../components/home/feature_box"
 import FeatureBoxDetailed from "../components/home/feature_box_detailed"
-import { map_view_list, route_drawing_list } from "../constants/home_constants"
+import { map_view_list, mobile_app_list, route_drawing_list } from "../constants/home_constants"
 
 const Home = () => {
     return (    
@@ -69,8 +69,11 @@ const Home = () => {
             </div>
 
             <div className="mt-20">
-                  
-
+                <FeatureBoxDetailed
+                    heading="Mobile App"
+                    image="/home/mobile_app.png"
+                    list={mobile_app_list}
+                ></FeatureBoxDetailed>
             </div>
 
             <div className="mt-20">
