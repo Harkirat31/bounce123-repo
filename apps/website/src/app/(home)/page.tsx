@@ -7,21 +7,23 @@ import { map_view_list, mobile_app_list, route_drawing_list } from "../constants
 const Home = () => {
     return (    
         <div className="flex flex-col justify-start">
-            <div className="flex flex-row justify-start items-center mt-2">
+            <div className="flex flex-row justify-start items-center mt-10">
                 <div className="w-1/2 text-primaryColor font-bold ">
-                    <h1 className="text-6xl">Manage Your Deliveries with Confidence</h1>
-                    <div className="mt-8 py-2 px-4 w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center gap-x-4">
-                        <span className="">Get Started</span>
+                    <h1 className="text-xl md:text-3xl lg:text-6xl">Manage Your Deliveries with Confidence</h1>
+                    <div className="text-sm md:text-base lg:text-lg mt-8 py-1 px-2 sm:py-2 sm:px-4 w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center gap-x-4">
+                        <span className="">
+                            <a target="_blank" href="https://delivery.easeyourtasks.com">Get Started</a>
+                            </span>
                         <FaArrowRight />
                     </div>
                 </div>
                 <div className="w-1/2">
-                    <div className="float-right w-[500px] aspect-[5/4] relative">
+                    <div className="float-right w-[95%] md:w-[350px] lg:w-[450px] aspect-[5/4] relative">
                         <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="1"></Image>                    
                     </div>
                 </div>
             </div>
-            <div id="usage" className="flex flex-row justify-between mt-16">
+            <div id="usage" className="grid grid-cols-2 lg:grid-cols-4 justify-between mt-16 gap-y-4">
 
                 <FeatureBox
                     heading="Map View"

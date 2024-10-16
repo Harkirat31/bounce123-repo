@@ -17,17 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="">
       <body className={`${inter.className}`}>
-        <div className=" bg-gray-50  h-full flex flex-col">
-          <header className="py-4 px-16">
+        <div className=" bg-gray-50  h-full flex flex-col py-4 px-8 md:px-14 scroll-smooth max-w-[2000px] mx-auto">
+          <header className="">
             <Navbar></Navbar>
           </header>
-          <div className="h-full overflow-scroll">
-            <div className="px-16">
+          <div className="h-full overflow-scroll ">
+            <div className="">
               {children}
             </div>
-            <footer className="py-4 px-16" >
+            <footer className="" >
               <Footer></Footer>
             </footer>
           </div>
