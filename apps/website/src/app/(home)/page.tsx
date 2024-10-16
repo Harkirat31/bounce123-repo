@@ -21,7 +21,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-row justify-between mt-16">
+            <div id="usage" className="flex flex-row justify-between mt-16">
 
                 <FeatureBox
                     heading="Map View"
@@ -68,7 +68,7 @@ const Home = () => {
                 ></FeatureBoxDetailed>
             </div>
 
-            <div className="mt-20">
+            <div id="mobile-app" className="mt-20">
                 <FeatureBoxDetailed
                     heading="Mobile App"
                     image="/home/mobile_app.png"
@@ -77,6 +77,7 @@ const Home = () => {
             </div>
 
             <div className="mt-20">
+            
                     
             </div>
         </div>

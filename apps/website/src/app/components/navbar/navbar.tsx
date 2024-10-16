@@ -1,4 +1,4 @@
-const Navbar = () => {
+const Navbar = () => {   
     return (
         <div className="font-bold flex flex-row justify-between items-center pb-2 text-primaryColor">
             <div>
@@ -8,9 +8,12 @@ const Navbar = () => {
             <div className="flex flex-row items-center gap-10"> 
             <div>
                 <ul className="flex flex-row gap-16 text-primaryColor">
-                    <li className="">HOME</li>
-                    <li>USAGE</li>
-                    <li>DRIVERS APP</li>
+                    <li className="">
+                        <a href="/">HOME</a>
+                    </li>
+                    <li>
+                       <a href="#usage">USAGE</a></li>
+                    <li><a href="#mobile-app">DRIVERS APP</a></li>
                 </ul></div>
             <div className="p-2 bg-primaryColor rounded">
                 <a target="_blank" href="https://delivery.easeyourtasks.com" className="text-white">Launch App</a>
