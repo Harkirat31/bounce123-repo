@@ -6,7 +6,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start:react": "cd apps/admin/prod && node index.cjs",
-    "start:express": "cd apps/api && node dist/index.js"
+    "start:express": "cd apps/api && node dist/index.js",
+    "start:website": "cd apps/website && npm start -- -p 4000"
   },
   "devDependencies": {
     "eslint": "^8.48.0",
