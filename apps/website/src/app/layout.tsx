@@ -19,11 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <body className={`${inter.className}`}>
-        <div className=" bg-gray-50  h-full flex flex-col py-4 px-8 md:px-14 scroll-smooth max-w-[2000px] mx-auto">
+        <div className=" bg-gray-50  h-full flex flex-col py-1 px-2 sm:py-4 sm:px-8 md:px-14 scroll-smooth max-w-[2000px] mx-auto">
           <header className="">
             <Navbar></Navbar>
           </header>
-          <div className="h-full overflow-scroll ">
+          <div className="h-full overflow-scroll">
             <div className="">
               {children}
             </div>
