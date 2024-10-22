@@ -157,15 +157,20 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: 
             // glyph: srNo.toString(),
             glyphColor: 'black',
             background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : orderData?.priority === "Low" ? LOW_PRIORITY_COLOR : VERY_LOW_PRIORITY_COLOR,
-            borderColor: "DarkSlateGrey"
+            borderColor: "DarkSlateGrey",
         });
+
+
+        const doneTag = document.createElement("div");
+        doneTag.className = "done-tag";
+        doneTag.textContent = "✔";
 
         const marker = new window.google.maps.marker.AdvancedMarkerElement(
             {
                 position: orderData!.location,
                 map: map,
-                content: pin.element
-                //label: srNo.toString()
+                content: orderData?.currentStatus=="Delivered"?doneTag: pin.element
+              
             }
         )
         let contentString = getInfoWindowContent(orderData!);

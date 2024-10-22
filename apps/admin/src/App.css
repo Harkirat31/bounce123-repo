@@ -19,4 +19,24 @@
     border-right: 8px solid transparent;
     border-top: 8px solid #4285F4;
   }
-  
+
+  .done-tag {
+    background-color: #148809;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 14px;
+    padding: 3px 6px;
+    position: relative;
+  }
+  .done-tag::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 90%;
+    transform: translate(-50%, 0);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #148809;
+  }
