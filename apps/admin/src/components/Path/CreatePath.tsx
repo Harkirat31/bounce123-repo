@@ -34,7 +34,6 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const saved = useRef(false) // weather path saved or not 
 
 
-
     useEffect(() => {
         setorderSetForPath([...orderIds] as string[])
         if (reset) {
@@ -49,6 +48,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
             if (showCreatePath.toBeEditedPath && !saved.current) {
                 showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
             }
+            // create path atom
             setPathOrders({ path: [], pathId: undefined })
         }
     }, [date, reset])
@@ -64,6 +64,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const onSaveClick = () => {
         let newDate = convertToUTC(date)
         setSaving(true)
+         // this method create path if path is undefined else update existing path
         createPath({ show: true, path: pathOrders.path, dateOfPath: newDate, pathId: pathOrders.pathId }).then((result) => {
             getPathsAPI(newDate).then((data: any) => {
                 setSavedPaths([...data]);

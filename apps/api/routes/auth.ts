@@ -93,6 +93,7 @@ router.post("/signin", (req: Request, res: Response) => {
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.json({ message: 'Login successfully', token });
   }).catch((error) => {
+    console.log(error)
     if (error == ErrorCode.EmailNotVerified) {
       res.status(401).json({
         err: ErrorCode.EmailNotVerified
