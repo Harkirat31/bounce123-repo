@@ -17,7 +17,7 @@ const UploadOrdersCSV = () => {
     return (
         <div className="flex items-center">
             <button onClick={openPopup} className="bg-blue-700 text-white py-2 px-4 mr-2 rounded hover:bg-blue-600">
-                Upload CSV
+                Upload CSV or Excel
             </button>
             <p> for new Orders</p>
             <Popup isOpen={isPopupOpen} onClose={closePopup}>

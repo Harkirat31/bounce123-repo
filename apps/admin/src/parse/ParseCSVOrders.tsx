@@ -6,6 +6,8 @@ import { createOrder, } from '../services/ApiService';
 import { useRecoilState } from 'recoil';
 import { ordersSearchDate } from '../store/atoms/orderAtom';
 import { convertToUTC } from '../utils/UTCdate';
+import * as XLSX from 'xlsx';
+import DownloadButtonExcel from '../components/Order/DownloadButtonExcel';
 
 
 const ParseCSVOrders = () => {
@@ -110,10 +112,11 @@ const ParseCSVOrders = () => {
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
-
     setCreateOrdersStatus([])
-    if (file) {
-      Papa.parse(file, {
+
+   // common file to handle csv directly anf converted by Excel
+    const handleCSV = function(csvFile:any ){
+      Papa.parse(csvFile, {
         complete: (result) => {
           console.log(result)
           setCSVData(result.data);
@@ -122,16 +125,40 @@ const ParseCSVOrders = () => {
         skipEmptyLines: true,
       });
     }
+
+
+    if (file) {
+      if (file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const data = new Uint8Array(e.target!.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+
+          const csvFile = XLSX.utils.sheet_to_csv(worksheet);
+          handleCSV(csvFile)
+        };
+      reader.readAsArrayBuffer(file!); //    
+      }
+      else{
+        handleCSV(file)
+      }
+      
+    } 
   };
 
 
   return (
     <div className='flex flex-col'>
-      <h1 className='text-center text-xl mb-8'>Upload CSV</h1>
+      <h1 className='text-center text-xl mb-8'>Upload CSV or Excel File</h1>
+
+      <input ref={uploadInputButtonRef} className='mb-8' type="file" accept='.csv, .xls, .xlsx' onChange={handleFileUpload} />
+      
+      <DownloadButtonExcel></DownloadButtonExcel>
+      
       <DownloadButton></DownloadButton>
-      <input ref={uploadInputButtonRef} className='mb-8' type="file" accept='.csv' onChange={handleFileUpload} />
-
-
+    
       {csvData.length > 0 && (
         <div>
           <div className='max-h-96 overflow-y-scroll'>
