@@ -111,6 +111,11 @@ export const updateStatusOfOrder = z.object({
     currentStatus: z.string()
 })
 
+export const updatePathAcceptance = z.object({
+    pathId: z.string(),
+    isAcceptedByDriver: z.boolean()
+})
+
 export enum deliveryStatus {
     NotAssigned,
     Assigned,
@@ -131,7 +136,8 @@ export const pathOrder = z.object({
     path: z.array(z.string()),
     dateOfPath: z.date(),
     driverId: z.string().optional(),
-    driverName: z.string().optional()
+    driverName: z.string().optional(),
+    isAcceptedByDriver:z.boolean().optional()
 })
 
 export type PathOrderType = z.infer<typeof pathOrder>

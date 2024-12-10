@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
-import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
-import { getDriverWithPaths, getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus } from "db"
+import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
+import { getDriverWithPaths, getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus, updatePathAcceptanceByDriver } from "db"
 
 const router = express.Router();
 
@@ -96,4 +96,24 @@ router.post("/updateOrderStatus", authenticateJwtDriver, (req: Request, res: Res
 
 })
 
+router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, (req: Request, res: Response) => {
+    let parsedData = updatePathAcceptance.safeParse(req.body)
+    if (!parsedData.success) {
+        return res.status(403).json({
+            isUpdated: false,
+            msg: "Error in Parameters"
+        });
+    }
+    updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {
+        //send email,socketUpdate or whatever in future to admin
+        return res.json({
+            isUpdated: true
+        })
+    }).catch((error) => {
+        return res.json({
+            isUpdated: false
+        })
+    })
+
+})
 export default router

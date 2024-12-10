@@ -535,6 +535,15 @@ export const updateOrderStatus = (orderId: string, currentStatus: string) => {
   })
 }
 
+export const updatePathAcceptanceByDriver= (pathId: string, isAccepted: boolean) => {
+  return new Promise((resolve, reject) => {
+    db.collection('paths').doc(pathId).update({
+      isAcceptedByDriver: isAccepted
+    }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
+  })
+}
+
+
 
 export const assignOrderToDriver = (driverId: string, driverName: string, orderId: string) => {
   return new Promise((resolve, reject) => {

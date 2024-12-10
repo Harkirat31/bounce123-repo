@@ -163,7 +163,7 @@ const ParseCSVOrders = () => {
         <div>
           <div className='max-h-96 overflow-y-scroll'>
 
-            <h3>Parsed CSV Data:</h3>
+            <h3>Parsed Data:</h3>
             <table className="text-sm text-left w-full text-gray-500 ">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
