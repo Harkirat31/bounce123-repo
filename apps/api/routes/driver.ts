@@ -98,7 +98,6 @@ router.post("/updateOrderStatus", authenticateJwtDriver, (req: Request, res: Res
 
 router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, (req: Request, res: Response) => {
     let parsedData = updatePathAcceptance.safeParse(req.body)
-    console.log(parsedData);
     if (!parsedData.success) {
         return res.status(403).json({
             isUpdated: false,
