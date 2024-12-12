@@ -21,10 +21,12 @@ function App() {
   const tokenKey = useRecoilValue<string | null>(token)
   RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false
   return (
-    <div className='w-full'>
+    <div className='w-full h-full'>
       <Router>
+        <div className='flex flex-col h-full'>
         <AppBar></AppBar>
         <Init></Init>
+        <div className='h-full overflow-scroll'>
         <Routes >
           <Route path='/*' element={tokenKey == null ? <Login></Login> : <Map></Map>} />
           <Route path='/orders' element={tokenKey == null ? <Login></Login> : <Order></Order>} />
@@ -36,6 +38,8 @@ function App() {
           <Route path='/signup' element={<Signup></Signup>} />
           <Route path='/account' element={tokenKey == null ? <Login></Login> : <MyAccount></MyAccount>} />
         </Routes>
+        </div>
+        </div>
       </Router>
 
     </div>

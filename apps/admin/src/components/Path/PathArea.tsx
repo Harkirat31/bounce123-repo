@@ -25,8 +25,8 @@ const PathArea = () => {
     return (
         <div className="border-t-2 border-grey-600">
             <div className="flex justify-center">
-                <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Show All Paths</button>
-                <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1`}>Create Path</button>
+                <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Show All Paths</button>
+                <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Create Path</button>
             </div>
             {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>}
             {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
