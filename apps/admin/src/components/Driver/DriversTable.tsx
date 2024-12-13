@@ -37,24 +37,24 @@ const DrivingTable = () => {
    
     if (drivers != null && (drivers.value as []).length > 0) {
         return <>
-            <div className="mt-4 w-full shadow-md sm:rounded-lg">
+           <div className="mt-4 shadow-md sm:rounded-lg">
                 <table className="text-sm text-left w-full text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-3 py-3 w-10">
                                 Name
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-6 py-3 w-10">
                                 Email
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-3 py-3 w-10">
                                 Contact
                             </th>
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-3 py-3 w-10">
                                 Vehicle Style
                             </th>
 
-                            <th scope="col" className="px-6 py-3">
+                            <th scope="col" className="px-3 py-3 w-10">
                                 <span className="sr-only">Delete</span>
                             </th>
                         </tr>
@@ -62,21 +62,22 @@ const DrivingTable = () => {
                     <tbody>
                         {(drivers.value as []).map((driver: DriverType) => {
                             return <>
-                                <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {driver.name}
-                                    </th>
-                                    <td className="px-6 py-4">
+                            
+                                <tr className="w-64 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <td className="px-3 py-4">
+                                        <p>{driver.name}</p>
+                                    </td>
+                                    <td className="px-3 py-4">
                                         {driver.email}
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-3 py-4">
                                         {driver.phone}
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-3 py-4">
                                         {driver.vehicleStyle}
                                     </td>
 
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="px-3 py-4">
                                         <button data-id={`${driver.uid}`} onClick={onDelete} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</button>
                                     </td>
                                 </tr>

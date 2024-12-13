@@ -7,7 +7,7 @@ const Driver = () => {
   return (
     <>
       <div className="mt-4 pt-4 xl:grid xl:grid-cols-12 xl:ml-10">
-        <div className="md:col-span-8 overflow-scroll m-1">
+        <div className="xl:col-span-8 overflow-scroll m-1">
           <div className="flex items-center flex-col">
             <div className="flex ">
               <p className="text-blue-900 font-bold">Drivers at a glance</p>
@@ -17,6 +17,7 @@ const Driver = () => {
         </div>
         <div className="xl:col-span-4 mx-2 my-4 xl:my-0  xl:ml-2">
           <CreateDriver></CreateDriver>
+          
         </div>
       </div>
     </>

@@ -17,7 +17,7 @@ const Order = () => {
   return (
     <>
       <div className="mt-4 pt-4 xl:grid xl:grid-cols-12">
-        <div className="ml-2 md:col-span-9 overflow-scroll">
+        <div className="ml-2 xl:col-span-9 overflow-scroll">
           <div className="flex items-center flex-col">
             <div className="flex">
               <p className="text-blue-900 font-bold mr-2">Orders at a glance</p>
