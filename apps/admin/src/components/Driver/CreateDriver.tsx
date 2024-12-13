@@ -95,7 +95,7 @@ const CreateDriver = () => {
 
     return <>
         <div className="mr-4 justify-center">
-            <p className="text-blue-900 text-center" >Create New Driver</p>
+            <p className="text-blue-900 text-center font-bold" >Create New Driver</p>
             <div className="mt-4">
                 <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
                 <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>

@@ -15,7 +15,6 @@ const Map = () => {
       <div className="xl:col-span-3 overflow-y-scroll">
         <RouteCalculatorArea></RouteCalculatorArea>
       </div>
-
     </div>
   )
 }

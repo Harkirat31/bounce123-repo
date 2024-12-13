@@ -16,17 +16,17 @@ const Order = () => {
 
   return (
     <>
-      <div className="mt-4 pt-4 xl:grid md:grid-cols-12">
-        <div className="ml-2 md:col-span-9">
+      <div className="mt-4 pt-4 xl:grid xl:grid-cols-12">
+        <div className="ml-2 md:col-span-9 overflow-scroll">
           <div className="flex items-center flex-col">
             <div className="flex">
-              <p className="text-blue-900">Orders at a glance</p>
+              <p className="text-blue-900 font-bold mr-2">Orders at a glance</p>
               <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date: Date) => OnDateChangeHandler(date)} />
             </div>
             <OrdersTable></OrdersTable>
           </div>
         </div>
-        <div className="ml-2 md:col-span-3 ">
+        <div className="mt-10 xl:mt-0 ml-4 xl:col-span-3">
           <CreateOrder></CreateOrder>
         </div>
       </div>

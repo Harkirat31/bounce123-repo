@@ -19,7 +19,7 @@ const UploadOrdersCSV = () => {
             <button onClick={openPopup} className="bg-blue-700 text-white py-2 px-4 mr-2 rounded hover:bg-blue-600">
                 Upload CSV or Excel
             </button>
-            <p> for new Orders</p>
+            <p className="text-blue-900 font-bold"> for new Orders</p>
             <Popup isOpen={isPopupOpen} onClose={closePopup}>
                 <ParseCSVOrders></ParseCSVOrders>
             </Popup>
