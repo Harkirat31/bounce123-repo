@@ -7,7 +7,7 @@ import { userAtom } from "../store/atoms/userAtom"
 const Map = () => {
   const user = useRecoilValue(userAtom)
   return (
-    <div className="xl:grid xl:grid-cols-11 h-screen">
+    <div className="xl:grid xl:grid-cols-11 h-full">
       <div className="xl:col-span-8 bg-slate-100">
         {user == null && <p className="h-screen">Map is Loading....</p>}
         {user != null && <MapArea user={user}></MapArea>}

@@ -42,7 +42,7 @@ const MapComponent = ({ user }: { user: UserType }) => {
     }, []);
 
     return (
-        <div ref={ref} id="map" className="h-70v xl:h-screen" >
+        <div ref={ref} id="map" className="h-70v xl:h-90v" >
             {map && <div>
                 <PickUpMarker map={map}></PickUpMarker>
                 {ordersIds.map((orderId, index) => {
