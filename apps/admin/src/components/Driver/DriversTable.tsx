@@ -37,8 +37,8 @@ const DrivingTable = () => {
    
     if (drivers != null && (drivers.value as []).length > 0) {
         return <>
-           <div className="mt-4 shadow-md sm:rounded-lg">
-                <table className="text-sm text-left w-full text-gray-500 ">
+           <div className="mt-4 w-full overflow-scroll shadow-md sm:rounded-lg">
+                <table className="text-sm text-left text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3 w-10">
@@ -55,18 +55,18 @@ const DrivingTable = () => {
                             </th>
 
                             <th scope="col" className="px-3 py-3 w-10">
-                                <span className="sr-only">Delete</span>
+                                <p className="">Delete</p>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {(drivers.value as []).map((driver: DriverType) => {
-                            return <>
-                            
-                                <tr className="w-64 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            return <>  
+                                <tr className=" bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <td className="px-3 py-4">
                                         <p>{driver.name}</p>
                                     </td>
+
                                     <td className="px-3 py-4">
                                         {driver.email}
                                     </td>
