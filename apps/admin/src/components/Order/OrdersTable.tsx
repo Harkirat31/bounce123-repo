@@ -11,7 +11,7 @@ const OrdersTable = () => {
 
     if (orders != null && orders.length > 0) {
         return <>
-            <div className="mt-4 w-full shadow-md sm:rounded-lg">
+            <div className="mt-4 w-full shadow-md sm:rounded-lg overflow-scroll">
                 <table className="text-sm text-left w-full text-gray-500 ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
