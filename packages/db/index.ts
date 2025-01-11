@@ -160,7 +160,6 @@ export const getDriverWithPaths = (uid: string,date:Date) => {
         let driverCompany = doc.data() as DriverType
         driverCompanyList.push(driverCompany)
       })
-      let companyNames = new Map<string, string>()
       for (const element in driverCompanyList) {
         let company = await db.collection('users').doc(driverCompanyList[element].companyId!).get()
         driverCompanyList[element].companyName = (company.data() as UserType).companyName

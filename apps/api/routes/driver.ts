@@ -10,7 +10,6 @@ const router = express.Router();
 
 router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response) => {
     saveFCMToken(req.body.uid, req.body.FCMToken).then((data) => {
-        console.log(data)
         res.status(200).json({ isAdded: true })
     }).catch((error) => {
         console.log(error)

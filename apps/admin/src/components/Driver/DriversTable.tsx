@@ -38,7 +38,7 @@ const DrivingTable = () => {
     if (drivers != null && (drivers.value as []).length > 0) {
         return <>
            <div className="mt-4 w-full overflow-scroll shadow-md sm:rounded-lg">
-                <table className="text-sm text-left text-gray-500 ">
+                <table className="text-sm text-left text-gray-500 w-full ">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" className="px-3 py-3 w-10">
