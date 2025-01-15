@@ -8,6 +8,7 @@ WORKDIR /bounce123
 COPY package*.json ./
 COPY apps/admin/package*.json ./apps/admin/
 COPY apps/api/package*.json ./apps/api/
+COPY apps/website/package*.json ./apps/website/
 
 # Install root dependencies
 RUN npm install
@@ -21,12 +22,16 @@ RUN cd apps/admin && npm install
 # Install dependencies for the API app
 RUN cd apps/api && npm install
 
+#install dependencies for website
+RUN cd apps/website && npm install
+
 # Copy the rest of the application code
-COPY . .
+    COPY . .
 
 # Build the admin and API apps
 RUN cd apps/admin && npm run build && cd ../..
 RUN cd apps/api && npm run build && cd ../..
+RUN cd apps/website && npm run build && cd ../..
 
 # Install PM2 globally
 RUN npm install -g pm2
@@ -37,6 +42,7 @@ COPY pm2.config.js ./
 # Expose the necessary ports
 EXPOSE 3000
 EXPOSE 3001
+EXPOSE 4000
 
 # Start both applications using PM2 with the config file in JSON format
 CMD ["pm2-runtime", "start", "pm2.config.js"]

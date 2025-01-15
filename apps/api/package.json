@@ -5,8 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild ./index.ts --bundle --platform=node --outfile=dist/index.js",
-    "dev": "node dist/index.js"
+    "build": "esbuild ./bin.ts --bundle --platform=node --outfile=dist/bin.js",
+    "dev": "node dist/bin.js"
   },
   "keywords": [],
   "author": "",

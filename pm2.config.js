@@ -10,6 +10,11 @@ module.exports = {
         script: "npm",
         args: "run start:react",
       },
+      {
+        name: "website",
+        script: "npm",
+        args: "run start:website",
+      },
     ],
   };
   
