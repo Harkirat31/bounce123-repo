@@ -91,9 +91,9 @@ router.post("/signin", (req: Request, res: Response) => {
   signIn(email, password).then((user) => {
     const secretKey = process.env.JWT_SECRET;
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
-    res.json({ message: 'Login successfully', token });
+    res.status(201).json({ message: 'Login successfully', token });
   }).catch((error) => {
-    console.log(error)
+    console.log("Error is ",error)
     if (error == ErrorCode.EmailNotVerified) {
       res.status(401).json({
         err: ErrorCode.EmailNotVerified
