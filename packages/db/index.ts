@@ -60,22 +60,24 @@ export const signIn = async (email: string, password: string) => {
         if (!responseData.localId) {
           return reject(ErrorCode.JsonParseError)
         }
-        let isVerified: boolean = (await admin.auth().getUser(responseData.localId)).emailVerified
-        console.log(isVerified)
-        if (!isVerified) {
+        let userData  =  await admin.auth().getUser(responseData.localId)
+        if (!userData.emailVerified) {
           return reject(ErrorCode.EmailNotVerified)
         }
         getUser(responseData.localId).then((user) => {
-          resolve(user)
+          if(!user.isApproved){
+            reject(ErrorCode.UserNotApproved)
+          }else{
+            resolve(user)
+          }
         }).catch((error) => {
-          return reject(ErrorCode.FirebaseError)
+           reject(ErrorCode.FirebaseError)
         })
       }).catch((error) => {
         reject(ErrorCode.JsonParseError)
       })
     })
       .catch((error) => {
-        console.log(error)
         //reject(new Error("Error in sign in through Google Api"))
         reject(ErrorCode.MapsApiError)
       })
@@ -242,6 +244,7 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
       newUserDetail.userId = uidNewUser
       newUserDetail.password = ""
       newUserDetail.availableCount = parseInt(process.env.TRIAL_COUNT ?? "200")
+      newUserDetail.isApproved=false
 
       db.collection('users').doc(uidNewUser).set(
         newUserDetail

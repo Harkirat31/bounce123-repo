@@ -137,7 +137,8 @@ export const pathOrder = z.object({
     dateOfPath: z.date(),
     driverId: z.string().optional(),
     driverName: z.string().optional(),
-    isAcceptedByDriver:z.boolean().optional()
+    isAcceptedByDriver:z.boolean().optional(),
+    geometry:z.string().optional()
 })
 
 export type PathOrderType = z.infer<typeof pathOrder>
@@ -159,7 +160,8 @@ export const user = z.object({
     location: location.optional(),
     ordersCountForMonth: z.number().optional(),
     placeId: z.string().optional(),
-    availableCount: z.number().optional().default(0)
+    availableCount: z.number(),
+    isApproved:z.boolean()
 })
 export type UserType = z.infer<typeof user>
 
@@ -173,7 +175,9 @@ export enum ErrorCode {
     JsonParseError,
     WrongInputs,
     UserNotExists,
-    EmailNotVerified
+    EmailNotVerified,
+    OrderLimitIncrease,
+    UserNotApproved
 }
 
 
