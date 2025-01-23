@@ -86,7 +86,7 @@ router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
 
 })
 // this route handle situatoion when order directly assign to driver , thus it create path and then assign to driver
-router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response) => {
+router.post("/assignOrderAndPath", authenticateJwt, async (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)
   let parsedData = pathOrder.safeParse(req.body)
   let driverId: string | undefined;
@@ -98,6 +98,9 @@ router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response
   }
   driverId = parsedData.data.driverId
   if (parsedData.data.pathId) {
+
+    //create path geomatry to be rendered om map
+    //const directionsResult  = await axios.get()
     updatePath(parsedData.data).then((result) => {
       res.json({ isAdded: true });
     }).catch((error) => res.json({ isAdded: false }))
