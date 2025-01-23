@@ -61,6 +61,9 @@ const CreateOrder = () => {
                 if (result.err == ErrorCode.AddressError) {
                     setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
                 }
+                if (result.err == ErrorCode.OrderLimitIncrease) {
+                    setErrorMessage(["Order Maximum Limit reached, Please contact info@easeyourtasks.com"])
+                }
             }
             setLoading(false)
         }).catch((error) => {

@@ -127,11 +127,19 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
   req.body.deliveryDate = new Date(req.body.deliveryDate)
   let parsedData = order.safeParse(req.body)
   if (!parsedData.success) {
-    console.log(parsedData.error)
     return res.status(403).json({
       err: ErrorCode.WrongInputs
     });
   }
+  // handle creation limit 
+  let company = await getUser( req.body.companyId)
+  if(company.availableCount<=0){
+    return res.status(403).json({
+      err: ErrorCode.OrderLimitIncrease
+    });
+  }
+
+
   const apiKey = process.env.MAPS_API_KEY;
   let location = { lat: 0, lng: 0 }
   let placeId = ""
@@ -160,7 +168,9 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
 
   parsedData.data.location = location
   parsedData.data.placeId = placeId
-  createOrder(parsedData.data).then((user) => {
+  createOrder(parsedData.data).then(async (order) => {
+    //decrease count
+    await updateUser({...company,availableCount:company.availableCount-1})
     res.json({ isAdded: true })
   }).catch((error) => res.json({ isAdded: false }))
 

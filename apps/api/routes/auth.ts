@@ -93,12 +93,16 @@ router.post("/signin", (req: Request, res: Response) => {
     const token = jwt.sign({ user: user }, secretKey!, { expiresIn: '30 days', });
     res.status(201).json({ message: 'Login successfully', token });
   }).catch((error) => {
-    console.log("Error is ",error)
     if (error == ErrorCode.EmailNotVerified) {
       res.status(401).json({
         err: ErrorCode.EmailNotVerified
       })
-    } else {
+    }else if(error==ErrorCode.UserNotApproved){
+      res.status(401).json({
+        err: ErrorCode.UserNotApproved
+      })
+    } 
+    else {
       res.status(401).json({
         err: ErrorCode.WorngCredentials
       })

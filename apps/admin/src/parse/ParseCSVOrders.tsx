@@ -67,6 +67,9 @@ const ParseCSVOrders = () => {
                 if (result.err == ErrorCode.AddressError) {
                   statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Address not recognised by Google Maps" })
                 }
+                if (result.err == ErrorCode.OrderLimitIncrease) {
+                  statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Maximum Limit Reached. Conatct info@easeyourtasks.com"})
+                }
               }
               else {
                 statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
@@ -118,7 +121,6 @@ const ParseCSVOrders = () => {
     const handleCSV = function(csvFile:any ){
       Papa.parse(csvFile, {
         complete: (result) => {
-          console.log(result)
           setCSVData(result.data);
         },
         header: true, // Set this to true if the CSV file has headers

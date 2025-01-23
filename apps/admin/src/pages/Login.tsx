@@ -70,8 +70,10 @@ const Login = () => {
 
             } else {
                 if (result.err != null || result.err != undefined) {
-                    console.log(result.err)
-                    if (result.err == ErrorCode.WorngCredentials) {
+                    if (result.err == ErrorCode.UserNotApproved) {
+                        setErrorMessage(["User is not Approved by admin, Please email at info@easeyourtasks.com to resolve at the earliest."])
+                    }
+                    else if (result.err == ErrorCode.WorngCredentials) {
                         setErrorMessage(["Wrong Credentials, Please check again"])
                     }
                     else if (result.err == ErrorCode.EmailNotVerified) {

@@ -6,7 +6,7 @@ import {app} from "../../index"
 dotenv.config();
 
 
-// mocking of db package to ensure unit testing
+//mocking of db package to ensure unit testing
 vi.mock("db",()=>({
     signIn
 }))
