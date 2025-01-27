@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder, pathGeometry } from "types"
 //import { API_KEY_SIGNIN } from './config';
 
 import dotenv from "dotenv"
@@ -30,6 +30,7 @@ catch (e) {
 
 
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true })
 
 
 
@@ -342,20 +343,22 @@ export const updatePath = (newPath: PathOrderType) => {
         }
       })
       //change status to not assigned
-      oldPathSet.forEach(async (pathNode) => {
-        await db.collection("orders").doc(pathNode).update({
+
+      for (const pathNode of oldPathSet) {
+        await db.collection("orders").doc(pathNode.id).update({
           assignedPathId: "",
           currentStatus: "NotAssigned"
         })
-      })
-
+      }
       let result = await db.collection("paths").doc(newPath.pathId!).update(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      
+
+      for (const order of newPath.path){
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: newPath.pathId!,
           currentStatus: "PathAssigned"
         })
-      })
+      } 
       resolve("Success")
 
     }
@@ -367,20 +370,39 @@ export const updatePath = (newPath: PathOrderType) => {
 }
 
 
+export const updatePathGemetry = (newPath: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+        await db.collection("paths").doc(newPath.pathId!).update({
+          pathGeometry: newPath.pathGeometry,
+        })
+        resolve("Success")
+      } 
+    catch {
+      reject("Error")
+    }
+
+  })
+}
+
+
+
 export const createPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
+      //this should be transaction, add transaction
       let result = await db.collection("paths").add(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      for (const order of newPath.path) {
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: result.id,
-          currentStatus: "PathAssigned"
-        })
-      })
+          currentStatus: "PathAssigned",
+        });
+      }
       resolve("Success")
 
     }
-    catch {
+    catch(error) {
+      console.log(new Date().toLocaleTimeString,error)
       reject("Error")
     }
 
@@ -391,8 +413,8 @@ export const assignOrderAndPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
       let result = await db.collection("paths").add(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      newPath.path.forEach(async (order) => {
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: result.id,
           currentStatus: "SentToDriver",
           driverId: newPath.driverId,
@@ -411,14 +433,15 @@ export const deletePath = (path: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
       let result = await db.collection("paths").doc(path.pathId!).delete()
-      path.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+     
+      for (const order of path.path){
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: admin.firestore.FieldValue.delete(),
           currentStatus: "NotAssigned",
           driverId: admin.firestore.FieldValue.delete(),
           driverName: admin.firestore.FieldValue.delete()
         })
-      })
+      }
       resolve("Success")
 
     }
@@ -643,7 +666,7 @@ export const assignPathToDriver = (path: PathOrderType) => {
       driverName: path.driverName,
     }).then((result) => {
       path.path.forEach(async (pathNode) => {
-        await db.collection('orders').doc(pathNode).update({
+        await db.collection('orders').doc(pathNode.id).update({
           driverId: path.driverId,
           driverName: path.driverName,
           currentStatus: "SentToDriver"
@@ -660,12 +683,11 @@ export const cancelPath = (path: PathOrderType) => {
       const nonDeliveredOrders: OrderType[] = []
       const nonDeliveredOrderIds = new Set<string>()
       nonDeliveredOrdersDocs.forEach((doc) => {
-        console.log(doc.data() as OrderType)
         nonDeliveredOrders.push(doc.data() as OrderType)
         nonDeliveredOrderIds.add(doc.id)
       })
       const modifiedPath = path.path.filter((p) => {
-        if (nonDeliveredOrderIds.has(p)) {
+        if (nonDeliveredOrderIds.has(p.id)) {
           return false
         }
         else {

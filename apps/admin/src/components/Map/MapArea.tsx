@@ -5,8 +5,9 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { getOrder, getOrderIds, getOrders } from "../../store/selectors/orderSelector";
 import { OrderType, PathOrderType, UserType } from "types";
 import { HIGH_PRIORITY_COLOR, LOW_PRIORITY_COLOR, MEDIUM_PRIORITY_COLOR, VERY_LOW_PRIORITY_COLOR, darkColors } from "../../utils/constants";
-import { createPathAtom, getSavedPathById, savedPaths } from "../../store/atoms/pathAtom";
+import { createPathAtom, getSavedPathById, savedPathsAtom } from "../../store/atoms/pathAtom";
 import { userAtom } from "../../store/atoms/userAtom";
+import { isRoadView } from "../../store/atoms/commonAtoms";
 
 
 
@@ -57,7 +58,7 @@ const MapComponent = ({ user }: { user: UserType }) => {
 }
 
 const CreatePaths = ({ map, user }: { map: any, user: UserType }) => {
-    const paths = useRecoilValue(savedPaths)
+    const paths = useRecoilValue(savedPathsAtom)
     const orders = useRecoilValue(getOrders)
     return <>
         {paths.map((pathElement, index) => {
@@ -68,6 +69,7 @@ const CreatePaths = ({ map, user }: { map: any, user: UserType }) => {
 
 const CreateSinglePath = ({ map, pathElement, orders, index, user }: { map: any, pathElement: PathOrderType, orders: OrderType[], index: number, user: UserType }) => {
     const pathData = useRecoilValue(getSavedPathById(pathElement.pathId!))
+    const isRoad = useRecoilValue(isRoadView);
     useEffect(() => {
         if (!pathData)
             return
@@ -85,19 +87,27 @@ const CreateSinglePath = ({ map, pathElement, orders, index, user }: { map: any,
             icons: [{ icon: lineSymbol, offset: "100%", repeat: "15%" }]
         });
         if (pathData.path.length > 0) {
-            let cordinates: any = [user?.location] //
-            pathData.path.forEach((orderId) => {
-                let order = orders.find((order) => order.orderId === orderId)
-                cordinates.push(order?.location)
-            })
-            flightPath.setPath(cordinates)
-            flightPath.setMap(map);
+            if(isRoad && pathData.pathGeometry && pathData.pathGeometry.geometry){
+                flightPath.setPath(window.google.maps.geometry.encoding.decodePath(pathData.pathGeometry.geometry))
+                flightPath.setMap(map);
+            }
+            else{
+                let cordinates: any = [user?.location]
+                pathData.path.forEach((pathNode) => {
+                    let order = orders.find((order) => order.orderId === pathNode.id)
+                    cordinates.push(order?.location)
+                })
+                cordinates = [...cordinates]
+                flightPath.setPath(cordinates)
+                flightPath.setMap(map);
+            }
+           
         }
         return () => {
             flightPath.setMap(null)
         }
 
-    }, [pathData])
+    }, [pathData,isRoad])
     return <></>
 }
 
@@ -118,8 +128,8 @@ const CreatePolygonWhileCreatingPath = ({ map, user }: { map: any, user: UserTyp
         });
         if (createPathOrders.path.length > 0) {
             let cordinates: any = [user?.location] //initialize the array of path with starting from comapany address
-            createPathOrders.path.forEach((orderId) => {
-                let order = orders.find((order) => order.orderId === orderId)
+            createPathOrders.path.forEach((pathNode) => {
+                let order = orders.find((order) => order.orderId === pathNode.id)
                 cordinates.push(order?.location)
             })
             flightPath.setPath(cordinates)
@@ -154,6 +164,7 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: 
     useEffect(() => {
         const pin = new window.google.maps.marker.PinElement({
             glyph: getOrderLabel(orderData),
+            scale:0.60,
             // glyph: srNo.toString(),
             glyphColor: 'black',
             background: orderData?.priority === "High" ? HIGH_PRIORITY_COLOR : orderData?.priority === "Medium" ? MEDIUM_PRIORITY_COLOR : orderData?.priority === "Low" ? LOW_PRIORITY_COLOR : VERY_LOW_PRIORITY_COLOR,

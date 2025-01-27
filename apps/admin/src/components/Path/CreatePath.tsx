@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPaths } from "../../store/atoms/pathAtom";
+import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPathsAtom } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
 import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom";
 import { createPath, getPathsAPI } from "../../services/ApiService";
@@ -8,10 +8,12 @@ import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { AiFillDelete } from 'react-icons/ai';
 import { convertToUTC } from "../../utils/UTCdate";
+import { PathOrderType } from "types";
+import { refreshData } from "../../store/atoms/refreshAtom";
 
 
 const CreatePath = ({ showCreatePath, setShowCreatePath }: {
-    showCreatePath: { flag: boolean, toBeEditedPath: any },
+    showCreatePath: { flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null },
     setShowCreatePath: React.Dispatch<React.SetStateAction<{
         flag: boolean;
         toBeEditedPath: any;
@@ -24,7 +26,6 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const [dropDownValue, setDropDownValue] = useState<number | "Select">("Select")
     const [orderSetForPath, setorderSetForPath] = useRecoilState(orderSetForPathCreation)
     const [reset, setReset] = useState(false)
-    const [_paths, setSavedPaths] = useRecoilState(savedPaths)
     const date = useRecoilValue(ordersSearchDate)
     const [saving, setSaving] = useState(false)
     const [selectdropdoenError, setSelectDropdownError] = useState(false)
@@ -32,6 +33,8 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const [isEnd, setEnd] = useState(false)
     const changeCreatePathOrderSet = useSetRecoilState(orderSetForAtom)
     const saved = useRef(false) // weather path saved or not 
+
+    const refreshAllData = useSetRecoilState(refreshData)
 
 
     useEffect(() => {
@@ -48,10 +51,12 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
             if (showCreatePath.toBeEditedPath && !saved.current) {
                 showCreatePath.toBeEditedPath[1]({ ...showCreatePath.toBeEditedPath[0], show: true })
             }
-            // create path atom
+     
             setPathOrders({ path: [], pathId: undefined })
+
+            
         }
-    }, [date, reset])
+    }, [reset])
 
 
     const getSrNoFororderId = (orderId: string) => {
@@ -60,33 +65,63 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const getOrderNumberFororderId = (orderId: string) => {
         return orders.find((x) => x.orderId === orderId)?.orderNumber
     }
+    const getLocationOfOrder= (orderId: string) => {
+        return orders.find((x) => x.orderId === orderId)?.location
+    }
 
     const onSaveClick = () => {
         let newDate = convertToUTC(date)
         setSaving(true)
          // this method create path if path is undefined else update existing path
-        createPath({ show: true, path: pathOrders.path, dateOfPath: newDate, pathId: pathOrders.pathId }).then((result) => {
-            getPathsAPI(newDate).then((data: any) => {
-                setSavedPaths([...data]);
-                setSaving(false)
-                saved.current = true
-                if (showCreatePath.toBeEditedPath) {
-                    let pathData = { ...showCreatePath.toBeEditedPath[0], show: true, path: pathOrders.path }
-                    showCreatePath.toBeEditedPath[1](pathData)
-                }
-                setShowCreatePath({ toBeEditedPath: null, flag: false })
-            }).catch(
-                (err) => {
-                    alert("Error Fetching Paths, Please Refresh the page")
-                    setSaving(false)
-                    setShowCreatePath({ toBeEditedPath: null, flag: false })
-                })
+         
+         //this can be changed if user after multiple location in future
+         //if it is undefined , lat.lng:0,0
+         //in future , we will make sure to have starting location of path
+        const startingLocation = user?.location??{lat:0,lng:0}
+        createPath({ show: true, path: pathOrders.path, dateOfPath: newDate, pathId: pathOrders.pathId,startingLocation }).then((result) => {
+            setSaving(false)
+            saved.current = true
+            setShowCreatePath({ toBeEditedPath: null, flag: false })
+            
+            //this will refresh whole data
+            refreshAllData(Date.now().toString())
+            
+
+        //    setDate(new Date(date))
+         
+        //     getPathsAPI(newDate).then((data: any) => {
+                
+        //     //better to t0 refresh
+            
+        //     reset ? setReset(false) : setReset(true)
+        //     setSaving(false)
+        //     setDate(new Date(date))
+            
+        //     //Here rather than refresh , only ceated path can be refreshed and orders which are new in path can be updated and     which are deleted  cshould also be updated
+
+        //         // console.log("Hello",data)
+        //         // setSavedPaths([...data]);
+        //         // setSaving(false)
+        //         // saved.current = true
+        //         // if (showCreatePath.toBeEditedPath) {
+        //         //     let pathData = { ...showCreatePath.toBeEditedPath[0], show: true, path: pathOrders.path }
+        //         //     showCreatePath.toBeEditedPath[1](pathData)
+        //         // }
+        //         // setShowCreatePath({ toBeEditedPath: null, flag: false })
+        //     }
+        // ).catch(
+        //         (err) => {
+        //             alert("Error Fetching Paths, Please Refresh the page")
+        //             setSaving(false)
+        //             setShowCreatePath({ toBeEditedPath: null, flag: false })
+        //         })
 
 
         }).catch((error) => {
             alert(error)
             setSaving(false)
         })
+       
     }
     const addHandler = () => {
         if (dropDownValue === "Select") {
@@ -96,7 +131,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
         if (selectdropdoenError) {
             setSelectDropdownError(false)
         }
-        setPathOrders({ path: [...pathOrders.path, orderIds[dropDownValue - 1]!], pathId: pathOrders.pathId })
+        setPathOrders({ path: [...pathOrders.path, {id:orderIds[dropDownValue - 1]!,latlng:getLocationOfOrder(orderIds[dropDownValue - 1]!)}], pathId: pathOrders.pathId })
         let newSet = orderSetForPath.filter((orderId: any) => orderId != orderIds[dropDownValue - 1]!)
         changeCreatePathOrderSet([...newSet])
         if (newSet.length > 0) {
@@ -148,7 +183,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
             let updatedPathOrders = { path: updatedPath, pathId: pathOrders.pathId }
             setPathOrders(updatedPathOrders)
             //main atom of creating path has been updated
-            changeCreatePathOrderSet([deleteNodeValue, ...orderSetForPath])
+            changeCreatePathOrderSet([deleteNodeValue.id, ...orderSetForPath])
         }
         catch (error) {
 
@@ -182,7 +217,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                                     className="flex flex-row items-center border-2 rounded-xl p-0.5">
                                     <p data-id={`${index}`} >{`Order`}</p>
                                     <p data-id={`${index}`} className="text-center px-2">
-                                        {`Id. ${getOrderNumberFororderId(pathnode)}`}
+                                        {`Id. ${getOrderNumberFororderId(pathnode.id)}`}
                                     </p>
                                     <button data-id={`${index}`} data-id-node={`${index}`} onClick={handleDeleteNode} className="relative text-red-500"> <AiFillDelete /></button>
                                 </div>

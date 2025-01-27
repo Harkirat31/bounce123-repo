@@ -2,8 +2,9 @@ import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt } from "../middleware"
 import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification, cancelPath } from "db"
+import { createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification, cancelPath, updatePathGemetry } from "db"
 import axios from "axios";
+import { getGeometryApi } from "../externalApis/osrmAPI";
 
 
 
@@ -64,15 +65,25 @@ router.post('/deleteDriver', authenticateJwt, (req: Request, res: Response) => {
 
 
 
-router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
+router.post("/createPath", authenticateJwt, async (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)
   let parsedData = pathOrder.safeParse(req.body)
   if (!parsedData.success) {
-    console.log(parsedData.error)
     return res.status(403).json({
       msg: "Error in  Details"
     });
   }
+  try{
+    const pathGeometry = await getGeometryApi(parsedData.data)
+    parsedData.data.pathGeometry = pathGeometry
+    console.log(pathGeometry)
+  }
+  catch(e){
+   // delete parsedData.data.pathGeometry 
+    console.log(e)
+    //log  when not error in getGeometryApi
+  }
+ 
   if (parsedData.data.pathId) {
     updatePath(parsedData.data).then((result) => {
       res.json({ isAdded: true });
@@ -86,7 +97,7 @@ router.post("/createPath", authenticateJwt, (req: Request, res: Response) => {
 
 })
 // this route handle situatoion when order directly assign to driver , thus it create path and then assign to driver
-router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response) => {
+router.post("/assignOrderAndPath", authenticateJwt, async (req: Request, res: Response) => {
   req.body.dateOfPath = new Date(req.body.dateOfPath)
   let parsedData = pathOrder.safeParse(req.body)
   let driverId: string | undefined;
@@ -97,6 +108,16 @@ router.post("/assignOrderAndPath", authenticateJwt, (req: Request, res: Response
     });
   }
   driverId = parsedData.data.driverId
+  try{
+    const pathGeometry = await getGeometryApi(parsedData.data)
+    parsedData.data.pathGeometry = pathGeometry
+    console.log(pathGeometry)
+  }
+  catch(e){
+   // delete parsedData.data.pathGeometry 
+    console.log(e)
+    //log  when not error in getGeometryApi
+  }
   if (parsedData.data.pathId) {
     updatePath(parsedData.data).then((result) => {
       res.json({ isAdded: true });
@@ -256,7 +277,21 @@ router.post('/cancelPath', authenticateJwt, (req: Request, res: Response) => {
       msg: "Error in Parameters"
     })
   }
-  cancelPath(assignPathParams.data).then((result: any) => {
+
+
+  cancelPath(assignPathParams.data).then(async (result: any) => {
+
+    console.log("Modified path",result.modifiedPath)
+
+    //update geometry of new Path
+    try{
+      const pathGeometry = await getGeometryApi({...assignPathParams.data,path:result.modifiedPath})
+      assignPathParams.data.pathGeometry = pathGeometry
+    }
+    catch(e){
+      console.log(e)
+    }
+    await updatePathGemetry(assignPathParams.data)
     res.json({ isCancelled: result, isPathDeleted: result.isPathDeleted, modifiedPath: result.modifiedPath })
   }).catch((error) => {
     res.json({ isCancelled: false, isPathDeleted: false })

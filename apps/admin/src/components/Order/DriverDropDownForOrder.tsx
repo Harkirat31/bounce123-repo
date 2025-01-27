@@ -6,6 +6,7 @@ import { assignOrderAndPath, getPathsAPI } from "../../services/ApiService";
 import { useNavigate } from "react-router-dom";
 import { savedPathsAtom } from "../../store/atoms/pathAtom";
 import { loadingState } from "../../store/atoms/loadingStateAtom";
+import { userAtom } from "../../store/atoms/userAtom";
 
 
 
@@ -17,6 +18,8 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const setSavedPathsAtom = useSetRecoilState(savedPathsAtom)
     const navigate = useNavigate()
     const setLoading = useSetRecoilState(loadingState)
+    const user = useRecoilValue(userAtom)
+    
     useEffect(() => {
         setDropDownItem({ driverId: props.order.driverId ? props.order.driverId : "Select", driverName: props.order.driverName ? props.order.driverName : "Select" })
     }, [order])
@@ -56,7 +59,8 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
         }
 
         setLoading(true)
-        let params: PathOrderType = { dateOfPath: order.deliveryDate, show: true, path: [order!.orderId!], driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
+        const startingLocation = user?.location??{lat:0,lng:0}
+        let params: PathOrderType = { dateOfPath: order.deliveryDate, show: true, path: [{id:order!.orderId!,latlng:order!.location}], driverId: dropDownItem.driverId, driverName: dropDownItem.driverName ,startingLocation}
 
         assignOrderAndPath(params).then((response: any) => {
             if (response.isAdded == true) {

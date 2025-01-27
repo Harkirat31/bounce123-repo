@@ -10,6 +10,7 @@ import { OrderType } from "types"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { BiSortAlt2 } from "react-icons/bi";
+import { refreshData } from "../../store/atoms/refreshAtom"
 
 
 const RouteCalculatorArea = () => {
@@ -20,9 +21,10 @@ const RouteCalculatorArea = () => {
     const OnDateChangeHandler = (date1: Date) => {
         setDate(date1) //setting date will triger useEffect in Init component
     }
+    const refreshAllData = useSetRecoilState(refreshData)
 
     const refresh =()=>{
-        setDate(new Date(date))
+        refreshAllData(Date.now().toString())
     }
     const sortHandle = () => {
         setSortOrders("")
@@ -109,7 +111,7 @@ const OrderRow = (props: { orderId: string, index: number }) => {
                 </td> :
                 <td className="px-1 py-4">
                     {order!.driverName}
-                </td>
+                </td> 
             }
         </tr>
     )

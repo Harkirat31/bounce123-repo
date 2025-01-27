@@ -1,14 +1,14 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { DriverType, PathOrderType } from "types"
-import { createPathAtom, getSavedPathById, savedPaths, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
+import { createPathAtom, getSavedPathById, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
 import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit } from "react-icons/md";
 import { RiMailSendFill } from "react-icons/ri";
-import { getPathById } from "../../store/selectors/pathSelector"
+//import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
@@ -16,7 +16,7 @@ import { TiDelete } from "react-icons/ti"
 import { ordersSearchDate } from "../../store/atoms/orderAtom"
 
 const PathArea = () => {
-    const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: any }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
+    const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
     const paths = useRecoilValue(savedPathsAtom)
     // when user assign order directly to the driver , and also middle of creating some path, this refreshes
     useEffect(() => {
@@ -37,13 +37,13 @@ const PathArea = () => {
 export default PathArea
 
 const Paths = ({ showCreatePath, setShowCreatePath }: {
-    showCreatePath: { flag: boolean, toBeEditedPath: any },
+    showCreatePath: { flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null },
     setShowCreatePath: React.Dispatch<React.SetStateAction<{
         flag: boolean;
         toBeEditedPath: any;
     }>>
 }) => {
-    const paths = useRecoilValue(savedPaths)
+    const paths = useRecoilValue(savedPathsAtom)
     const orderIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
 
@@ -97,10 +97,10 @@ const Paths = ({ showCreatePath, setShowCreatePath }: {
 const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     path: PathOrderType, callbackToCalculateSrNo: (orderId: string) => number, edit: React.Dispatch<React.SetStateAction<{
         flag: boolean;
-        toBeEditedPath: any;
+        toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null;
     }>>
 }) => {
-    const [pathData, setPathData] = useRecoilState(getPathById(path.pathId!))
+    const [pathData, setPathData] = useRecoilState(getSavedPathById(path.pathId!))
     const setPathDataAtom = useSetRecoilState(getSavedPathById(path.pathId!))
 
     const drivers = useRecoilValue(getDrivers)
@@ -108,7 +108,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const updateOrder = useSetRecoilState(updateOrders)
     //const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
-    const [allPaths, setAllPaths] = useRecoilState(savedPaths)
+    const [allPaths, setAllPaths] = useRecoilState(savedPathsAtom)
     const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
     const setLoading = useSetRecoilState(loadingState)
@@ -169,7 +169,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                     }
                 })
                 setAllPaths(allPathsCopy)
-                updateOrder(pathData!.path)
+                updateOrder(pathData!.path.map((p)=>p.id))
 
             }
             if (result.err != null || result.err != undefined) {
@@ -240,7 +240,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                         <div className="pt-10 text-white   flex flex-wrap items-center justify-center">
                             {pathData.path.map((node) => {
                                 return <div className="mt-2">
-                                    <DisplayOrderData orderId={node}></DisplayOrderData>
+                                    <DisplayOrderData orderId={node.id}></DisplayOrderData>
                                 </div>
                             })}
                         </div>
@@ -252,7 +252,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                 <td>
                     <div className="grid grid-cols-3">
                         {pathData!.path.map((node) => {
-                            return <DisplayOrderNumber orderId={node}></DisplayOrderNumber>
+                            return <DisplayOrderNumber orderId={node.id}></DisplayOrderNumber>
                         })}
                     </div>
                 </td>

@@ -8,7 +8,7 @@ import { convertToUTC } from "../utils/UTCdate"
 import Loading from "./Loading"
 import { loadingState } from "../store/atoms/loadingStateAtom"
 import { token } from "../store/atoms/tokenAtom"
-import { refresh } from "../store/atoms/refreshAtom"
+import { refreshData, refresh } from "../store/atoms/refreshAtom"
 
 
 const Init = () => {
@@ -16,39 +16,46 @@ const Init = () => {
     const setOrders = useSetRecoilState(ordersAtom)
     const setPaths = useSetRecoilState(savedPathsAtom)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
-    const loading = useRecoilValue(loadingState)
+    const [loading,setLoading] = useRecoilState(loadingState)
     const [_tokenValue, setTokenValue] = useRecoilState(token)
     const setRefresh = useSetRecoilState(refresh("d"))
+    const refreshAllData = useRecoilValue(refreshData)
+
 
     useEffect(() => {
+
         if (window.localStorage.getItem("token")) {
+            setLoading(true)
             let date = convertToUTC(orderSearchDate)
             getOrdersAPI(date).then((orders: any) => {
                 getPathsAPI(date).then((paths: any) => {
-                    getDriversAPI().then((drivers: any) => {
+                    getDriversAPI().then(async (drivers: any) => {
                         setOrders(orders)
                         setPaths(paths)
                         setDrivers({
                             isLoading: false,
                             value: drivers
                         })
+                        console.log("Hello ")
                         setRefresh()
-                        
+                        setLoading(false)
                     }).catch((err) => {
+                        setLoading(false)
                         alert("Error1 Fetching Data, Please check internet or refresh the page agin")
                     })
                 }).catch((err) => {
+                    setLoading(false)
                     alert("Error2 Fetching Data, Please check internet or refresh the page agin")
                 })
             }).catch((err) => {
-                console.log(err)
+                setLoading(false)
                 alert("Error Fetching Data, Please check internet or login again")
                 setTokenValue(null)
                 window.location.assign("/")
             })
 
         }
-    }, [orderSearchDate])
+    }, [orderSearchDate,refreshAllData])
 
     return (
         <div>
