@@ -6,11 +6,7 @@ import { createDriver, assignOrderToDriver, createSideItem, createRentingItem, c
 import axios from "axios";
 import { getGeometryApi } from "../externalApis/osrmAPI";
 
-
-
 const router = express.Router();
-
-
 
 router.post('/createSideItem', authenticateJwt, (req: Request, res: Response) => {
   let parsedData = sideItem.safeParse(req.body)

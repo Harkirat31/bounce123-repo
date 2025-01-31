@@ -135,6 +135,7 @@ export interface orderReferenceForPath{
 export const pathGeometry = z.object({
     geometry:z.string().optional(),
     distanceInKm:z.number().optional(),
+    durationInMins:z.number().optional()
 })
 
 export type PathGeometryType = z.infer<typeof pathGeometry>

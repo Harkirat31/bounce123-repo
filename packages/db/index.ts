@@ -512,6 +512,12 @@ export const getOrdersWithPathId = (pathId: string): Promise<OrderType[]> => {
 }
 
 export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderType[]> => {
+//  let cachedData =  getCachedObject(date.toISOString()+companyId)
+//  if (cachedData){
+//   console.log("Returning Cached")
+//   return  Promise.resolve(cachedData)
+//  }
+//  console.log("Not Cached")
   return new Promise((resolve, reject) => {
     db.collection('orders').where("companyId", "==", companyId).where("deliveryDate", "==", date).get().then((result) => {
       let orders = result.docs.map(
@@ -522,6 +528,10 @@ export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderT
           return order
         }
       )
+      //only add in cache when size of orders grreater than 0 to avoid unnecessary space
+      // if(orders && orders.length>0){
+      //   addObjectInCache(date.toISOString()+companyId,orders)
+      // }
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
   })
@@ -775,7 +785,6 @@ export const deleteOrders = (orders: string[]) => {
 
 
 export const deleteDriver = (driverId: string, companyId: string) => {
-  console.log(`${driverId} and ${companyId}`)
   return new Promise((resolve, reject) => {
     db.collection("driver_company").where("uid", "==", driverId).where("companyId", "==", companyId).get().then((document) => {
       let driverDoc = document.docs[0].id

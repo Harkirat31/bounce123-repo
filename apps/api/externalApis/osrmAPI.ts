@@ -13,21 +13,20 @@ export const getGeometryApi= (path:PathOrderType)=>{
         let coordinatesString = path.path.map(p => [p.latlng?.lng,p.latlng?.lat].join(',')).join(';');
           //add starting location
         coordinatesString = path.startingLocation.lng+","+path.startingLocation.lat+";"+coordinatesString
-
-        console.log(coordinatesString)
         // added started location , apart from nodes location
         axios.get(url+coordinatesString)
             .then(response => {
-                console.log("Hosting",response.data.routes[0].geometry)
-                resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000})
+                console.log("OSRM",response.data.routes[0].geometry)
+                resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000,durationInMins:response.data.routes[0].duration/60})
              
             })
             .catch(async error => {
                 // if first url fails then second
+                console.log("error erro")
                 try{
                     const response =await axios.get(hosting_url+coordinatesString)
                     console.log("Osrm Hosting",response.data.routes[0].geometry)
-                    resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000})
+                    resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000,durationInMins:response.data.routes[0].duration/60})
                 }
                 catch(e){
                     reject(error)
