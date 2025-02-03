@@ -188,7 +188,7 @@ export enum ErrorCode {
     EmailAlreadyExist,
     WorngCredentials,
     MissisRequiredParams,
-    FirebaseError,
+    DbError,
     MapsApiError,
     JsonParseError,
     WrongInputs,

@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt } from "../middleware"
-import { driver, assignOrder, rentingItem, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
-import { createDriver, assignOrderToDriver, createSideItem, createRentingItem, createOrder, getRentingItems, getSideItems, getDriver, getDrivers, getOrderswithDate, createPath, getPathswithDate, assignPathToDriver, changeOrderPriority, getUser, deleteOrders, getOrdersWithPathId, deletePath, updateUser, updatePath, deleteDriver, assignOrderAndPath, getFCMTokens, sendNotification, cancelPath, updatePathGemetry } from "db"
+import { driver, assignOrder, sideItem, order, pathOrder, changePriority, ErrorCode, user } from "types";
+import { createDriver, assignOrderToDriver, createSideItem, getDriver, getDrivers, getUser, updateUser, deleteDriver, sendNotification } from "db"
 import axios from "axios";
 import { getGeometryApi } from "../externalApis/osrmAPI";
+import { createPath , createOrder , getOrderswithDate, getPathswithDate,updatePath,deletePath,getOrdersWithPathId,assignPathToDriver ,assignOrderAndPath, cancelPath, updatePathGemetry,changeOrderPriority,deleteOrders} from "mongoose-db";
 
 const router = express.Router();
 
@@ -194,21 +195,6 @@ router.post("/createOrder", authenticateJwt, async (req: Request, res: Response)
 })
 
 
-router.post('/createRentingItem', authenticateJwt, (req: Request, res: Response) => {
-  let parsedData = rentingItem.safeParse(req.body)
-  if (!parsedData.success) {
-    return res.status(403).json({
-      msg: "Error in  Details"
-    });
-  }
-
-  createRentingItem(parsedData.data).then((result) => {
-    res.json({ isAdded: true });
-  }).catch((error) => res.json({ isAdded: false }))
-
-})
-
-
 router.post('/assignPath', authenticateJwt, (req: Request, res: Response) => {
   if (req.body.dateOfPath) {
     try {
@@ -340,17 +326,6 @@ router.get('/getUser', authenticateJwt, (req: Request, res: Response) => {
   })
 })
 
-router.get('/getRentingItems', authenticateJwt, (req: Request, res: Response) => {
-  getRentingItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
-  )
-})
-
-
-router.get('/getSideItems', authenticateJwt, (req: Request, res: Response) => {
-  getSideItems().then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
-  )
-})
-
 router.get('/getDrivers', authenticateJwt, (req: Request, res: Response) => {
   getDrivers(req.body.companyId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
   )
@@ -385,7 +360,7 @@ router.post("/getPaths", authenticateJwt, (req: Request, res: Response) => {
     res.json(paths);
   }).catch(() => {
     res.status(403).json({
-      err: ErrorCode.FirebaseError
+      err: ErrorCode.DbError
     })
   })
 })
@@ -468,7 +443,7 @@ router.post("/updateUser", authenticateJwt, (req: Request, res: Response) => {
     });
   })).catch((mapsAPIError) => {
     return res.status(403).json({
-      err: ErrorCode.FirebaseError
+      err: ErrorCode.DbError
     });
   })
 

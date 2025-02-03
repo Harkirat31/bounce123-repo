@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
@@ -15,7 +14,7 @@ router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response
         console.log(error)
         res.status(403).json({
             isAdded: false,
-            err: ErrorCode.FirebaseError
+            err: ErrorCode.DbError
         })
     })
 })

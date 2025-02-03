@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 export * from './service/orderService'
+export * from './service/pathService'
 
 const mongoURL = 'mongodb://localhost:27017/harkirat';
 

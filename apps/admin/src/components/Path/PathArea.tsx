@@ -6,7 +6,7 @@ import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiServ
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
 import { RiMailSendFill } from "react-icons/ri";
 //import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,9 @@ import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
 import { TiDelete } from "react-icons/ti"
 import { ordersSearchDate } from "../../store/atoms/orderAtom"
+import { refreshData } from "../../store/atoms/refreshAtom";
+import AssignDriver from "./AssignDriver"
+
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
@@ -70,9 +73,12 @@ const Paths = ({ showCreatePath, setShowCreatePath }: {
                         <th scope="col" className="px-1 py-3">
                             Path
                         </th>
-                        <th scope="col" className="py-3">
-                            Assign To
+                        <th scope="col" className="px-1 py-3">
+                            Metrics
                         </th>
+                        {/* <th scope="col" className="py-3">
+                            Assign To
+                        </th> */}
                         <th scope="col" className="px-1 py-3">
                             Action
                         </th>
@@ -103,16 +109,20 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     const [pathData, setPathData] = useRecoilState(getSavedPathById(path.pathId!))
     const setPathDataAtom = useSetRecoilState(getSavedPathById(path.pathId!))
 
-    const drivers = useRecoilValue(getDrivers)
+    
     const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const updateOrder = useSetRecoilState(updateOrders)
     //const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
     const [allPaths, setAllPaths] = useRecoilState(savedPathsAtom)
-    const navigate = useNavigate()
+    //const navigate = useNavigate()
     const setCreatePath = useSetRecoilState(createPathAtom)
     const setLoading = useSetRecoilState(loadingState)
-    const [orderSearchDate,setOrderSearchDate] = useRecoilState(ordersSearchDate)
+    const refreshAllData = useSetRecoilState(refreshData)
+    const [isAssignDivOpen,setIsAssignDivOpen] = useState(false)
+   // const drivers = useRecoilValue(getDrivers)
+
+   
 
 
     const handleShowToggle = () => {
@@ -123,9 +133,9 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
             setPathDataAtom({ ...pathData!, show: true })
         }
     }
-    function handleDropdownChanged(event: ChangeEvent<HTMLSelectElement>): void {
-        setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-    }
+    // function handleDropdownChanged(event: ChangeEvent<HTMLSelectElement>): void {
+    //     setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
+    // }
 
     const hanldeSendSMS = () => {
 
@@ -148,6 +158,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
             setPathData(pathArgs as PathOrderType)
             setLoading(false)
+            refreshAllData(Date.now().toString())
             alert("Assigned and Sent to driver")
         }).catch((_error) => {
             setLoading(false)
@@ -211,8 +222,8 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 
 
             //this refresh the orders, paths
-            setOrderSearchDate(new Date(orderSearchDate))
-
+            refreshAllData(Date.now().toString())
+        
         }).catch((error) => {
             alert("Failed")
         }).finally(() => {
@@ -247,16 +258,27 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                         <button onClick={() => handleUndo()} className="bg-blue-700 text my-10 text-white p-2">Cancel Assignment</button>
                     </div>
                 </div>}
-            <tr className="border-b-2 border-gray-100 relative">
-                <td> <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"></input></td>
+            <tr className="border-b-2 border-gray-100 items-center">
                 <td>
-                    <div className="grid grid-cols-3">
+                    <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                    </input>
+                   
+                </td>
+                <td>
+                    <div className="grid grid-cols-3 w-28">
                         {pathData!.path.map((node) => {
                             return <DisplayOrderNumber orderId={node.id}></DisplayOrderNumber>
-                        })}
+                        })}  
                     </div>
                 </td>
                 <td>
+                    <div className="flex flex-col text-xs text-nowrap ml-2 items-start justify-start">
+                        <p>{`${pathData.pathGeometry?.distanceInKm?.toFixed(2)} km`}</p>
+                        <p>{`${pathData.pathGeometry?.durationInMins?.toFixed(2)} mins` }</p>
+                       
+                    </div>
+                </td>
+                {/* <td>
                     {
                         <>
                             {(pathData!.driverId == null || pathData!.driverId == undefined)
@@ -283,24 +305,31 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                         </>
                     }
 
-                </td>
-                <td className="px-6 py-4 flex">
+                </td> */}
+                <td>
 
                     {(pathData!.driverId == null || pathData!.driverId == undefined) ?
-                        <>
-                            {drivers.length > 0 &&
-                                <button onClick={hanldeSendSMS} className="text-s">
-                                    <div className="flex flex-row items-center border-gray-300 border-r-2 p-1 ">
-                                        Send
-                                        <RiMailSendFill />
-                                    </div>
-                                </button>}
+                        <div  className="px-1 py-2 flex flex-row ">
+                            
+                            <div className="relative">
+                                <button onClick={() => isAssignDivOpen?setIsAssignDivOpen(false): setIsAssignDivOpen(true)} className=" border-gray-300 border-r-2 p-1" type="button">
+                                    <span className="flex flex-row items-center">Assign {!isAssignDivOpen ?<MdOutlineArrowDropDown size={20} /> :<MdOutlineArrowDropUp size={20} />}</span>
+                                </button>
+                                {<AssignDriver
+                                    pathData={pathData}
+                                    hanldeSendSMS={hanldeSendSMS}
+                                    isAssignDivOpen={isAssignDivOpen}
+                                    setIsAssignDivOpen={setIsAssignDivOpen}
+                                    dropDownItem={dropDownItem}
+                                    setDropDownItem={setDropDownItem}>
+                                </AssignDriver>}
+                            </div>
                             <button type="button" onClick={handleDelete} className="text-2xl border-gray-300 border-r-2 p-1"><AiFillDelete></AiFillDelete></button>
                             <button type="button" onClick={handleEdit} className="text-2xl border-gray-300 border-r-2 p-1"><MdEdit /></button>
-                        </>
+                        </div>
                         :
                         <div className="flex flex-row">
-                            <p className="ml-2 mr-2">Sent</p>
+                            <p className="ml-2 mr-2">Sent to {pathData.driverName}</p>
                             <button onClick={() => setUndo(true)} className=" border-gray-300 text-red-500 underline font-bold"> Undo</button>
                         </div>
 

@@ -135,13 +135,13 @@ router.post("/signinDriver", (req: Request, res: Response) => {
       }
       else {
         res.status(401).json({
-          err: ErrorCode.FirebaseError
+          err: ErrorCode.DbError
         });
       }
     }
     catch (e) {
       res.status(401).json({
-        err: ErrorCode.FirebaseError
+        err: ErrorCode.DbError
       });
     }
 
@@ -205,7 +205,7 @@ router.post("/createUser", (req: Request, res: Response) => {
     });
   })).catch((mapsAPIError) => {
     return res.status(403).json({
-      err: ErrorCode.FirebaseError
+      err: ErrorCode.DbError
     });
   })
 

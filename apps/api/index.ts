@@ -12,7 +12,7 @@ import { connectDB } from "mongoose-db";
 
 
 export const app = express()
-//connectDB();
+connectDB();
 app.use(cors());
 
 app.use(express.json())

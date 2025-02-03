@@ -72,7 +72,7 @@ export const signIn = async (email: string, password: string) => {
             resolve(user)
           }
         }).catch((error) => {
-           reject(ErrorCode.FirebaseError)
+           reject(ErrorCode.DbError)
         })
       }).catch((error) => {
         reject(ErrorCode.JsonParseError)
@@ -145,7 +145,7 @@ export const getFuturePathDates = (uid: string,date:Date) => {
         })
         resolve(futureDates)
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
   
   })
@@ -179,13 +179,13 @@ export const getDriverWithPaths = (uid: string,date:Date) => {
 
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         }).catch((error) => {
-          reject(ErrorCode.FirebaseError)
+          reject(ErrorCode.DbError)
         })
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }).catch((error) => {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }
@@ -196,7 +196,7 @@ export const getDriver = async (uid: string, companyId: string): Promise<DriverT
     db.collection("driver_company").where("uid", "==", uid).where("companyId", "==", companyId).get().then((documentSnapshot) => {
       resolve(Object(documentSnapshot.docs[0].data()))
     }).catch((error) => {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }
@@ -211,7 +211,7 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
         if (error.code == "auth/email-already-exists") {
           reject(ErrorCode.EmailAlreadyExist)
         } else {
-          reject(ErrorCode.FirebaseError)
+          reject(ErrorCode.DbError)
         }
 
       }
@@ -235,7 +235,7 @@ export const updateUser = (userDetail: UserType): Promise<UserType> => {
       userDetail
     ).then((result) => {
       resolve(userDetail)
-    }).catch(() => reject(ErrorCode.FirebaseError))
+    }).catch(() => reject(ErrorCode.DbError))
   })
 }
 
@@ -251,7 +251,7 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
         newUserDetail
       ).then((result) => {
         resolve(newUserDetail)
-      }).catch(() => reject(ErrorCode.FirebaseError))
+      }).catch(() => reject(ErrorCode.DbError))
     }
     ).catch((error) => {
       reject(error)
@@ -272,7 +272,7 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 //     ).then((result) => {
 //       newDriverDetail.uid = result.id
 //       resolve(newDriverDetail)
-//     }).catch(() => reject(ErrorCode.FirebaseError))
+//     }).catch(() => reject(ErrorCode.DbError))
 //   })
 // }
 
@@ -292,7 +292,7 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
       ).then((res) => {
         resolve(newDriverDetail)
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }
     ).catch((error) => {
@@ -310,7 +310,7 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
               ).then((res) => {
                 resolve(newDriverDetail)
               }).catch((error) => {
-                reject(ErrorCode.FirebaseError)
+                reject(ErrorCode.DbError)
               })
             }
           })
@@ -446,7 +446,7 @@ export const deletePath = (path: PathOrderType) => {
 
     }
     catch {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     }
 
   })
@@ -791,11 +791,11 @@ export const deleteDriver = (driverId: string, companyId: string) => {
       db.collection("driver_company").doc(driverDoc).delete().then((res) => {
         resolve("Deleted")
       }).catch((e) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }).catch((e) => {
       console.log(e)
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }

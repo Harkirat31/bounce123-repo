@@ -3,7 +3,7 @@ import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } fr
 import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPathsAtom } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
 import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom";
-import { createPath, getPathsAPI } from "../../services/ApiService";
+import { createPath } from "../../services/ApiService";
 import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { AiFillDelete } from 'react-icons/ai';
