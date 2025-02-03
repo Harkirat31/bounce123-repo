@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { optional, z } from "zod"
 
 
 
@@ -128,20 +128,38 @@ export enum deliveryStatus {
     Returned,
 }
 
+export interface orderReferenceForPath{
+
+}
+
+export const pathGeometry = z.object({
+    geometry:z.string().optional(),
+    distanceInKm:z.number().optional(),
+    durationInMins:z.number().optional()
+})
+
+export type PathGeometryType = z.infer<typeof pathGeometry>
 
 export const pathOrder = z.object({
     pathId: z.string().optional(),
     companyId: z.string().optional(),
+    startingLocation:location,
     show: z.boolean(),
-    path: z.array(z.string()),
+    path: z.array(z.object({id:z.string(),latlng:location.optional()})),
     dateOfPath: z.date(),
     driverId: z.string().optional(),
     driverName: z.string().optional(),
     isAcceptedByDriver:z.boolean().optional(),
-    geometry:z.string().optional()
+    pathGeometry:pathGeometry.optional()
 })
 
+
+
 export type PathOrderType = z.infer<typeof pathOrder>
+
+
+
+
 
 export const notificationMessage = z.object({
     companyName: z.string(),
@@ -170,7 +188,7 @@ export enum ErrorCode {
     EmailAlreadyExist,
     WorngCredentials,
     MissisRequiredParams,
-    FirebaseError,
+    DbError,
     MapsApiError,
     JsonParseError,
     WrongInputs,

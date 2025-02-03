@@ -1,9 +1,9 @@
 import { DefaultValue, atom, atomFamily, selector, selectorFamily } from "recoil";
-import { OrderType, PathOrderType } from "types";
+import { LocationType, OrderType, PathOrderType } from "types";
 import { getOrder } from "../selectors/orderSelector";
 
 
-export const createPathAtom = atom<{ path: string[], pathId: string | undefined }>({
+export const createPathAtom = atom<{ path: {id:string,latlng?:LocationType}[], pathId: string | undefined }>({
     key: "createPathAtom",
     default: { path: [], pathId: undefined }
 })
@@ -13,28 +13,29 @@ export const savedPathsAtom = atom<PathOrderType[]>({
     default: []
 })
 
-export const savedPaths = selector<PathOrderType[]>({
-    key: "savedPathsSelector",
-    get: ({ get }) => {
-        return get(savedPathsAtom)
-    },
-    set: ({ set, get }, newValue) => {
-        if (!(newValue instanceof DefaultValue)) {
-            newValue.forEach((path) => {
-                path.path.forEach((orderId) => {
-                    let order = get(getOrder(orderId))
-                    if (order!.assignedPathId == null || order!.assignedPathId == "") {
-                        set(getOrder(orderId), { ...order!, assignedPathId: path.pathId, currentStatus: "PathAssigned" })
-                    }
-                })
-            })
-            set(savedPathsAtom, newValue)
-        }
-        else {
-            set(savedPathsAtom, newValue)
-        }
-    }
-})
+// export const savedPaths = selector<PathOrderType[]>({
+//     key: "savedPathsSelector",
+//     get: ({ get }) => {
+//         return get(savedPathsAtom)
+//     },
+//     set: ({ set, get }, newValue) => {
+//         if (!(newValue instanceof DefaultValue)) {
+//             console.log("Lol")
+//             newValue.forEach((path) => {
+//                 path.path.forEach((pathNode) => {
+//                     let order = get(getOrder(pathNode.id))
+//                     if (order!.assignedPathId == null || order!.assignedPathId == "") {
+//                         set(getOrder(pathNode.id), { ...order!, assignedPathId: path.pathId, currentStatus: "PathAssigned" })
+//                     }
+//                 })
+//             })
+//             set(savedPathsAtom, newValue)
+//         }
+//         else {
+//             set(savedPathsAtom, newValue)
+//         }
+//     }
+// })
 
 
 
@@ -43,7 +44,7 @@ export const getSavedPathById = atomFamily({
     default: selectorFamily({
         key: "getPath/Default",
         get: (pathId: string) => ({ get }) => {
-            const paths = get(savedPaths)
+            const paths = get(savedPathsAtom)
             return paths.find((path) => path.pathId === pathId)
         }
     })

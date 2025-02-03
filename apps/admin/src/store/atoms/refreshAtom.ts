@@ -1,4 +1,4 @@
-import { selectorFamily } from "recoil";
+import { atom, selectorFamily } from "recoil";
 import { ordersAtom } from "./orderAtom";
 import { getOrder } from "../selectors/orderSelector";
 import { getSavedPathById, savedPathsAtom } from "./pathAtom";
@@ -8,7 +8,7 @@ This selector is used to refresh each order as Order is cached need to set to ne
 Reset Recoil State can be used in future
 */
 export const refresh = selectorFamily({
-    key: "getDrivers",
+    key: "refresh",
     get:()=>({ get }) => {   
     },
     set:()=>({get,set})=>{
@@ -23,3 +23,8 @@ export const refresh = selectorFamily({
     }
 })
 
+
+export const refreshData = atom<string>({
+    key:"refreshDAta",
+    default:"refresh"
+})

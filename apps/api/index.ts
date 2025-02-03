@@ -8,10 +8,11 @@ import authRouter from "./routes/auth"
 
 //import testRouter from "./routes/test"
 import cors from "cors"
-
+import { connectDB } from "mongoose-db";
 
 
 export const app = express()
+connectDB();
 app.use(cors());
 
 app.use(express.json())

@@ -1,4 +1,4 @@
-import { DriverType, ErrorCode, OrderType, PathOrderType, RentingItemType, UserType } from "types";
+import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
 import axios from "axios";
 
 

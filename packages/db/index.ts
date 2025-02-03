@@ -3,7 +3,7 @@ import path, { resolve } from 'path';
 import * as admin from 'firebase-admin';
 import { homedir } from 'os'
 
-import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder } from "types"
+import { DriverType, UserSignInType, RentingItemType, SideItemType, OrderType, LocationType, order, PathOrderType, UserType, ErrorCode, NotificationMessage, pathOrder, pathGeometry } from "types"
 //import { API_KEY_SIGNIN } from './config';
 
 import dotenv from "dotenv"
@@ -30,6 +30,7 @@ catch (e) {
 
 
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true })
 
 
 
@@ -71,7 +72,7 @@ export const signIn = async (email: string, password: string) => {
             resolve(user)
           }
         }).catch((error) => {
-           reject(ErrorCode.FirebaseError)
+           reject(ErrorCode.DbError)
         })
       }).catch((error) => {
         reject(ErrorCode.JsonParseError)
@@ -144,7 +145,7 @@ export const getFuturePathDates = (uid: string,date:Date) => {
         })
         resolve(futureDates)
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
   
   })
@@ -178,13 +179,13 @@ export const getDriverWithPaths = (uid: string,date:Date) => {
 
           resolve({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         }).catch((error) => {
-          reject(ErrorCode.FirebaseError)
+          reject(ErrorCode.DbError)
         })
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }).catch((error) => {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }
@@ -195,7 +196,7 @@ export const getDriver = async (uid: string, companyId: string): Promise<DriverT
     db.collection("driver_company").where("uid", "==", uid).where("companyId", "==", companyId).get().then((documentSnapshot) => {
       resolve(Object(documentSnapshot.docs[0].data()))
     }).catch((error) => {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }
@@ -210,7 +211,7 @@ export const signUp = async (authUser: UserSignInType): Promise<string> => {
         if (error.code == "auth/email-already-exists") {
           reject(ErrorCode.EmailAlreadyExist)
         } else {
-          reject(ErrorCode.FirebaseError)
+          reject(ErrorCode.DbError)
         }
 
       }
@@ -234,7 +235,7 @@ export const updateUser = (userDetail: UserType): Promise<UserType> => {
       userDetail
     ).then((result) => {
       resolve(userDetail)
-    }).catch(() => reject(ErrorCode.FirebaseError))
+    }).catch(() => reject(ErrorCode.DbError))
   })
 }
 
@@ -250,7 +251,7 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
         newUserDetail
       ).then((result) => {
         resolve(newUserDetail)
-      }).catch(() => reject(ErrorCode.FirebaseError))
+      }).catch(() => reject(ErrorCode.DbError))
     }
     ).catch((error) => {
       reject(error)
@@ -271,7 +272,7 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 //     ).then((result) => {
 //       newDriverDetail.uid = result.id
 //       resolve(newDriverDetail)
-//     }).catch(() => reject(ErrorCode.FirebaseError))
+//     }).catch(() => reject(ErrorCode.DbError))
 //   })
 // }
 
@@ -291,7 +292,7 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
       ).then((res) => {
         resolve(newDriverDetail)
       }).catch((error) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }
     ).catch((error) => {
@@ -309,7 +310,7 @@ export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> =
               ).then((res) => {
                 resolve(newDriverDetail)
               }).catch((error) => {
-                reject(ErrorCode.FirebaseError)
+                reject(ErrorCode.DbError)
               })
             }
           })
@@ -342,20 +343,22 @@ export const updatePath = (newPath: PathOrderType) => {
         }
       })
       //change status to not assigned
-      oldPathSet.forEach(async (pathNode) => {
-        await db.collection("orders").doc(pathNode).update({
+
+      for (const pathNode of oldPathSet) {
+        await db.collection("orders").doc(pathNode.id).update({
           assignedPathId: "",
           currentStatus: "NotAssigned"
         })
-      })
-
+      }
       let result = await db.collection("paths").doc(newPath.pathId!).update(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      
+
+      for (const order of newPath.path){
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: newPath.pathId!,
           currentStatus: "PathAssigned"
         })
-      })
+      } 
       resolve("Success")
 
     }
@@ -367,20 +370,39 @@ export const updatePath = (newPath: PathOrderType) => {
 }
 
 
+export const updatePathGemetry = (newPath: PathOrderType) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+        await db.collection("paths").doc(newPath.pathId!).update({
+          pathGeometry: newPath.pathGeometry,
+        })
+        resolve("Success")
+      } 
+    catch {
+      reject("Error")
+    }
+
+  })
+}
+
+
+
 export const createPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
+      //this should be transaction, add transaction
       let result = await db.collection("paths").add(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      for (const order of newPath.path) {
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: result.id,
-          currentStatus: "PathAssigned"
-        })
-      })
+          currentStatus: "PathAssigned",
+        });
+      }
       resolve("Success")
 
     }
-    catch {
+    catch(error) {
+      console.log(new Date().toLocaleTimeString,error)
       reject("Error")
     }
 
@@ -391,8 +413,8 @@ export const assignOrderAndPath = (newPath: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
       let result = await db.collection("paths").add(newPath)
-      newPath.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+      newPath.path.forEach(async (order) => {
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: result.id,
           currentStatus: "SentToDriver",
           driverId: newPath.driverId,
@@ -411,19 +433,20 @@ export const deletePath = (path: PathOrderType) => {
   return new Promise(async (resolve, reject) => {
     try {
       let result = await db.collection("paths").doc(path.pathId!).delete()
-      path.path.forEach(async (orderId) => {
-        await db.collection("orders").doc(orderId).update({
+     
+      for (const order of path.path){
+        await db.collection("orders").doc(order.id).update({
           assignedPathId: admin.firestore.FieldValue.delete(),
           currentStatus: "NotAssigned",
           driverId: admin.firestore.FieldValue.delete(),
           driverName: admin.firestore.FieldValue.delete()
         })
-      })
+      }
       resolve("Success")
 
     }
     catch {
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     }
 
   })
@@ -489,6 +512,12 @@ export const getOrdersWithPathId = (pathId: string): Promise<OrderType[]> => {
 }
 
 export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderType[]> => {
+//  let cachedData =  getCachedObject(date.toISOString()+companyId)
+//  if (cachedData){
+//   console.log("Returning Cached")
+//   return  Promise.resolve(cachedData)
+//  }
+//  console.log("Not Cached")
   return new Promise((resolve, reject) => {
     db.collection('orders').where("companyId", "==", companyId).where("deliveryDate", "==", date).get().then((result) => {
       let orders = result.docs.map(
@@ -499,6 +528,10 @@ export const getOrderswithDate = (date: Date, companyId: string): Promise<OrderT
           return order
         }
       )
+      //only add in cache when size of orders grreater than 0 to avoid unnecessary space
+      // if(orders && orders.length>0){
+      //   addObjectInCache(date.toISOString()+companyId,orders)
+      // }
       resolve(orders)
     }).catch((error) => reject(new Error("Error fetching orders of driver")))
   })
@@ -643,7 +676,7 @@ export const assignPathToDriver = (path: PathOrderType) => {
       driverName: path.driverName,
     }).then((result) => {
       path.path.forEach(async (pathNode) => {
-        await db.collection('orders').doc(pathNode).update({
+        await db.collection('orders').doc(pathNode.id).update({
           driverId: path.driverId,
           driverName: path.driverName,
           currentStatus: "SentToDriver"
@@ -660,12 +693,11 @@ export const cancelPath = (path: PathOrderType) => {
       const nonDeliveredOrders: OrderType[] = []
       const nonDeliveredOrderIds = new Set<string>()
       nonDeliveredOrdersDocs.forEach((doc) => {
-        console.log(doc.data() as OrderType)
         nonDeliveredOrders.push(doc.data() as OrderType)
         nonDeliveredOrderIds.add(doc.id)
       })
       const modifiedPath = path.path.filter((p) => {
-        if (nonDeliveredOrderIds.has(p)) {
+        if (nonDeliveredOrderIds.has(p.id)) {
           return false
         }
         else {
@@ -753,18 +785,17 @@ export const deleteOrders = (orders: string[]) => {
 
 
 export const deleteDriver = (driverId: string, companyId: string) => {
-  console.log(`${driverId} and ${companyId}`)
   return new Promise((resolve, reject) => {
     db.collection("driver_company").where("uid", "==", driverId).where("companyId", "==", companyId).get().then((document) => {
       let driverDoc = document.docs[0].id
       db.collection("driver_company").doc(driverDoc).delete().then((res) => {
         resolve("Deleted")
       }).catch((e) => {
-        reject(ErrorCode.FirebaseError)
+        reject(ErrorCode.DbError)
       })
     }).catch((e) => {
       console.log(e)
-      reject(ErrorCode.FirebaseError)
+      reject(ErrorCode.DbError)
     })
   })
 }

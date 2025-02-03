@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/lru-cache": "^7.10.10",
     "dotenv": "^16.4.4",
     "firebase-admin": "^11.11.0",
+    "lru-cache": "^11.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^8.1.2"
   },
