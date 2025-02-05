@@ -14,9 +14,9 @@ export const getGeometryApi= (path:PathOrderType)=>{
           //add starting location
         coordinatesString = path.startingLocation.lng+","+path.startingLocation.lat+";"+coordinatesString
         // added started location , apart from nodes location
-        axios.get(hosting_url+coordinatesString)
+        axios.get(url+coordinatesString)
             .then(response => {
-                console.log("OSRM_Hosted",response.data.routes[0].geometry)
+                console.log("OSRM",response.data.routes[0].geometry)
                 resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000,durationInMins:response.data.routes[0].duration/60})
              
             })
@@ -25,7 +25,7 @@ export const getGeometryApi= (path:PathOrderType)=>{
                 console.log("error erro")
                 try{
                     const response =await axios.get(url+coordinatesString)
-                    console.log("Osrm",response.data.routes[0].geometry)
+                    console.log("hosting_url",response.data.routes[0].geometry)
                     resolve({geometry:response.data.routes[0].geometry,distanceInKm:response.data.routes[0].distance/1000,durationInMins:response.data.routes[0].duration/60})
                 }
                 catch(e){
