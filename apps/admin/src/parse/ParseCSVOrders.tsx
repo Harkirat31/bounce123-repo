@@ -23,7 +23,7 @@ const ParseCSVOrders = () => {
     return pattern.test(dateString);
   }
 
-  const handleSubmitCSV = () => {
+  const handleSubmitCSV = async () => {
     const resetStates = () => {
       if (statusOfUploading.length === csvData.length) {
         setCreateOrdersStatus(statusOfUploading)
@@ -37,7 +37,7 @@ const ParseCSVOrders = () => {
     let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail',]
     setIsLoading(true)
     let statusOfUploading: {}[] = []
-    csvData.map(async (row) => {
+    for (const row of csvData){
       let orderobject: any = {}
       Object.values(row).map((cell: any, cellIndex: number) => {
         orderobject[orderAttributes[cellIndex]] = cell
@@ -55,10 +55,11 @@ const ParseCSVOrders = () => {
       if (!orderobject['priority']) {
         orderobject['priority'] = "Medium"
       }
-      try {
+      try{
         let parse = order.safeParse(orderobject)
         if (parse.success) {
-          createOrder(parse.data).then((result: any) => {
+          try{
+            const result:any = await  createOrder(parse.data)
             if (result.isAdded) {
               statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: true })
             }
@@ -78,12 +79,12 @@ const ParseCSVOrders = () => {
             if (statusOfUploading.length === csvData.length) {
               resetStates()
             }
-          }).catch((result: any) => {
+          }catch(result:any){
             statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
             if (statusOfUploading.length === csvData.length) {
               resetStates()
             }
-          })
+          }
         }
         else {
           if (parse.error) {
@@ -101,6 +102,36 @@ const ParseCSVOrders = () => {
             resetStates()
           }
         }
+      }
+      catch (e) {
+        statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })
+        if (statusOfUploading.length === csvData.length) {
+          resetStates()
+        }
+      }
+
+    }
+
+    csvData.forEach((row) => {
+      let orderobject: any = {}
+      Object.values(row).map((cell: any, cellIndex: number) => {
+        orderobject[orderAttributes[cellIndex]] = cell
+      })
+      if (!isDateFormatValid(orderobject[orderAttributes[5]])) {
+        statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false, err: "Date format must be MM/DD/YYYY" })
+        if (statusOfUploading.length === csvData.length) {
+          resetStates()
+        }
+        return
+      }
+      let newDate = convertToUTC(new Date(orderobject[orderAttributes[5]]))
+      orderobject['deliveryDate'] = newDate
+
+      if (!orderobject['priority']) {
+        orderobject['priority'] = "Medium"
+      }
+      try {
+
       }
       catch (e) {
         statusOfUploading.push({ orderNumber: orderobject['orderNumber'], success: false })

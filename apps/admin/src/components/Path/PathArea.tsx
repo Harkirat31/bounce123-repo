@@ -1,26 +1,27 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { DriverType, PathOrderType } from "types"
+import {  PathOrderType } from "types"
 import { createPathAtom, getSavedPathById, savedPathsAtom, updateOrders } from "../../store/atoms/pathAtom"
 import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
-import { getDrivers } from "../../store/selectors/driversSelector"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
-import { RiMailSendFill } from "react-icons/ri";
+
 //import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
 import { TiDelete } from "react-icons/ti"
-import { ordersSearchDate } from "../../store/atoms/orderAtom"
+//import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import { refreshData } from "../../store/atoms/refreshAtom";
 import AssignDriver from "./AssignDriver"
+import { isRoadView } from "../../store/atoms/commonAtoms"
 
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
     const paths = useRecoilValue(savedPathsAtom)
+    const [isRoad,setIsRoad] = useRecoilState(isRoadView)
     // when user assign order directly to the driver , and also middle of creating some path, this refreshes
     useEffect(() => {
         setShowCreatePath({ flag: false, toBeEditedPath: null })
@@ -30,6 +31,11 @@ const PathArea = () => {
             <div className="flex justify-center">
                 <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Show All Paths</button>
                 <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Create Path</button>
+                <div className="flex flex-row items-center">
+                    <label className="text-sm ">Road View</label>
+                    <input checked={isRoad} onChange={()=>setIsRoad(!isRoad)} className="m-2" type="checkbox"></input>
+                </div>
+                
             </div>
             {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>}
             {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
@@ -110,7 +116,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     const setPathDataAtom = useSetRecoilState(getSavedPathById(path.pathId!))
 
     
-    const selectRef = useRef<HTMLSelectElement | null>(null);
+   // const selectRef = useRef<HTMLSelectElement | null>(null);
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const updateOrder = useSetRecoilState(updateOrders)
     //const updateAfterCancel = useSetRecoilState(updateOrdersAfterCancel)
@@ -315,14 +321,14 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                                 <button onClick={() => isAssignDivOpen?setIsAssignDivOpen(false): setIsAssignDivOpen(true)} className=" border-gray-300 border-r-2 p-1" type="button">
                                     <span className="flex flex-row items-center">Assign {!isAssignDivOpen ?<MdOutlineArrowDropDown size={20} /> :<MdOutlineArrowDropUp size={20} />}</span>
                                 </button>
-                                {<AssignDriver
+                                <AssignDriver
                                     pathData={pathData}
                                     hanldeSendSMS={hanldeSendSMS}
                                     isAssignDivOpen={isAssignDivOpen}
                                     setIsAssignDivOpen={setIsAssignDivOpen}
                                     dropDownItem={dropDownItem}
                                     setDropDownItem={setDropDownItem}>
-                                </AssignDriver>}
+                                </AssignDriver>
                             </div>
                             <button type="button" onClick={handleDelete} className="text-2xl border-gray-300 border-r-2 p-1"><AiFillDelete></AiFillDelete></button>
                             <button type="button" onClick={handleEdit} className="text-2xl border-gray-300 border-r-2 p-1"><MdEdit /></button>

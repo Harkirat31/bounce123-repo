@@ -339,34 +339,28 @@ export const cancelPathAPI = (path: PathOrderType) => {
 
 export const createOrdersApi = (orders: OrderType[]) => {
     let createOrderStatuses: any = []
-
     return new Promise(async (resolve, reject) => {
-        let iteratedElements = 0
-        orders.forEach(async (order, index) => {
-            fetch(BASE_URL + '/admin/createOrder', {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(order)
-            }).then((response) => response.json().then((jsonData) => {
-                iteratedElements = index + 1
-                if (jsonData.isAdded) {
+        for(const order of orders){
+            try{
+                const response = await fetch(BASE_URL + '/admin/createOrder', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(order)
+                })
+                const jsonData = await response.json()
+                if(jsonData.isAdded){
                     createOrderStatuses.push({ orderNumber: order.orderNumber, success: true })
-                } else {
+                }else{
                     createOrderStatuses.push({ orderNumber: order.orderNumber, success: false })
                 }
-            })).catch(() => {
+            }catch(error){
                 createOrderStatuses.push({ orderNumber: order.orderNumber, success: false })
-            }).finally(() => {
-                if (iteratedElements == orders.length) {
-                    resolve(createOrderStatuses)
-                }
-            })
-        })
-
-
+            }
+            resolve(createOrderStatuses)
+        }
     })
 
 

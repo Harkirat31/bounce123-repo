@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
-import { createPathAtom, orderSetForAtom, orderSetForPathCreation, savedPathsAtom } from "../../store/atoms/pathAtom";
+import { createPathAtom, orderSetForAtom, orderSetForPathCreation } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
 import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom";
 import { createPath } from "../../services/ApiService";

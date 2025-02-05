@@ -1,23 +1,27 @@
 import { useRecoilValue } from "recoil"
 import { getDrivers } from "../../store/selectors/driversSelector"
 import { useNavigate } from "react-router-dom";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useRef } from "react";
 import { DriverType, PathOrderType } from "types";
 import { RiMailSendFill } from "react-icons/ri";
 
-interface props {
+interface propsType {
+    children?: React.ReactNode;
     pathData: PathOrderType,
     hanldeSendSMS: () => void,
     isAssignDivOpen: boolean,
     setIsAssignDivOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    dropDownItem: { driverId: string, driverName: string } | "Select",
+    dropDownItem: "Select" | {
+    driverId: string;
+    driverName: string;
+},
     setDropDownItem: React.Dispatch<React.SetStateAction<"Select" | {
         driverId: string;
         driverName: string;
     }>>
 }
 
-const AssignDriver = ({ pathData, hanldeSendSMS, isAssignDivOpen, setIsAssignDivOpen, dropDownItem, setDropDownItem }: props) => {
+const AssignDriver = ({ pathData, hanldeSendSMS, isAssignDivOpen, setIsAssignDivOpen, dropDownItem, setDropDownItem }: propsType) => {
 
     const drivers = useRecoilValue(getDrivers)
     const navigate = useNavigate()

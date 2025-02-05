@@ -1,12 +1,9 @@
 import express from "express"
 import dotenv from "dotenv"
 dotenv.config();
-
 import driverRouter from './routes/driver'
 import adminRouter from './routes/admin'
 import authRouter from "./routes/auth"
-
-//import testRouter from "./routes/test"
 import cors from "cors"
 import { connectDB } from "mongoose-db";
 

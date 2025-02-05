@@ -36,7 +36,6 @@ const Init = () => {
                             isLoading: false,
                             value: drivers
                         })
-                        console.log("Hello ")
                         setRefresh()
                         setLoading(false)
                     }).catch((err) => {
