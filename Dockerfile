@@ -23,10 +23,10 @@ RUN cd apps/admin && npm install
 RUN cd apps/api && npm install
 
 #install dependencies for website
-RUN cd apps/website && npm install
+#RUN cd apps/website && npm install
 
 # Copy the rest of the application code
-    COPY . .
+COPY . .
 
 # Build the admin and API apps
 RUN cd apps/admin && npm run build && cd ../..

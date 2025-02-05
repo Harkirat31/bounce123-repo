@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export * from './service/orderService'
 export * from './service/pathService'
 
-const mongoURL = 'mongodb://localhost:27017/harkirat';
+const mongoURL = process.env.MONGO_DB_URL??'mongodb://localhost:27017/mydb';
 
 export const connectDB = async () => {
   try {

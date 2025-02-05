@@ -1,0 +1,26 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    container_name: my-mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+    command: ["mongod", "--port", "27017"]
+
+  myapp:
+    image: easeyourtasks
+    depends_on:
+      - mongodb
+    networks:
+      - mynetwork
+    environment:
+      MONGO_DB_URL: mongodb://my-mongo:27017/mydb
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "4000:4000"
+
+networks:
+  mynetwork:
