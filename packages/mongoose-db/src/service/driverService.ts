@@ -6,7 +6,7 @@ export const getPathsOfDriverByDate =( driverId: string,date: Date):Promise<Path
      return new Promise((resolve, reject) => {   
           PathModel.find({
             driverId:driverId,
-            deliveryDate:date
+            dateOfPath:date
           }).then((docs)=>{
             let paths = docs.map((doc)=> doc as PathOrderType)
             resolve(paths)
