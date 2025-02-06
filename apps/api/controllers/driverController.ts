@@ -20,7 +20,6 @@ export const getDriverWithPaths = async (req: Request, res: Response) => {
         }
         let paths = await getPathsOfDriverByDate(driverId,date)
         let orders: OrderType[] = await getOrdersOfDriverByDate(date,driverId)
-        console.log("Drivers Data is ",{ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
         res.json({ driverCompanyList: driverCompanyList, paths: paths, orders: orders })
     }
     catch {
