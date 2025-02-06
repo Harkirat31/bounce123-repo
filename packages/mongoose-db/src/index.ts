@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 export * from './service/orderService'
 export * from './service/pathService'
+export * from './service/driverService'
 
 const mongoURL = process.env.MONGO_DB_URL??'mongodb://localhost:27017/mydb';
 

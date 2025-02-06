@@ -151,7 +151,19 @@ export const getFuturePathDates = (uid: string,date:Date) => {
   })
 }
 
-
+export const  getAllCompaniesOfDriver = async (driverId:String) =>{
+  let driverCompanyList: DriverType[] = [] 
+  try{
+    const documentSnapshot =   await db.collection("driver_company").where("uid", "==", driverId).get()
+    documentSnapshot.docs.forEach((doc) => {
+      let driverCompany = doc.data() as DriverType
+      driverCompanyList.push(driverCompany)
+    })
+    return driverCompanyList
+  }catch(error){
+    return ErrorCode.DbError
+  }
+}
 
 export const getDriverWithPaths = (uid: string,date:Date) => {
   return new Promise((resolve, reject) => {
@@ -278,8 +290,6 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 
 
 export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
-
-
 
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver

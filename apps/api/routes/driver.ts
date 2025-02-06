@@ -2,7 +2,8 @@ import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
-import { getDriverWithPaths, getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus, updatePathAcceptanceByDriver } from "db"
+import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus, updatePathAcceptanceByDriver } from "db"
+import { getDriverWithPaths } from "../controllers/driverController";
 
 const router = express.Router();
 
@@ -20,17 +21,23 @@ router.post("/saveFCMToken", authenticateJwtDriver, (req: Request, res: Response
 })
 
 //retrieve all paths of driver as well
-router.post("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
-    getDriverWithPaths(req.body.uid,new Date(req.body.date)).then((data) => {
-        res.status(200).json(data)
-    }).catch((error) => {
-        console.log(error)
-        res.status(403).json({
-            err: "Error"
-        })
-    })
 
-})
+
+// router.post("/getDriver", authenticateJwtDriver, (req: Request, res: Response) => {
+//     getDriverWithPaths(req.body.uid,new Date(req.body.date)).then((data) => {
+//         res.status(200).json(data)
+//     }).catch((error) => {
+//         console.log(error)
+//         res.status(403).json({
+//             err: "Error"
+//         })
+//     })
+
+// })
+
+//retrieve all paths of driver as well
+router.post("/getDriver", authenticateJwtDriver, getDriverWithPaths)
+
 router.post("/getFuturePathDates",authenticateJwtDriver,(req: Request, res: Response) => {
     getFuturePathDates(req.body.uid,new Date(req.body.date)).then((data) => {
         res.status(200).json(data)

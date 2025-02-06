@@ -183,6 +183,13 @@ export const user = z.object({
 })
 export type UserType = z.infer<typeof user>
 
+
+export const extraDetailsOfUser = z.object({
+    availableCount: z.number(),
+})
+export type ExtraDetailsOfUser = z.infer<typeof extraDetailsOfUser>
+
+
 export enum ErrorCode {
     AddressError,
     EmailAlreadyExist,
