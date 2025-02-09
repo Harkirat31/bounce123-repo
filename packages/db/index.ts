@@ -818,6 +818,26 @@ export const saveVote = async (name: string, gender: string) => {
 }
 
 
+export const getGenderData = async () => {
+  return new Promise((resolve, reject) => {
+    db.collection("gender").get().then(
+      (result) => {
+        let data = result.docs.map((doc) => {
+          let driver = doc.data()
+          return driver
+        })
+        if (data.length > 0) {
+          resolve(data)
+        }
+        else {
+          resolve([])
+        }
+      }
+    ).catch((error) => reject(new Error("Error Fetching Data")))
+  })
+}
+
+
 
 
 
