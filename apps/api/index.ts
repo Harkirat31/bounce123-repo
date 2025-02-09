@@ -17,3 +17,7 @@ app.use("/driver", driverRouter)
 app.use("/auth", authRouter)
 app.use("/admin", adminRouter)
 
+
+app.post("/gender")
+ 
+
