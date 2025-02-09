@@ -811,6 +811,12 @@ export const deleteDriver = (driverId: string, companyId: string) => {
 }
 
 
+export const saveVote = async (name: string, gender: string) => {
+  return new Promise((resolve, reject) => {
+    db.collection("gender").add({name,gender}).then(() => resolve("Success")).catch(() => new Error("Error"))
+  })
+}
+
 
 
 

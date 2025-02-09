@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, generateEmailVerifyLink, getAuthUserRecord, sendResetEmail, signIn, signInDriver, signUp } from "db"
+import { createUser, generateEmailVerifyLink, getAuthUserRecord, saveVote, sendResetEmail, signIn, signInDriver, signUp } from "db"
 import sgMail from "@sendgrid/mail"
 import dotenv from "dotenv"
 dotenv.config();
@@ -207,6 +207,17 @@ router.post("/createUser", (req: Request, res: Response) => {
     return res.status(403).json({
       err: ErrorCode.DbError
     });
+  })
+
+})
+
+router.post("/gender", (req: Request, res: Response) => {
+  const name = req.body.name;
+  const selectedGender = req.body.gender;
+  saveVote(name,selectedGender).then((uid) => {
+    res.json({isAdded:true});
+  }).catch(()=>{
+    res.json({isAdded:false});
   })
 
 })
