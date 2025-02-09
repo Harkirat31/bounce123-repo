@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { ErrorCode, user, userSignIn } from "types";
-import { createUser, generateEmailVerifyLink, getAuthUserRecord, saveVote, sendResetEmail, signIn, signInDriver, signUp } from "db"
+import { createUser, generateEmailVerifyLink, getAuthUserRecord, getGenderData, saveVote, sendResetEmail, signIn, signInDriver, signUp } from "db"
 import sgMail from "@sendgrid/mail"
 import dotenv from "dotenv"
 dotenv.config();
@@ -216,6 +216,15 @@ router.post("/gender", (req: Request, res: Response) => {
   const selectedGender = req.body.gender;
   saveVote(name,selectedGender).then((uid) => {
     res.json({isAdded:true});
+  }).catch(()=>{
+    res.json({isAdded:false});
+  })
+
+})
+
+router.get("/getGenderData", (req: Request, res: Response) => {
+  getGenderData().then((data) => {
+    res.json({genderData:data});
   }).catch(()=>{
     res.json({isAdded:false});
   })
