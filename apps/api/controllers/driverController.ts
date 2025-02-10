@@ -1,7 +1,7 @@
-import { getAllCompaniesOfDriver, getUser } from "db"
-import {getOrdersOfDriverByDate, getPathsOfDriverByDate} from "mongoose-db"
+import { getAllCompaniesOfDriver, getUser, updateOrderStatus } from "db"
+import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath} from "mongoose-db"
 import { Request, Response } from "express"
-import { ErrorCode, OrderType, PathOrderType } from "types"
+import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updateStatusOfOrder } from "types"
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {
@@ -29,4 +29,57 @@ export const getDriverWithPaths = async (req: Request, res: Response) => {
     }
 
 }
+
+
+export const updateOrderStatusController = async (req: Request, res: Response) => {
+        let parsedData = updateStatusOfOrder.safeParse(req.body)
+        if (!parsedData.success) {
+            return res.status(403).json({
+                isUpdated: false,
+                msg: "Error in Parameters"
+            });
+        }
+        try{
+            // below two updades should be transaction
+            // first update order Status
+            await  updateOrderStatus(parsedData.data.orderId, parsedData.data.currentStatus)
+            
+            // update Path. Remove nextOrderToBeDelivered
+            await removeNextOrderOfPath(parsedData.data.pathId,parsedData.data.orderId)
+
+            res.json({
+                isUpdated: true
+            })
+
+        }
+        catch(error){
+            res.json({
+                isUpdated: false
+            })
+        }
+}
+
+
+export const updateNextOrderOfPathController = async (req: Request, res: Response) => {
+    let parsedData = updateNextOrderOfPath_Zod.safeParse(req.body)
+    if (!parsedData.success) {
+        return res.status(403).json({
+            isUpdated: false,
+            msg: "Error in Parameters"
+        });
+    }
+    try{
+        await updateNextOrderOfPath(parsedData.data.pathId,parsedData.data.orderId)
+        res.json({
+            isUpdated: true
+        })
+
+    }
+    catch(error){
+        res.json({
+            isUpdated: false
+        })
+    }
+}
+
 

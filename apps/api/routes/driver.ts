@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from "express"
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
 import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus, updatePathAcceptanceByDriver } from "db"
-import { getDriverWithPaths } from "../controllers/driverController";
+import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController } from "../controllers/driverController";
 
 const router = express.Router();
 
@@ -81,26 +81,10 @@ router.post("/updateCurrentLocation", authenticateJwt, (req: Request, res: Respo
     })
 })
 
-router.post("/updateOrderStatus", authenticateJwtDriver, (req: Request, res: Response) => {
-    console.log(req.body)
-    let parsedData = updateStatusOfOrder.safeParse(req.body)
-    if (!parsedData.success) {
-        return res.status(403).json({
-            isUpdated: false,
-            msg: "Error in Parameters"
-        });
-    }
-    updateOrderStatus(parsedData.data.orderId, parsedData.data.currentStatus).then((result) => {
-        return res.json({
-            isUpdated: true
-        })
-    }).catch((error) => {
-        return res.json({
-            isUpdated: false
-        })
-    })
+router.post("/updateOrderStatus", authenticateJwtDriver, updateOrderStatusController)
 
-})
+router.post("/updateNextOrderOfPath",authenticateJwtDriver,updateNextOrderOfPathController)
+
 
 router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, (req: Request, res: Response) => {
     let parsedData = updatePathAcceptance.safeParse(req.body)

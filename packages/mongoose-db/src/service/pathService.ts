@@ -234,3 +234,41 @@ export const updatePathGemetry = (newPath: PathOrderType) => {
 
     })
 }
+
+
+export const updateNextOrderOfPath = (pathId: string, orderId: string) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await PathModel.findByIdAndUpdate(pathId, {
+                nextOrderToBeDelivered: orderId
+            })
+            resolve("Success")
+        }
+        catch {
+            reject("Error")
+        }
+
+    })
+}
+
+export const removeNextOrderOfPath = (pathId: string, orderId: string) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await PathModel.findByIdAndUpdate(pathId,
+                {
+                    $unset: { nextOrderToBeDelivered: "" }
+                },)
+            resolve("Success")
+        }
+        catch {
+            reject("Error")
+        }
+
+    })
+}
+
+
+
+
+
+

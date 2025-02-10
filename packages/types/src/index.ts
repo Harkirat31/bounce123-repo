@@ -108,7 +108,13 @@ export const updateLocation = z.object({
 
 export const updateStatusOfOrder = z.object({
     orderId: z.string(),
-    currentStatus: z.string()
+    currentStatus: z.string(),
+    pathId:z.string()
+})
+
+export const updateNextOrderOfPath = z.object({
+    orderId: z.string(),
+    pathId:z.string()
 })
 
 export const updatePathAcceptance = z.object({
@@ -150,7 +156,8 @@ export const pathOrder = z.object({
     driverId: z.string().optional(),
     driverName: z.string().optional(),
     isAcceptedByDriver:z.boolean().optional(),
-    pathGeometry:pathGeometry.optional()
+    pathGeometry:pathGeometry.optional(),
+    nextOrderToBeDelivered:z.string().optional()
 })
 
 

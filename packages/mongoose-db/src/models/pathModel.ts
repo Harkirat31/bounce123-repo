@@ -35,6 +35,7 @@ const pathSchema = new Schema<IPath>({
       driverId:{ type: String, required: false },
       driverName:{ type: String, required: false },
       isAcceptedByDriver:{ type: Boolean, required: false },
+      nextOrderToBeDelivered:{type:String,required:false},
       pathGeometry:{
         type:{
             geometry:{

@@ -59,3 +59,13 @@ export const deleteOrders = (orders: string[]) => {
     })
   })
 }
+
+
+export const updateOrderStatus = (orderId: string, currentStatus: string) => {
+  return new Promise((resolve, reject) => {
+    OrderModel.findByIdAndUpdate(orderId,{
+      currentStatus: currentStatus
+    }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
+  }) 
+}
+
