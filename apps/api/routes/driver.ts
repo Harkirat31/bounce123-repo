@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
-import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updateOrderStatus, updatePathAcceptanceByDriver } from "db"
+import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updatePathAcceptanceByDriver } from "db"
 import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController } from "../controllers/driverController";
 
 const router = express.Router();

@@ -52,7 +52,8 @@ export const updateOrderStatusController = async (req: Request, res: Response) =
             })
 
         }
-        catch(error){
+        catch(error:any){
+            console.log("error is", error)
             res.json({
                 isUpdated: false
             })
