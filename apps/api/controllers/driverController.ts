@@ -1,5 +1,5 @@
-import { getAllCompaniesOfDriver, getUser, updateOrderStatus } from "db"
-import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath} from "mongoose-db"
+import { getAllCompaniesOfDriver, getUser } from "db"
+import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus} from "mongoose-db"
 import { Request, Response } from "express"
 import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updateStatusOfOrder } from "types"
 
