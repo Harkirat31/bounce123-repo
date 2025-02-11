@@ -50,10 +50,8 @@ const pathSchema = new Schema<IPath>({
         },
         required:false
       }
-    
-
+  
 })
-
 
 export const PathModel = model<IPath>('Path', pathSchema);
 

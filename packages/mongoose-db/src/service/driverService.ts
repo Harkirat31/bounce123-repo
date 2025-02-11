@@ -37,3 +37,14 @@ export const getOrdersOfDriverByDate = (date: Date, driverId: string): Promise<O
       .catch(() => reject(new Error("Error fetching orders of driver")))
     })
 }
+
+
+
+
+export const updatePathAcceptanceByDriver= (pathId: string, isAccepted: boolean) => {
+  return new Promise((resolve, reject) => {
+    PathModel.findByIdAndUpdate(pathId,{
+      isAcceptedByDriver:isAccepted
+    }).then((result) => resolve(result)).catch((error) => reject(new Error("Error")))
+  })
+}

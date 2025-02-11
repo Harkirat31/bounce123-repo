@@ -1,7 +1,7 @@
 import { getAllCompaniesOfDriver, getUser } from "db"
-import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus} from "mongoose-db"
+import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus, updatePathAcceptanceByDriver} from "mongoose-db"
 import { Request, Response } from "express"
-import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updateStatusOfOrder } from "types"
+import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {
@@ -83,4 +83,24 @@ export const updateNextOrderOfPathController = async (req: Request, res: Respons
     }
 }
 
+export const updatePathAcceptanceByDriverController  =async(req:Request,res:Response)=>{
+ let parsedData = updatePathAcceptance.safeParse(req.body)
+    if (!parsedData.success) {
+        return res.status(403).json({
+            isUpdated: false,
+            msg: "Error in Parameters"
+        });
+    }
+    updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {
+        //send email,socketUpdate or whatever in future to admin
+        return res.json({
+            isUpdated: true
+        })
+    }).catch((error) => {
+        return res.json({
+            isUpdated: false
+        })
+    })
+
+}
 
