@@ -25,6 +25,7 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
 }
 
 export const authenticateJwtDriver = (req: Request, res: Response, next: NextFunction) => {
+    console.log("Buraha")
     const secretKey = process.env.JWT_SECRET
     const authHeader = req.headers.authorization;
     if (authHeader) {
