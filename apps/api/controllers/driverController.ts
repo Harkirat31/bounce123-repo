@@ -84,7 +84,6 @@ export const updateNextOrderOfPathController = async (req: Request, res: Respons
 }
 
 export const updatePathAcceptanceByDriverController  =async(req:Request,res:Response)=>{
-    console.log("1.","Start")
  let parsedData = updatePathAcceptance.safeParse(req.body)
     if (!parsedData.success) {
         return res.status(403).json({
@@ -92,14 +91,12 @@ export const updatePathAcceptanceByDriverController  =async(req:Request,res:Resp
             msg: "Error in Parameters"
         });
     }
-    updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {
-        console.log("1.",result)
+    updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {  
         //send email,socketUpdate or whatever in future to admin
         return res.json({
             isUpdated: true
         })
     }).catch((error) => {
-        console.log("2.",error)
         return res.json({
             isUpdated: false
         })

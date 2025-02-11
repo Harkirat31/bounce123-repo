@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
-import { userId, updateLocation, updateStatusOfOrder, ErrorCode, updatePathAcceptance } from "types";
-import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation, updatePathAcceptanceByDriver } from "db"
-import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController } from "../controllers/driverController";
+import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
+import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation } from "db"
+import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController, updatePathAcceptanceByDriverController } from "../controllers/driverController";
 
 const router = express.Router();
 
@@ -86,5 +86,6 @@ router.post("/updateOrderStatus", authenticateJwtDriver, updateOrderStatusContro
 router.post("/updateNextOrderOfPath",authenticateJwtDriver,updateNextOrderOfPathController)
 
 
-router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, updateNextOrderOfPathController)
+router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, updatePathAcceptanceByDriverController)
+
 export default router
