@@ -8,7 +8,12 @@ export const getPathsOfDriverByDate =( driverId: string,date: Date):Promise<Path
             driverId:driverId,
             dateOfPath:date
           }).then((docs)=>{
-            let paths = docs.map((doc)=> doc as PathOrderType)
+            let paths = docs.map((doc)=> {
+              let path = doc as PathOrderType
+              path.pathId = doc.id
+              return path
+            })
+
             resolve(paths)
           })
           .catch(() => reject(new Error("Error fetching orders of driver")))
