@@ -37,7 +37,7 @@ const Home = () => {
 
                 <FeatureBox
                     heading="Optimize Deliveries"
-                    summary="Make more informed decision while assigning deliveries to the drivers"
+                    summary="Generate Optimized Routes for the drivers "
                 ></FeatureBox>
 
                 <FeatureBox
@@ -55,26 +55,27 @@ const Home = () => {
             </div>
             <div className="mt-20">
                 <FeatureBoxDetailed
-                    heading="Map View for better route planning"
-                    image="/home/2.png"
+                    heading="Map View, Draw Routes, Optimize deliveries for better route planning"
+                    image="/home/3.png"
                     list={map_view_list}
                 ></FeatureBoxDetailed>
             </div>
 
-            <div className="mt-20">
+            {/* <div className="mt-20">
                 <FeatureBoxDetailed
                     heading="Draw Routes, Optimize deliveries"
                     image="/home/3.png"
                     list={route_drawing_list}
                     flip={true}
                 ></FeatureBoxDetailed>
-            </div>
+            </div> */}
 
             <div id="mobile-app" className="mt-20">
                 <FeatureBoxDetailed
                     heading="Mobile App"
                     image="/home/mobile_app.png"
                     list={mobile_app_list}
+                    flip={true}
                 ></FeatureBoxDetailed>
             </div>
 
