@@ -51,7 +51,7 @@ export const LiveUpdates = () => {
 
     return <>
         <div className="w-full">
-            <div className={`flex flex-row justify-between pl-16`}>
+            <div className={`flex flex-row justify-between pl-2 lg:pl-16`}>
                 {messages.length>0 && !isOpen?<div className="flex flex-row"><p>{messages[0].timeStamp.toLocaleTimeString()+": "+messages[0].message}</p><p className="text-red-500 font-bold italic pl-2 animate-pulse">New</p></div>:<p></p>}
                 <div className="flex flex-row justify-end items-center pr-2 gap-x-2 ">
                 {!isOpen && <MdKeyboardArrowDown onClick={()=>isOpen?setIsOpen(false):setIsOpen(true)} className="text-3xl hover:cursor-pointer" />}

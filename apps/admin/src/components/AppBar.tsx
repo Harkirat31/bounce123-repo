@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-//import logo from "../assets/BounceLogo-Main.webp"
+import logo from "../assets/logo.png"
 import { useRecoilState } from "recoil";
 import { token } from "../store/atoms/tokenAtom";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -41,14 +41,18 @@ const AppBar = () => {
     return (
       <div>
         <nav className="bg-white border-b border-gray-200 py-1">
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-16 p-1">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-between lg:mx-16 p-1">
+            <div className="flex flex-row items-center">
+              <img src={logo} className="w-10 h-10 md:w-16 md:h-16 mr-1" alt="logo"></img>
             <div className="flex flex-col">
-            <a href="" className="flex items-center">
-              <h1 className="font-bold text-lg md:text-2xl">Ease Your Tasks</h1>    
-              {/* <img src={logo} className="h-14 mr-3" alt="Bounce123 Logo" /> */}
-            </a>
-            <h2 className="text-sm md:text-base">Easing Logistics</h2>
+              <a href="" className="flex items-center">
+                <h1 className="font-bold text-lg md:text-2xl">Ease Your Tasks</h1>
+                {/* <img src={logo} className="h-14 mr-3" alt="Bounce123 Logo" /> */}
+              </a>
+              <h2 className="text-sm md:text-base">Easing Logistics</h2>
             </div>
+            </div>
+          
             <div className="flex items-center md:order-2">
               {user && <button type="button" onClick={() => navigate('/account')} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center h-min px-2 py-1 md:px-4 md:py-2 mr-2">My Acocunt</button>}
               <button type="button" onClick={logout} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center mr-3 md:mr-0 h-min px-2 py-1 md:px-4 md:py-2">Logout</button>

@@ -9,7 +9,7 @@ const Home = () => {
         <div className="flex flex-col justify-start">
             <div className="flex flex-row justify-start items-center mt-10">
                 <   div className="w-1/2 text-primaryColor font-bold ">
-                    <h1 className="text-xl md:text-3xl lg:text-6xl">Manage Your Deliveries with Confidence</h1>
+                    <h1 className="text-xl md:text-3xl lg:text-6xl ">Manage Your Deliveries with Confidence</h1>
                     <div className="text-sm md:text-base lg:text-lg mt-8 py-1 px-2 sm:py-2 sm:px-4 w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center gap-x-4">
                         <span className="">
                             <a target="_blank" href="https://delivery.easeyourtasks.com">Get Started</a>
