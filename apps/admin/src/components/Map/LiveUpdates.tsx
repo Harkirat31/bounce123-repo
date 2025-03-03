@@ -57,10 +57,10 @@ export const LiveUpdates = () => {
                 {!isOpen && <MdKeyboardArrowDown onClick={()=>isOpen?setIsOpen(false):setIsOpen(true)} className="text-3xl hover:cursor-pointer" />}
                 {isOpen &&<MdKeyboardArrowUp onClick={()=>isOpen?setIsOpen(false):setIsOpen(true)} className="text-3xl hover:cursor-pointer" />}
                 <p className="font-bold ">Live Updates</p>
-                <AiFillNotification id="notification" className="text-red-500 animate-ping"></AiFillNotification>
+                <AiFillNotification id="notification" className="text-red-500 animate-pulse"></AiFillNotification>
                 </div>
             </div>
-            <div className={`pl-16 z-10 w-full bg-white transition-all duration-500 ${isOpen?"h-72":"h-0"}`}>
+            <div className={`pl-16 z-10 w-full bg-white transition-all duration-500 overflow-auto custom-scrollbar ${isOpen?"h-40":"h-0"}`}>
                 {messages.length>0 &&
                     messages.map((message)=>{
                         return <>

@@ -40,3 +40,17 @@
     border-right: 8px solid transparent;
     border-top: 8px solid #148809;
   }
+
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4a5568; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners on the thumb */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #e2e8f0; /* Background of the scrollbar track */
+  }

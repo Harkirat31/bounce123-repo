@@ -55,7 +55,7 @@ const Home = () => {
             </div>
             <div className="mt-20">
                 <FeatureBoxDetailed
-                    heading="Map View"
+                    heading="Map View for better route planning"
                     image="/home/2.png"
                     list={map_view_list}
                 ></FeatureBoxDetailed>
