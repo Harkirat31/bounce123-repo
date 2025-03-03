@@ -58,7 +58,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
             return
         }
 
-        setLoading(true)
+        setLoading({isLoading:true,value:"Please Wait..."})
         const startingLocation = user?.location??{lat:0,lng:0}
         let params: PathOrderType = { dateOfPath: order.deliveryDate, show: true, path: [{id:order!.orderId!,latlng:order!.location}], driverId: dropDownItem.driverId, driverName: dropDownItem.driverName ,startingLocation}
 
@@ -73,10 +73,10 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
                 console.log("Error, Order Not updated")
             }
 
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         }).catch((error) => {
             alert(error)
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         })
     }
     if (props.order.driverId) {

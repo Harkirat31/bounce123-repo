@@ -1,5 +1,6 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
+import {  atomFamily, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
+import { OrderType } from "types";
 
 export const getOrders = selector({
     key: "getOrders",
@@ -88,4 +89,19 @@ export const sortOrders = selectorFamily({
 // })
 
 
+
+export const updateOrderStatusToDelivered = selector<string|null>({
+    key:"updateOrderStatusToDelivered",
+    get:({})=>{return null},
+    set:({ set, get }, newValue)=>{
+        if(typeof newValue =="string"){
+            let order = { ...get(getOrder(newValue)) }
+            order.currentStatus="Delivered"
+            if(order){
+                    set(getOrder(newValue), { ...order as OrderType })
+            }
+           
+        }
+    }
+})
 

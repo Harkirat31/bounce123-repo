@@ -1,6 +1,7 @@
 import { DefaultValue, atom, atomFamily, selector, selectorFamily } from "recoil";
 import { LocationType, OrderType, PathOrderType } from "types";
 import { getOrder } from "../selectors/orderSelector";
+import { ordersAtom } from "./orderAtom";
 
 
 export const createPathAtom = atom<{ path: {id:string,latlng?:LocationType}[], pathId: string | undefined }>({
@@ -74,6 +75,21 @@ export const orderSetForPathCreation = selector({
 
     }
 })
+
+// get only those  orders(only NOT ASSIGNED) for generating path utilily 
+export const getOrdersForGeneratingOptimizedPaths = selector({
+    key: "getOrdersForGeneratingOptimizedPaths",
+    get: ({ get }) => {
+        const orders = get(ordersAtom)
+        let filteredOrders= orders.filter((order) => {
+            return true ? get(getOrder(order.orderId!))!.currentStatus == "NotAssigned" : false
+        })
+        return filteredOrders
+        
+    }
+})
+
+
 
 //update after undo
 export const updateOrders = selector<string[]>({

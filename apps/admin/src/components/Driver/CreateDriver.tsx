@@ -22,7 +22,7 @@ const CreateDriver = () => {
         if (parsedDriverData == null) {
             return
         }
-        setLoading(true)
+        setLoading({isLoading:true,value:"Please Wait..."})
         createDriver(parsedDriverData).then((result: any) => {
             if (result.isAdded) {
                 getDriversAPI().then((drivers: any) => {
@@ -41,9 +41,9 @@ const CreateDriver = () => {
                     setErrorMessage(["Driver of this Email already Exists"])
                 }
             }
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         }).catch((result) => {
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
             alert("Not Added, Errors in Detail or Internet is down")
         })
     }

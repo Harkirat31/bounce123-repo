@@ -6,6 +6,7 @@ import { createDriver, assignOrderToDriver, createSideItem, getDriver, getDriver
 import axios from "axios";
 import { getGeometryApi } from "../externalApis/osrmAPI";
 import { createPath , createOrder , getOrderswithDate, getPathswithDate,updatePath,deletePath,getOrdersWithPathId,assignPathToDriver ,assignOrderAndPath, cancelPath, updatePathGemetry,changeOrderPriority,deleteOrders} from "mongoose-db";
+import { generateOptimizeRoutes } from "../controllers/pathController";
 
 const router = express.Router();
 
@@ -71,7 +72,7 @@ router.post("/createPath", authenticateJwt, async (req: Request, res: Response) 
     });
   }
   try{
-    const pathGeometry = await getGeometryApi(parsedData.data)
+    const pathGeometry = await getGeometryApi(parsedData.data.startingLocation,parsedData.data.path.map(o=>o.latlng!))
     parsedData.data.pathGeometry = pathGeometry
     console.log(pathGeometry)
   }
@@ -106,7 +107,7 @@ router.post("/assignOrderAndPath", authenticateJwt, async (req: Request, res: Re
   }
   driverId = parsedData.data.driverId
   try{
-    const pathGeometry = await getGeometryApi(parsedData.data)
+    const pathGeometry = await getGeometryApi(parsedData.data.startingLocation,parsedData.data.path.map(o=>o.latlng!))
     parsedData.data.pathGeometry = pathGeometry
     console.log(pathGeometry)
   }
@@ -271,7 +272,7 @@ router.post('/cancelPath', authenticateJwt, (req: Request, res: Response) => {
 
     //update geometry of new Path
     try{
-      const pathGeometry = await getGeometryApi({...assignPathParams.data,path:result.modifiedPath})
+      const pathGeometry = await getGeometryApi(assignPathParams.data.startingLocation,result.modifiedPath)
       assignPathParams.data.pathGeometry = pathGeometry
     }
     catch(e){
@@ -404,6 +405,8 @@ router.post('/deletePath', authenticateJwt, (req: Request, res: Response) => {
 
 
 
+
+
 router.post("/updateUser", authenticateJwt, (req: Request, res: Response) => {
   let parsedUserData = user.safeParse(req.body)
   if (!parsedUserData.success) {
@@ -453,6 +456,7 @@ router.post("/updateUser", authenticateJwt, (req: Request, res: Response) => {
 
 })
 
+router.post("/generateOptimizePaths",authenticateJwt, generateOptimizeRoutes)
 
 
 export default router

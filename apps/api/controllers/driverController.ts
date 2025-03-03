@@ -2,6 +2,7 @@ import { getAllCompaniesOfDriver, getUser } from "db"
 import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus, updatePathAcceptanceByDriver} from "mongoose-db"
 import { Request, Response } from "express"
 import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
+import { delivered } from "../sockets/handlers/orderHandler"
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {
@@ -46,6 +47,11 @@ export const updateOrderStatusController = async (req: Request, res: Response) =
             
             // update Path. Remove nextOrderToBeDelivered
             await removeNextOrderOfPath(parsedData.data.pathId,parsedData.data.orderId)
+
+             // send real time upodate to client via Web Socket
+             if(parsedData.data.currentStatus=="Delivered" && parsedData.data.companyId ){
+                delivered(parsedData.data.companyId,parsedData.data.orderId)
+            }
 
             res.json({
                 isUpdated: true

@@ -48,7 +48,7 @@ const CreateOrder = () => {
         if (parsedOrder == null) {
             return
         }
-        setLoading(true)
+        setLoading({isLoading:true,value:"Creating order. Please Wait..."})
         createOrder(parsedOrder).then((result: any) => {
             if (date) {
                 resetInputs()
@@ -65,9 +65,9 @@ const CreateOrder = () => {
                     setErrorMessage(["Order Maximum Limit reached, Please contact info@easeyourtasks.com"])
                 }
             }
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         }).catch((error) => {
-            setLoading(true)
+            setLoading({isLoading:false,value:null})
         })
     }
 

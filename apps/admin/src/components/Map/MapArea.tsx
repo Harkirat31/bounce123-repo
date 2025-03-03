@@ -9,8 +9,6 @@ import { createPathAtom, getSavedPathById, savedPathsAtom } from "../../store/at
 import { userAtom } from "../../store/atoms/userAtom";
 import { isRoadView } from "../../store/atoms/commonAtoms";
 
-
-
 /* Left Side of of the map page . Google maps API is integrated in this component to render orders and path data 
    Used React wrapper for google maps API.
    
@@ -31,15 +29,19 @@ const MapArea = ({ user }: { user: UserType }) => {
 const MapComponent = ({ user }: { user: UserType }) => {
     const ref: any = useRef()
     const ordersIds = useRecoilValue(getOrderIds)
-    const [map, setMap] = useState<any>()
+    const [map, setMap] = useState<google.maps.Map|null>()
 
-    useEffect(() => {
+
+
+    useEffect(() => { 
         const mapOptions = {
             center: user?.location,
             zoom: 11,
-            mapId: '4504f8b37365c3d0'
+            mapId: '4504f8b37365c3d0',
         };
-        setMap(new window.google.maps.Map(ref.current, mapOptions,))
+        const mapCreated = new window.google.maps.Map(ref.current, mapOptions,)
+        setMap(mapCreated)
+
     }, []);
 
     return (
@@ -158,7 +160,7 @@ const getOrderLabel = (orderData: OrderType | undefined) => {
 
 }
 
-const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: any, srNo: number }) => {
+const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: google.maps.Map, srNo: number }) => {
     const [orderData, _setOrderData] = useRecoilState(getOrder(orderId))
     const [isOpenOnMap, setIsOpenOnMap] = useState(false)
     useEffect(() => {

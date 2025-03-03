@@ -20,6 +20,7 @@
     "@sendgrid/mail": "^8.1.0",
     "@types/cors": "^2.8.14",
     "@types/supertest": "^6.0.2",
+    "@types/ws": "^8.5.14",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "db": "*",
@@ -27,6 +28,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "supertest": "^7.0.0",
-    "types": "*"
+    "types": "*",
+    "ws": "^8.18.0"
   }
 }

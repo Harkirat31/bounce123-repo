@@ -1,4 +1,4 @@
-import { DriverType, OrderType, PathOrderType, RentingItemType, UserType } from "types";
+import { DriverType, OrderType, PathOrderType, RentingItemType, TypesForGeneratingOptimizePaths, UserType } from "types";
 import axios from "axios";
 
 
@@ -503,4 +503,58 @@ export const deletePath = (path: any) => {
             reject(result)
         })
     })
+}
+
+
+// export const generateOptomizePathsAPI = (data:TypesForGeneratingOptimizePaths)=>{
+//     return new Promise((resolve, reject) => {
+//         fetch(BASE_URL + '/admin/generateOptimizePaths', {
+//             method: "POST",
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 Authorization: `Bearer ${localStorage.getItem('token')}`
+//             },
+//             body: JSON.stringify(data)
+//         }).then((response) => response.json().then((jsonData) => {
+//             resolve(jsonData)
+//         })).catch((result) => {
+//             reject(result)
+//         })
+//     })   
+// }
+
+
+// export const generateOptomizePathsAPI = (data:TypesForGeneratingOptimizePaths)=>{
+//     return new Promise((resolve, reject) => {
+//         axios(BASE_URL + '/admin/generateOptimizePaths',{
+//             data,
+//             method: "POST",
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 Authorization: `Bearer ${localStorage.getItem('token')}`
+//             },
+//         }).then((response) => resolve(response.data)).catch((result) => {
+//             reject(result)
+//         })
+//     })   
+// }
+
+
+export const generateOptomizePathsAPI = (data:TypesForGeneratingOptimizePaths)=>{
+    return new Promise((resolve, reject) => {
+        axios.post(BASE_URL + '/admin/generateOptimizePaths',
+             data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+             
+            },).then(response=>resolve(response.data)).catch(error=>{
+                if (error.response && error.response.data){
+                    resolve(error.response.data)
+                }
+                reject(error)
+            })
+        })
 }

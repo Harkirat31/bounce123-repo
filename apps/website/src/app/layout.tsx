@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Saira } from "next/font/google";
+import { Aleo } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar/navbar";
 import Footer from "./components/footer_component/footer"
 
-const inter = Saira({ subsets: ["latin"] });
+const inter = Aleo({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Manage you Deliveries",

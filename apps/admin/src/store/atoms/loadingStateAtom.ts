@@ -1,6 +1,9 @@
 import { atom } from "recoil";
 
-export const loadingState = atom<boolean>({
+export const loadingState = atom<{isLoading:boolean,value:string|null}>({
     key: "loadingState",
-    default: false
+    default: {
+        isLoading:false,
+        value:"Please Wait..."
+    }
 })

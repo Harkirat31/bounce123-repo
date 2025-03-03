@@ -109,7 +109,8 @@ export const updateLocation = z.object({
 export const updateStatusOfOrder = z.object({
     orderId: z.string(),
     currentStatus: z.string(),
-    pathId:z.string()
+    pathId:z.string(),
+    companyId:z.string().optional()
 })
 
 export const updateNextOrderOfPath_Zod = z.object({
@@ -213,3 +214,27 @@ export enum ErrorCode {
 }
 
 
+export enum RealTimeUpdates{
+    ORDER_DELIVERED="ORDER_DELIVERED",
+    NEXT_ORDER="NEXT_ORDER",
+    ORDER_POSTPONED="ORDER_POSTPONED"
+}
+
+export interface RealTimeMessage{
+    timeStamp:Date,
+    message:string
+}
+
+
+
+export const generatingOptimizePathsParams = z.object({
+    orderIdsWithLocation:z.array(z.object({id:z.string(),latlng:location})),
+    startingLocation:location,
+    date:z.date(),
+    numberOfVehicles:z.number(),
+    vehicleCapacity:z.array(z.number()),
+    demands:z.array(z.number())
+    
+})
+
+export type TypesForGeneratingOptimizePaths = z.infer<typeof generatingOptimizePathsParams>

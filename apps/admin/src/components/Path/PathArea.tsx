@@ -160,20 +160,20 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
         }
 
         let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
-        setLoading(true)
+        setLoading({isLoading:true,value:"Sending to Driver. Please Wait..."})
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
             setPathData(pathArgs as PathOrderType)
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
             refreshAllData(Date.now().toString())
             alert("Assigned and Sent to driver")
         }).catch((_error) => {
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
             alert("Error")
         })
     }
 
     const handleDelete = () => {
-        setLoading(true)
+        setLoading({isLoading:true,value:"Deleting Path. Please Wait..."})
         deletePath(pathData).then((result: any) => {
             if (result.isDeleted) {
                 // Reather than setting date, fetch paths and set paths
@@ -192,48 +192,25 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
             if (result.err != null || result.err != undefined) {
                 alert("Error Deleting Path")
             }
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         }
         ).catch((error) => {
             alert("Error Deleting Path")
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         })
     }
     const [undo, setUndo] = useState(false)
 
     const handleUndo = () => {
-        setLoading(true)
+        setLoading({isLoading:true,value:"Please Wait..."})
         cancelPathAPI({ ...pathData! }).then((result: any) => {
             setUndo(false)
-            
-            // if (result.isCancelled) {
-            //     //if all orders are not delivered , then path is deleted in db, so need to delete path at front end
-            //     if (result.isPathDeleted) {
-            //         let allPathsCopy = allPaths.filter((path) => {
-            //             //removed path which is deleted
-            //             if (path.pathId == pathData!.pathId) {
-            //                 return false
-            //             } else {
-            //                 return true
-            //             }
-            //         })
-            //         setAllPaths(allPathsCopy)
-            //         updateOrder(pathData!.path)
-            //     }
-            //     else {
-            //         updateAfterCancel(pathData!.path)
-            //         setPathDataAtom({ ...pathData!, path: result.modifiedPath })
-            //     }
-            // }
-
-
-            //this refresh the orders, paths
             refreshAllData(Date.now().toString())
         
         }).catch((error) => {
             alert("Failed")
         }).finally(() => {
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         })
     }
 
@@ -357,7 +334,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 const DisplayOrderNumber = ({ orderId }: { orderId: string }) => {
     const order = useRecoilValue(getOrder(orderId))
 
-    return <p className="text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black bg-red-400 border-gray-300 rounded-xl">{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
+    return <p className={`text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black ${order?.currentStatus=="Delivered"?"bg-green-700 text-white ":"bg-red-400"} border-gray-300 rounded-xl`}>{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
 }
 
 const DisplayOrderData = ({ orderId }: { orderId: string }) => {

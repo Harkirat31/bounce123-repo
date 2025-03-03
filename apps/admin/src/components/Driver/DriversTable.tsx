@@ -11,7 +11,7 @@ const DrivingTable = () => {
     const setLoading = useSetRecoilState(loadingState)
 
     const onDelete = (ev: any) => {
-        setLoading(true)
+        setLoading({isLoading:true,value:"Please Wait..."})
         let driverId = ev.currentTarget.getAttribute('data-id')
         deleteDriver(driverId).then((res: any) => {
             getDriversAPI().then((drivers: any) => {
@@ -19,7 +19,7 @@ const DrivingTable = () => {
                     isLoading: false,
                     value: drivers
                 })
-                setLoading(false)
+                setLoading({isLoading:false,value:null})
             })
             if (res.isDeleted) {
                 alert("Deleted Succesfully")
@@ -27,10 +27,10 @@ const DrivingTable = () => {
             else {
                 alert("Error")
             }
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         }).catch((_) => {
             alert("Error")
-            setLoading(false)
+            setLoading({isLoading:false,value:null})
         })
 
     }

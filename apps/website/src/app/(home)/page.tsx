@@ -8,7 +8,7 @@ const Home = () => {
     return (    
         <div className="flex flex-col justify-start">
             <div className="flex flex-row justify-start items-center mt-10">
-                <div className="w-1/2 text-primaryColor font-bold ">
+                <   div className="w-1/2 text-primaryColor font-bold ">
                     <h1 className="text-xl md:text-3xl lg:text-6xl">Manage Your Deliveries with Confidence</h1>
                     <div className="text-sm md:text-base lg:text-lg mt-8 py-1 px-2 sm:py-2 sm:px-4 w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center gap-x-4">
                         <span className="">
@@ -18,8 +18,8 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="w-1/2">
-                    <div className="float-right w-[95%] md:w-[350px] lg:w-[450px] aspect-[5/4] relative">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="1"></Image>                    
+                    <div className="float-right w-[95%] md:w-[350px] lg:w-[450px] xl:w-[550px] aspect-[6/4] relative">
+                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="manage-deliveries"></Image>                    
                     </div>
                 </div>
             </div>

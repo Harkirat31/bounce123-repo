@@ -9,6 +9,8 @@ import Loading from "./Loading"
 import { loadingState } from "../store/atoms/loadingStateAtom"
 import { token } from "../store/atoms/tokenAtom"
 import { refreshData, refresh } from "../store/atoms/refreshAtom"
+import { connectToSocket } from "../services/SocketService"
+import { webSocket } from "../store/atoms/webSocket"
 
 
 const Init = () => {
@@ -17,19 +19,25 @@ const Init = () => {
     const setPaths = useSetRecoilState(savedPathsAtom)
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     const [loading,setLoading] = useRecoilState(loadingState)
-    const [_tokenValue, setTokenValue] = useRecoilState(token)
+    const [tokenValue, setTokenValue] = useRecoilState(token)
     const setRefresh = useSetRecoilState(refresh("d"))
     const refreshAllData = useRecoilValue(refreshData)
+    const setSocket = useSetRecoilState(webSocket)
 
 
     useEffect(() => {
 
         if (window.localStorage.getItem("token")) {
-            setLoading(true)
+
+            setLoading({isLoading:true,value:"Loading initial Data...."})
             let date = convertToUTC(orderSearchDate)
             getOrdersAPI(date).then((orders: any) => {
                 getPathsAPI(date).then((paths: any) => {
                     getDriversAPI().then(async (drivers: any) => {
+                        if(tokenValue){
+                            const ws = connectToSocket(tokenValue!)
+                            setSocket(ws)
+                        }
                         setOrders(orders)
                         setPaths(paths)
                         setDrivers({
@@ -37,17 +45,17 @@ const Init = () => {
                             value: drivers
                         })
                         setRefresh()
-                        setLoading(false)
+                        setLoading({isLoading:false,value:null})
                     }).catch((err) => {
-                        setLoading(false)
-                        alert("Error1 Fetching Data, Please check internet or refresh the page agin")
+                        setLoading({isLoading:false,value:null})
+                        alert("Error Fetching Data, Please check internet or refresh the page again")
                     })
                 }).catch((err) => {
-                    setLoading(false)
-                    alert("Error2 Fetching Data, Please check internet or refresh the page agin")
+                    setLoading({isLoading:false,value:null})
+                    alert("Error Fetching Data, Please check internet or refresh the page again")
                 })
             }).catch((err) => {
-                setLoading(false)
+                setLoading({isLoading:false,value:null})
                 alert("Error Fetching Data, Please check internet or login again")
                 setTokenValue(null)
                 window.location.assign("/")
@@ -58,7 +66,7 @@ const Init = () => {
 
     return (
         <div>
-            {loading && <Loading></Loading>}
+            {loading.isLoading && <Loading></Loading>}
         </div>
     )
 }

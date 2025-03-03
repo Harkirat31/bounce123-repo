@@ -41,7 +41,7 @@ const AppBar = () => {
     return (
       <div>
         <nav className="bg-white border-b border-gray-200 py-1">
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-16 p-1">
             <div className="flex flex-col">
             <a href="" className="flex items-center">
               <h1 className="font-bold text-lg md:text-2xl">Ease Your Tasks</h1>    

@@ -3,13 +3,14 @@ import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } fr
 import { createPathAtom, orderSetForAtom, orderSetForPathCreation } from "../../store/atoms/pathAtom";
 import { getOrderIds } from "../../store/selectors/orderSelector";
 import { ordersAtom, ordersSearchDate } from "../../store/atoms/orderAtom";
-import { createPath } from "../../services/ApiService";
+import { createPath, generateOptomizePathsAPI } from "../../services/ApiService";
 import { userAtom } from "../../store/atoms/userAtom";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { AiFillDelete } from 'react-icons/ai';
 import { convertToUTC } from "../../utils/UTCdate";
 import { PathOrderType } from "types";
 import { refreshData } from "../../store/atoms/refreshAtom";
+import { GenerateOptimizedPaths } from "./GenerateOptimizedPaths";
 
 
 const CreatePath = ({ showCreatePath, setShowCreatePath }: {
@@ -33,6 +34,7 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const [isEnd, setEnd] = useState(false)
     const changeCreatePathOrderSet = useSetRecoilState(orderSetForAtom)
     const saved = useRef(false) // weather path saved or not 
+    
 
     const refreshAllData = useSetRecoilState(refreshData)
 
@@ -68,6 +70,9 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
     const getLocationOfOrder= (orderId: string) => {
         return orders.find((x) => x.orderId === orderId)?.location
     }
+
+
+    
 
     const onSaveClick = () => {
         let newDate = convertToUTC(date)
@@ -199,6 +204,8 @@ const CreatePath = ({ showCreatePath, setShowCreatePath }: {
                     <p> Or No order is created for this date!!</p>
                 </div>
             }
+
+    <GenerateOptimizedPaths></GenerateOptimizedPaths>
 
             <div className="flex flex-col items-center" >
                 <div className="mt-4 flex flex-col items-center justify-center">
