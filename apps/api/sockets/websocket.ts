@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import url from 'url';
 
 // Track connected clients
-const clients = new Map<string,WebSocket>();
+const clients = new Map<string,WebSocket[]>();
 const secretKey = process.env.JWT_SECRET
 
 
@@ -46,7 +46,17 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
     // Handle new WebSocket connections
     wss.on('connection', (ws: WebSocket,user:jwt.JwtPayload | undefined) => {
         console.log('New WebSocket connection established');
-        clients.set(user!.user.userId,ws); // Add the client to the set
+        //one user can open app at multiple browsers so maintaining array
+        let wsArray = clients.get(user!.user.userId)
+     
+        if(wsArray){
+            wsArray.push(ws)
+            clients.set(user!.user.userId,wsArray); 
+        }else{
+            wsArray = [ws]
+            clients.set(user!.user.userId,wsArray); 
+        }
+
 
         // Handle WebSocket disconnection
         ws.on('close', () => {

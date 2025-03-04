@@ -44,7 +44,7 @@ const AppBar = () => {
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between lg:mx-16 p-1">
             <div className="flex flex-row items-center">
               <img src={logo} className="w-10 h-10 md:w-16 md:h-16 mr-1" alt="logo"></img>
-            <div className="flex flex-col">
+            <div className="hidden flex-col min-[410px]:flex ">
               <a href="" className="flex items-center">
                 <h1 className="font-bold text-lg md:text-2xl">Ease Your Tasks</h1>
                 {/* <img src={logo} className="h-14 mr-3" alt="Bounce123 Logo" /> */}

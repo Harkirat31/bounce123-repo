@@ -52,15 +52,15 @@ export const LiveUpdates = () => {
     return <>
         <div className="w-full">
             <div className={`flex flex-row justify-between pl-2 lg:pl-16`}>
-                {messages.length>0 && !isOpen?<div className="flex flex-row"><p>{messages[0].timeStamp.toLocaleTimeString()+": "+messages[0].message}</p><p className="text-red-500 font-bold italic pl-2 animate-pulse">New</p></div>:<p></p>}
+                {messages.length>0 && !isOpen?<div className="flex flex-row items-center text-xs md:text-base"><p>{messages[0].timeStamp.toLocaleTimeString()+": "+messages[0].message}</p><p className="text-red-500 font-bold italic pl-1 md:pl-2 animate-pulse">New</p></div>:<p></p>}
                 <div className="flex flex-row justify-end items-center pr-2 gap-x-2 ">
                 {!isOpen && <MdKeyboardArrowDown onClick={()=>isOpen?setIsOpen(false):setIsOpen(true)} className="text-3xl hover:cursor-pointer" />}
                 {isOpen &&<MdKeyboardArrowUp onClick={()=>isOpen?setIsOpen(false):setIsOpen(true)} className="text-3xl hover:cursor-pointer" />}
-                <p className="font-bold ">Live Updates</p>
+                <p className="font-bold text-sm md:text-base ">Live Updates</p>
                 <AiFillNotification id="notification" className="text-red-500 animate-pulse"></AiFillNotification>
                 </div>
             </div>
-            <div className={`pl-16 z-10 w-full bg-white transition-all duration-500 overflow-auto custom-scrollbar ${isOpen?"h-40":"h-0"}`}>
+            <div className={`pl-1 sm:pl-16 z-10 w-full bg-white transition-all duration-500 overflow-auto custom-scrollbar ${isOpen?"h-40":"h-0"}`}>
                 {messages.length>0 &&
                     messages.map((message)=>{
                         return <>
