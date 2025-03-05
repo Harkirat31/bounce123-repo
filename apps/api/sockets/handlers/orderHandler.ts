@@ -5,6 +5,7 @@ import { WebSocket } from 'ws';
 // Function to broadcast a message to all clients
 export function delivered(userId:string,orderId:string) {
     const clientArray = clients.get(userId)
+    console.log("Size",clientArray?.size)
     if(clientArray){
         for (const client of clientArray){
             if(client){

@@ -5,13 +5,10 @@ import jwt from 'jsonwebtoken';
 import url from 'url';
 
 // Track connected clients
-const clients = new Map<string,WebSocket[]>();
+const clients = new Map<string,Set<WebSocket>>();
 const secretKey = process.env.JWT_SECRET
 
 
-// setTimeout(()=>{
-//     delivered("7yPWUGula8TfVctK9cyUnKsuq1l2","test")
-// },5000)
 
 // Initialize WebSocket server
 function initWebSocketServer(server: HttpServer | HttpsServer) {
@@ -47,21 +44,31 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
     wss.on('connection', (ws: WebSocket,user:jwt.JwtPayload | undefined) => {
         console.log('New WebSocket connection established');
         //one user can open app at multiple browsers so maintaining array
-        let wsArray = clients.get(user!.user.userId)
-     
-        if(wsArray){
-            wsArray.push(ws)
-            clients.set(user!.user.userId,wsArray); 
-        }else{
-            wsArray = [ws]
-            clients.set(user!.user.userId,wsArray); 
-        }
 
+        if(!clients.has(user!.user.userId)){
+            clients.set(user!.user.userId,new Set())
+            console.log("1")
+
+        }
+        let clientsSet  = clients.get(user!.user.userId)
+        
+        if(clientsSet){
+            clientsSet.add(ws)
+            console.log("1",clientsSet.size)
+        }
 
         // Handle WebSocket disconnection
         ws.on('close', () => {
+            if (clients.has(user!.user.userId)) {
+                 const userConnections = clients.get(user!.user.userId);
+                if(userConnections){
+                    userConnections.delete(ws);  // Remove WebSocket from user's Set
+                    if (userConnections.size === 0) {
+                        clients.delete(user!.user.userId);  // If no more connections for this userId, remove userId from Map
+                    }
+                }           
+            }
             console.log('WebSocket connection closed');
-     //       clients.delete(ws); // Remove the client from the set
         });
 
         // Handle incoming messages from WebSocket
