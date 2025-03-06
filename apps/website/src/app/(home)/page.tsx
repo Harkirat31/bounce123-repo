@@ -6,20 +6,24 @@ import { map_view_list, mobile_app_list, route_drawing_list } from "../constants
 
 const Home = () => {
     return (    
-        <div className="flex flex-col justify-start">
-            <div className="flex flex-row justify-start items-center mt-10">
-                <   div className="w-1/2 text-primaryColor font-bold ">
-                    <h1 className="text-xl md:text-3xl lg:text-6xl ">Manage Your Deliveries with Confidence</h1>
-                    <div className="text-sm md:text-base lg:text-lg mt-8 py-1 px-2 sm:py-2 sm:px-4 w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center gap-x-4">
+        <div className="px-6 sm:pl-0 flex flex-col justify-start">
+            <div className="flex flex-col md:flex-row md:justify-start md:items-center mt-10">
+                <div className="w-full flex flex-row md:flex-col justify-between md:justify-center  items-center md:items-start  md:w-1/2 text-primaryColor font-bold ">
+                    <h1 className=" md:w-full text-base sm:text-xl md:text-2xl lg:text-5xl ">Manage Your Deliveries with Confidence</h1>
+                    <div className=" text-nowrap text-[10px] md:text-base lg:text-lg md:mt-8 py-1 px-2 sm:py-2 sm:px-4 md:w-max h-max rounded-lg border-2 border-primaryColor flex flex-row items-center  gap-x-4">
                         <span className="">
                             <a target="_blank" href="https://delivery.easeyourtasks.com">Get Started</a>
                             </span>
                         <FaArrowRight />
                     </div>
                 </div>
-                <div className="w-1/2">
-                    <div className="float-right w-[95%] md:w-[350px] lg:w-[450px] xl:w-[550px] aspect-[6/4] relative">
-                        <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="manage-deliveries"></Image>                    
+                <div className="md:hidden border-2 border-t mt-5 mb-5"></div>
+                <div className="w-full md:w-1/2">
+                    <div className="float-right w-[100%] md:w-[325px] min-[835px]:w-[360px] lg:w-[450px] xl:w-[550px] aspect-[7/4] relative ">
+                        {/* <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="manage-deliveries"></Image>                     */}
+                        <video autoPlay muted playsInline controls preload="none" className=" object-cover  w-full h-full" >
+                        <source src="/home/demo_route_generations.mp4" type="video/mp4"></source>
+                        </video>
                     </div>
                 </div>
             </div>

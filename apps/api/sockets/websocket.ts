@@ -47,14 +47,12 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
 
         if(!clients.has(user!.user.userId)){
             clients.set(user!.user.userId,new Set())
-            console.log("1")
 
         }
         let clientsSet  = clients.get(user!.user.userId)
         
         if(clientsSet){
             clientsSet.add(ws)
-            console.log("1",clientsSet.size)
         }
 
         // Handle WebSocket disconnection
