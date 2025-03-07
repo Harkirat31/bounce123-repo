@@ -1,0 +1,38 @@
+name: CI  Workflow
+
+on:
+  push:
+    # paths:
+    #   - 'apps/api/**'
+    #   - 'packages/types/**'
+    #   - 'packages/db/**'
+    #   - 'packages/mongoose-db'
+    branches:
+      - main  # Trigger on push to the main branch
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu for the CI environment
+
+    steps:
+      # Checkout the repository's code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.16.0'  # Replace with your desired Node.js version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          cd apps/api
+          npm install
+
+
+      # Run tests
+      - name: Run tests
+        run: | 
+          cd apps/api
+          npm run test
