@@ -36,3 +36,7 @@ jobs:
         run: | 
           cd apps/api
           npm run test
+        env:
+          SEND_GRID_API: ${{ secrets.SEND_GRID_API }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
