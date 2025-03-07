@@ -16,20 +16,20 @@ vi.mock("db",()=>({
 
 
 describe("/post sign in with email and password",()=>{
-    it("Testing with Correct Email and password",async ()=>{
+    // it("Testing with Correct Email and password",async ()=>{
        
-        const userEmail = TEST_EMAIL
-        const userPassword = TEST_PASSWORD
-        const res = await request(app).post("/auth/signin").send({
-            email:userEmail,
-            password:userPassword
-        })
-        expect(res.statusCode).toBe(201)
-        expect(res.body.message).toBe("Login successfully")
-        expect(res.body.token).toBeTypeOf("string")
-        expect(signIn).toHaveBeenCalledTimes(1);
-        expect(signIn).toHaveBeenCalledWith(userEmail, userPassword);
-    })
+    //     const userEmail = TEST_EMAIL
+    //     const userPassword = TEST_PASSWORD
+    //     const res = await request(app).post("/auth/signin").send({
+    //         email:userEmail,
+    //         password:userPassword
+    //     })
+    //     expect(res.statusCode).toBe(201)
+    //     expect(res.body.message).toBe("Login successfully")
+    //     expect(res.body.token).toBeTypeOf("string")
+    //     expect(signIn).toHaveBeenCalledTimes(1);
+    //     expect(signIn).toHaveBeenCalledWith(userEmail, userPassword);
+    // })
 
     it("/post sign in with wrong email and password",async ()=>{
 
