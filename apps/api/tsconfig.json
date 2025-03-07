@@ -7,5 +7,10 @@
     "strict": true,                                      /* Enable all strict type-checking options. */
     "skipLibCheck": true,
     "outDir": "dist",                              /* Skip type checking all .d.ts files. */
+    "paths": {
+      "mongoose-db": [
+        "../../packages/mongoose-db/src/index.ts"
+      ],
+    } 
   }
 }
