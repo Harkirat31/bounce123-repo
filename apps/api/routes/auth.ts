@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express"
+import express, { Request, Response, } from "express"
 import jwt from "jsonwebtoken"
 import { ErrorCode, user, userSignIn } from "types";
 import { createUser, generateEmailVerifyLink, getAuthUserRecord, getGenderData, saveVote, sendResetEmail, signIn, signInDriver, signUp } from "db"
