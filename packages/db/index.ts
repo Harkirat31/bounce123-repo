@@ -152,7 +152,6 @@ export const getFuturePathDates = (uid: string,date:Date) => {
 }
 
 export const  getAllCompaniesOfDriver = (driverId:String): Promise<DriverType[]> =>{
-
   return new Promise(async (resolve,reject)=>{
     let driverCompanyList: DriverType[] = [] 
     try{
