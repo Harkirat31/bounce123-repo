@@ -29,6 +29,8 @@
     "jsonwebtoken": "^9.0.2",
     "supertest": "^7.0.0",
     "types": "*",
-    "ws": "^8.18.0"
+    "vitest": "^3.0.8",
+    "ws": "^8.18.0",
+    "mongoose-db":"*"
   }
 }

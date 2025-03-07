@@ -151,18 +151,24 @@ export const getFuturePathDates = (uid: string,date:Date) => {
   })
 }
 
-export const  getAllCompaniesOfDriver = async (driverId:String) =>{
-  let driverCompanyList: DriverType[] = [] 
-  try{
-    const documentSnapshot =   await db.collection("driver_company").where("uid", "==", driverId).get()
-    documentSnapshot.docs.forEach((doc) => {
-      let driverCompany = doc.data() as DriverType
-      driverCompanyList.push(driverCompany)
-    })
-    return driverCompanyList
-  }catch(error){
-    return ErrorCode.DbError
-  }
+export const  getAllCompaniesOfDriver = (driverId:String): Promise<DriverType[]> =>{
+
+  return new Promise(async (resolve,reject)=>{
+    let driverCompanyList: DriverType[] = [] 
+    try{
+      const documentSnapshot =   await db.collection("driver_company").where("uid", "==", driverId).get()
+      documentSnapshot.docs.forEach((doc) => {
+        let driverCompany = doc.data() as DriverType
+        driverCompanyList.push(driverCompany)
+      })
+      resolve(driverCompanyList)
+    }
+    catch(error){
+      reject(ErrorCode.DbError)
+    }
+   
+  })
+
 }
 
 export const getDriverWithPaths = (uid: string,date:Date) => {

@@ -9,11 +9,6 @@ export const getDriverWithPaths = async (req: Request, res: Response) => {
         const driverId = req.body.uid
         const date = new Date(req.body.date)
         let driverCompanyList = await getAllCompaniesOfDriver(driverId)
-        if (driverCompanyList == ErrorCode.DbError) {
-            return res.status(400).json({
-                err: ErrorCode.DbError
-            })
-        }
         for (const element in driverCompanyList) {
             let company = await getUser(driverCompanyList[element].companyId!)
             driverCompanyList[element].companyName = company.companyName
@@ -52,14 +47,11 @@ export const updateOrderStatusController = async (req: Request, res: Response) =
              if(parsedData.data.currentStatus=="Delivered" && parsedData.data.companyId ){
                 delivered(parsedData.data.companyId,parsedData.data.orderId)
             }
-
             res.json({
                 isUpdated: true
             })
-
         }
         catch(error:any){
-            console.log("error is", error)
             res.json({
                 isUpdated: false
             })
