@@ -11,15 +11,6 @@ vi.mock("db",()=>({
     signIn
 }))
 
-vi.mock('@sendgrid/mail', async () => {
-    const actual = await vi.importActual('@sendgrid/mail'); // Get the actual module
-    return {
-      ...actual, // Keep the original exports
-      setApiKey: vi.fn(), // Mock setApiKey to be a no-op function
-    };
-  });
-
-
 describe("/post sign in with email and password",()=>{
     it("Testing with Correct Email and password",async ()=>{
        
