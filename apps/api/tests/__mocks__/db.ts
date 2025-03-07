@@ -1,8 +1,9 @@
 import {vi} from "vitest"
+import { TEST_EMAIL, TEST_PASSWORD } from "../fixtures/dummy_credentials"
 
 
 export const signIn = vi.fn().mockImplementation((email:string,password:string)=>{
-    if (email===process.env.TEST_EMAIL && password===process.env.TEST_PASSWORD)
+    if (email===TEST_EMAIL && password===TEST_PASSWORD)
         return Promise.resolve({
             user:{name:"Dummy User"}
          })

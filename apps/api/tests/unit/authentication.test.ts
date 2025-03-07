@@ -3,6 +3,7 @@ import request from "supertest"
 import dotenv from "dotenv"
 import { signIn } from "../__mocks__/db";
 import {app} from "../../index"
+import { TEST_EMAIL, TEST_PASSWORD } from "../fixtures/dummy_credentials";
 dotenv.config();
 
 
@@ -11,11 +12,14 @@ vi.mock("db",()=>({
     signIn
 }))
 
+
+
+
 describe("/post sign in with email and password",()=>{
     it("Testing with Correct Email and password",async ()=>{
        
-        const userEmail = process.env.TEST_EMAIL
-        const userPassword = process.env.TEST_PASSWORD
+        const userEmail = TEST_EMAIL
+        const userPassword = TEST_PASSWORD
         const res = await request(app).post("/auth/signin").send({
             email:userEmail,
             password:userPassword
@@ -29,7 +33,7 @@ describe("/post sign in with email and password",()=>{
 
     it("/post sign in with wrong email and password",async ()=>{
 
-        const userEmail = process.env.TEST_EMAIL
+        const userEmail = TEST_EMAIL
         const res = await request(app).post("/auth/signin").send({
             email:userEmail,
             password:"dummy"
