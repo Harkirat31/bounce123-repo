@@ -8,11 +8,6 @@ https://easeyourtasks.com
 5. Paths can be assigned to drivers and become visible in drivers mobile app.
 6. Deleveries orders can be uploaded through csv file.
 
-FRONT END
-Implemented in React js 
-State management library (Recoil.js) is used.
 
-   
-![Deleviers](https://github.com/Harkirat31/bounce123-repo/assets/26318290/034814db-8af5-4f9b-9027-5c881a0d544f)
 
-![paths](https://github.com/Harkirat31/bounce123-repo/assets/26318290/d357776f-935c-44c4-b6e7-c76e39647cd5)
+<img width="1002" alt="Screenshot 2025-03-05 at 1 58 56 PM" src="https://github.com/user-attachments/assets/454ce6a0-209a-454f-ad3d-8a7d35537b65" />
