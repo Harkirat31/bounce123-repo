@@ -11,7 +11,7 @@ dotenv.config();
 const SEND_GRID_API = process.env.SEND_GRID_API
 
 
- sgMail.setApiKey(SEND_GRID_API!)
+sgMail.setApiKey(SEND_GRID_API!)
 
 
 const router = express.Router();

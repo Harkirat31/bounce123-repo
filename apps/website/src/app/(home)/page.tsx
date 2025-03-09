@@ -21,7 +21,7 @@ const Home = () => {
                 <div className="w-full md:w-1/2">
                     <div className="float-right w-[100%] md:w-[325px] min-[835px]:w-[360px] lg:w-[450px] xl:w-[550px] aspect-[7/4] relative ">
                         {/* <Image className=" rounded-2xl" fill={true} objectFit="cover" src="/home/home_deliveries.jpg" alt="manage-deliveries"></Image>                     */}
-                        <video autoPlay muted playsInline controls preload="none" className=" object-cover  w-full h-full" >
+                        <video  poster="/home/thumbnail.png" muted playsInline controls preload="none" className=" object-cover  w-full h-full" >
                         <source src="/home/demo_route_generations.mp4" type="video/mp4"></source>
                         </video>
                     </div>
