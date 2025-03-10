@@ -40,6 +40,7 @@ const Signup2 = () => {
 
     const validateInput = (input: {}) => {
         let parsedInput = user.safeParse(input)
+    
         if (parsedInput.success) {
             try {
                 let phone = parseInt(parsedInput.data.phone)
@@ -55,6 +56,7 @@ const Signup2 = () => {
             return parsedInput.data
         }
         else {
+            console.log(parsedInput.error)
             let errors: any[] = []
             parsedInput.error.issues.forEach((issue) => {
                 if (issue.path[0] == "companyName") {

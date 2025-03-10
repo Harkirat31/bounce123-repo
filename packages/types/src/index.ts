@@ -186,8 +186,8 @@ export const user = z.object({
     location: location.optional(),
     ordersCountForMonth: z.number().optional(),
     placeId: z.string().optional(),
-    availableCount: z.number(),
-    isApproved:z.boolean()
+    availableCount: z.number().default(200),
+    isApproved:z.boolean().default(true)
 })
 export type UserType = z.infer<typeof user>
 
