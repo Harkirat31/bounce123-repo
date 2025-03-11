@@ -2,14 +2,14 @@ import Image from "next/image";
 
 export default function FeatureBoxDetailed({ image, heading, list, flip = false }: { image: string, heading: string, list: string[], flip?: boolean }) {
     return <>
-        <div className="flex flex-col lg:flex-row justify-around items-center lg:h-[450px]">
+        <div className="flex flex-col lg:flex-row justify-around items-center lg:h-[375px] xl:h-[450px]">
             {!flip && <div className="hidden lg:block h-full">
                 <ImageSection image={image}></ImageSection>
             </div>
             }
 
-            <div className={`h-full w-full flex flex-col  bg-gray-100 px-10 py-4 ${flip?"lg:mr-10":"lg:ml-10"}`}>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold ">
+            <div className={`h-full w-full flex overflow-scroll flex-col  bg-gray-100 px-10 py-4 ${flip?"lg:mr-10":"lg:ml-10"}`}>
+                <h1 className="text-xl md:text-lg lg:text-2xl xl:text-3xl font-bold ">
                     {heading}
                 </h1>
                 <div className="mt-4 w-full lg:hidden">
