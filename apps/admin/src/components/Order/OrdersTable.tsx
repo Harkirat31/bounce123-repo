@@ -46,6 +46,9 @@ const OrdersTable = () => {
                             <th scope="col" className="px-1 py-3 w-10">
                                 Instructions
                             </th>
+                            <th scope="col" className="px-1 py-3 w-10">
+                                Payment Status
+                            </th>
                             <th scope="col" className="px-2 py-3 w-10">
                                 Asign To
                             </th>
@@ -112,6 +115,9 @@ const OrderRow = ({ orderId }: any) => {
                 </td>
                 <td className="px-1 py-4">
                     {order.specialInstructions}
+                </td>
+                <td className="px-1 py-4">
+                    {order.paymentStatus??"N/A"}
                 </td>
                 <td className="px-1 py-4">
                     {order.driverName}

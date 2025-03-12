@@ -34,7 +34,7 @@ const ParseCSVOrders = () => {
       }
     }
 
-    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail',]
+    let orderAttributes = ['orderNumber', 'cname', 'cphone', 'cemail', 'address', 'deliveryDate', 'priority', 'specialInstructions', 'itemsDetail','paymentStatus']
     setIsLoading(true)
     let statusOfUploading: {}[] = []
     for (const row of csvData){

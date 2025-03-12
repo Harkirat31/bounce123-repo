@@ -73,7 +73,14 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
         ws.on('message', (message: string) => {
             console.log(`Received message: ${message}`);
         });
+        ws.on('error',(err)=>{
+            console.log("Web Socket Error",err)
+        })
     });
+    wss.on('error',()=>{
+        console.log("Web Socket Server Error")
+    })
+   
 }
 
 

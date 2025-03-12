@@ -51,6 +51,7 @@ const orderSchema = new Schema<IOrder>({
     },
     deliveryDate: {type:Date,required:true},
     specialInstructions: { type: String, required: false },
+    paymentStatus: { type: String, required: false },
     deliverTimeRangeStart: {type:String,required:false,minlength:1,maxlength:24},
     deliverTimeRangeEnd:{type:String,required:false,minlength:1,maxlength:24},
     priority: {
