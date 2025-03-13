@@ -2,8 +2,9 @@ import express, { Request, Response, NextFunction } from "express"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
 import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
-import { getFuturePathDates, getOrders, saveFCMToken, updateCurrentLocation } from "db"
+import {  getOrders, saveFCMToken, updateCurrentLocation } from "db"
 import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController, updatePathAcceptanceByDriverController } from "../controllers/driverController";
+import { getFuturePathDates } from "mongoose-db";
 
 const router = express.Router();
 
