@@ -2,7 +2,7 @@ import { getAllCompaniesOfDriver, getUser } from "db"
 import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus, updatePathAcceptanceByDriver} from "mongoose-db"
 import { Request, Response } from "express"
 import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
-import { delivered } from "../sockets/handlers/orderHandler"
+import { delivered, pathAcceptedOrRejected } from "../sockets/handlers/orderHandler"
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {
@@ -91,6 +91,11 @@ export const updatePathAcceptanceByDriverController  =async(req:Request,res:Resp
     }
     updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {  
         //send email,socketUpdate or whatever in future to admin
+        if(parsedData.data.companyId){
+            pathAcceptedOrRejected(parsedData.data.companyId,parsedData.data.pathId,parsedData.data.isAcceptedByDriver)
+        } 
+       
+
         return res.json({
             isUpdated: true
         })

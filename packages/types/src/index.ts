@@ -121,7 +121,8 @@ export const updateNextOrderOfPath_Zod = z.object({
 
 export const updatePathAcceptance = z.object({
     pathId: z.string(),
-    isAcceptedByDriver: z.boolean()
+    isAcceptedByDriver: z.boolean(),
+    companyId:z.string().optional()
 })
 
 export enum deliveryStatus {
@@ -218,7 +219,8 @@ export enum ErrorCode {
 export enum RealTimeUpdates{
     ORDER_DELIVERED="ORDER_DELIVERED",
     NEXT_ORDER="NEXT_ORDER",
-    ORDER_POSTPONED="ORDER_POSTPONED"
+    ORDER_POSTPONED="ORDER_POSTPONED",
+    PATH_ACCEPTED = "PATH_ACCEPTED"
 }
 
 export interface RealTimeMessage{

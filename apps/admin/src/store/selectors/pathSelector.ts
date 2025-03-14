@@ -3,6 +3,8 @@
 // import { getOrder } from "./orderSelector";
 // import { OrderType } from "types";
 
+import { selector } from "recoil"
+
 
 
 
@@ -52,3 +54,19 @@
 
 //     },
 // });
+
+
+// export const updatePathAcceptanceStatus = selector<string|null>({
+//     key:"updatePathAcceptanceStatus",
+//     get:({})=>{return null},
+//     set:({ set, get }, newValue)=>{
+//         if(typeof newValue =="string"){
+//             let order = { ...get(getOrder(newValue)) }
+//             order.currentStatus="Delivered"
+//             if(order){
+//                     set(getOrder(newValue), { ...order as OrderType })
+//             }
+           
+//         }
+//     }
+// })

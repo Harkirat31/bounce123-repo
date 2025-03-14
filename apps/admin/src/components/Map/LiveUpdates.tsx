@@ -6,12 +6,15 @@ import { updateOrderStatusToDelivered } from "../../store/selectors/orderSelecto
 import { realTimeUpdates } from "../../store/atoms/updatesAtom";
 import { webSocket } from "../../store/atoms/webSocket";
 import { ordersAtom } from "../../store/atoms/orderAtom";
+import { RealTimeUpdates } from "types";
+import { savedPathsAtom } from "../../store/atoms/pathAtom";
 
 export const LiveUpdates = () => {
     const [isOpen,setIsOpen] = useState<boolean>(false)
     const updateStatusToDelivered = useSetRecoilState(updateOrderStatusToDelivered)
     const socket = useRecoilValue(webSocket)
     const orders = useRecoilValue(ordersAtom)
+    const paths = useRecoilValue(savedPathsAtom)
 
     const [messages,setMessages] = useRecoilState(realTimeUpdates)
     
@@ -22,7 +25,7 @@ export const LiveUpdates = () => {
 // // Even though the LiveUpdates component might re-render and messages might update with new values, the handleDeliveryUpdateMessage function is still holding on to the initial value of messages from the very first render. This is because the function is referencing the old state due to how closures work, and not the latest state that the component has after re-renders.
     const handleDeliveryUpdateMessage = (event:MessageEvent)=>{
         const data = JSON.parse(event.data)
-        if (data.type && data.type == "ORDER_DELIVERED") {
+        if (data.type && data.type == RealTimeUpdates.PATH_ACCEPTED) {
             const order = orders.find((o)=>o.orderId==data.id)
             if(order){
                 updateStatusToDelivered(order?.orderId!)
@@ -33,6 +36,20 @@ export const LiveUpdates = () => {
             }else{
                 setMessages((prevMessages) => [
                     { message: `Order has been Delivered`, timeStamp: new Date() },...prevMessages,
+                ]);
+            }    
+        }
+        if (data.type && data.type == RealTimeUpdates.PATH_ACCEPTED) {
+            const path = paths.find((p)=>p.pathId==data.id)
+            if(path){
+              //  updateStatusToDelivered(order?.orderId!)
+                // setMessages([...messages, { message: `${order!.driverName} has delivered the order number ${order?.orderNumber}`, timeStamp: new Date() }])
+                 setMessages((prevMessages) => [
+                     { message: `${path!.driverName} has ${data.isAccepted?"accepted":"Rejected"} the assigned deliveries route`, timeStamp: new Date() },...prevMessages,
+                 ]);
+            }else{
+                setMessages((prevMessages) => [
+                    { message: `One Driver has ${data.isAccepted?"accepted":"rejected"} the path`, timeStamp: new Date() },...prevMessages,
                 ]);
             }    
         }

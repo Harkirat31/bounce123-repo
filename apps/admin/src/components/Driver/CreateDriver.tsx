@@ -2,9 +2,10 @@ import { useState } from "react"
 
 import { ErrorCode, driver } from "types/src/index"
 import { createDriver, getDriversAPI } from "../../services/ApiService"
-import { useSetRecoilState } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import { driversState } from "../../store/atoms/driversAtom"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
+import { userAtom } from "../../store/atoms/userAtom"
 
 const CreateDriver = () => {
     const [name, setName] = useState("")
@@ -15,6 +16,7 @@ const CreateDriver = () => {
     const setDrivers = useSetRecoilState(driversState)
     const [errorMessage, setErrorMessage] = useState<any[]>([])
     const setLoading = useSetRecoilState(loadingState)
+    const user = useRecoilValue(userAtom)
 
 
     function saveDriver() {
@@ -22,6 +24,8 @@ const CreateDriver = () => {
         if (parsedDriverData == null) {
             return
         }
+        //add company name for sending email
+        parsedDriverData.companyName = user?.companyName
         setLoading({isLoading:true,value:"Please Wait..."})
         createDriver(parsedDriverData).then((result: any) => {
             if (result.isAdded) {

@@ -30,7 +30,6 @@ router.post("/verifyEmail", (req: Request, res: Response) => {
       sgMail.send(msg).then((result2) => {
         res.json({ sent: true })
       }).catch((error) => {
-        console.log(error)
         res.status(401).json({
           sent: false
         });

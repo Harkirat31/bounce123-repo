@@ -294,12 +294,12 @@ export const createUser = (newUserDetail: UserType): Promise<UserType> => {
 // }
 
 
-export const createDriver = (newDriverDetail: DriverType): Promise<DriverType> => {
+export const createDriver = (newDriverDetail: DriverType,password:string): Promise<DriverType> => {
 
   return new Promise((resolve, reject) => {
     // first new sign up is created for driver
     // default password is password, reset email would be sent
-    signUp({ email: newDriverDetail.email, password: "password" }).then((uidNewDriver) => {
+    signUp({ email: newDriverDetail.email, password:password }).then((uidNewDriver) => {
       newDriverDetail.isAutomaticallyTracked = false // set tracking false during creation of driver
       newDriverDetail.uid = uidNewDriver
       db.collection("driver_company").add(

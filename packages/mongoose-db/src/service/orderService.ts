@@ -1,4 +1,4 @@
-import { OrderType } from "types"
+import { ErrorCode, OrderType } from "types"
 import { OrderModel } from "../models/orderModel"
 
 export const createOrder = (orderData: OrderType) => {
@@ -69,3 +69,18 @@ export const updateOrderStatus = (orderId: string, currentStatus: string) => {
   }) 
 }
 
+export const getFutureOrdersDates = (uid: string, date: Date) => {
+  return new Promise((resolve, reject) => {
+    OrderModel.distinct('deliveryDate', {
+      companyId: uid,
+      deliveryDate: {
+        $gte: date
+      }
+    }).then((futureDates => {
+      resolve(futureDates)
+    })).catch((error) => {
+      reject(ErrorCode.DbError)
+    })
+
+  })
+}

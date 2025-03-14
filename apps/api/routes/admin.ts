@@ -5,8 +5,10 @@ import { driver, assignOrder, sideItem, order, pathOrder, changePriority, ErrorC
 import { createDriver, assignOrderToDriver, createSideItem, getDriver, getDrivers, getUser, updateUser, deleteDriver, sendNotification } from "db"
 import axios from "axios";
 import { getGeometryApi } from "../externalApis/osrmAPI";
-import { createPath , createOrder , getOrderswithDate, getPathswithDate,updatePath,deletePath,getOrdersWithPathId,assignPathToDriver ,assignOrderAndPath, cancelPath, updatePathGemetry,changeOrderPriority,deleteOrders} from "mongoose-db";
+import { createPath , createOrder , getOrderswithDate, getPathswithDate,updatePath,deletePath,getOrdersWithPathId,assignPathToDriver ,assignOrderAndPath, cancelPath, updatePathGemetry,changeOrderPriority,deleteOrders, getFutureOrdersDates} from "mongoose-db";
 import { generateOptimizeRoutes } from "../controllers/pathController";
+import { sendDriverCreationEmail } from "../services/mail/mail_services";
+import { generatePassword } from "../utility/password/generate_password";
 
 const router = express.Router();
 
@@ -31,8 +33,9 @@ router.post("/createDriver", authenticateJwt, (req: Request, res: Response) => {
       err: ErrorCode.WrongInputs
     });
   }
-  console.log(parsedUserData.data)
-  createDriver(parsedUserData.data).then((driver) => {
+  let generatedPassword = generatePassword()
+  createDriver(parsedUserData.data,generatedPassword).then(async (driver) => {
+    await sendDriverCreationEmail(parsedUserData.data.email,generatedPassword,parsedUserData.data.companyName??"N/A")
     res.json({ message: 'Sign Up successfully', isAdded: true });
   }).catch((error) => {
     return res.status(403).json({
@@ -453,6 +456,18 @@ router.post("/updateUser", authenticateJwt, (req: Request, res: Response) => {
       err: ErrorCode.DbError
     });
   })
+
+})
+
+router.get("/getFutureOrdersDates",authenticateJwt,(req: Request, res: Response) => {
+  getFutureOrdersDates(req.body.companyId,new Date(req.body.date)).then((data) => {
+        res.status(200).json(data)
+    }).catch((error) => {
+        console.log(error)
+        res.status(403).json({
+            err: "Error"
+        })
+    })
 
 })
 
