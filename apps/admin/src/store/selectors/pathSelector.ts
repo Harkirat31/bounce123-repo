@@ -3,7 +3,9 @@
 // import { getOrder } from "./orderSelector";
 // import { OrderType } from "types";
 
-//import { selector } from "recoil"
+import { selector } from "recoil"
+import { getSavedPathById } from "../atoms/pathAtom"
+import { PathOrderType } from "types"
 
 
 
@@ -56,17 +58,32 @@
 // });
 
 
-// export const updatePathAcceptanceStatus = selector<string|null>({
-//     key:"updatePathAcceptanceStatus",
-//     get:({})=>{return null},
-//     set:({ set, get }, newValue)=>{
-//         if(typeof newValue =="string"){
-//             let order = { ...get(getOrder(newValue)) }
-//             order.currentStatus="Delivered"
-//             if(order){
-//                     set(getOrder(newValue), { ...order as OrderType })
-//             }
+export const updatePathtoAccepted = selector<string|null>({
+    key:"updatePathAcceptanceStatus",
+    get:({})=>{return null},
+    set:({ set, get }, newValue)=>{
+        if(typeof newValue =="string"){
+            let path = { ...get(getSavedPathById(newValue)) }
+            path.isAcceptedByDriver=true
+            if(path){
+                    set(getSavedPathById(newValue), { ...path as PathOrderType })
+            }
            
-//         }
-//     }
-// })
+        }
+    }
+})
+
+export const updatePathtoRejected = selector<string|null>({
+    key:"updatePathAcceptanceStatus",
+    get:({})=>{return null},
+    set:({ set, get }, newValue)=>{
+        if(typeof newValue =="string"){
+            let path = { ...get(getSavedPathById(newValue)) }
+            path.isAcceptedByDriver=false
+            if(path){
+                    set(getSavedPathById(newValue), { ...path as PathOrderType })
+            }
+           
+        }
+    }
+})

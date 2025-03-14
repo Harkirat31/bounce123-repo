@@ -8,10 +8,13 @@ import { webSocket } from "../../store/atoms/webSocket";
 import { ordersAtom } from "../../store/atoms/orderAtom";
 import { RealTimeUpdates } from "types";
 import { savedPathsAtom } from "../../store/atoms/pathAtom";
+import { updatePathtoAccepted, updatePathtoRejected } from "../../store/selectors/pathSelector";
 
 export const LiveUpdates = () => {
     const [isOpen,setIsOpen] = useState<boolean>(false)
     const updateStatusToDelivered = useSetRecoilState(updateOrderStatusToDelivered)
+    const updateStatusToAccepted = useSetRecoilState(updatePathtoAccepted)
+    const updateStatusToRejected = useSetRecoilState(updatePathtoRejected)
     const socket = useRecoilValue(webSocket)
     const orders = useRecoilValue(ordersAtom)
     const paths = useRecoilValue(savedPathsAtom)
@@ -42,8 +45,11 @@ export const LiveUpdates = () => {
         if (data.type && data.type == RealTimeUpdates.PATH_ACCEPTED) {
             const path = paths.find((p)=>p.pathId==data.id)
             if(path){
-              //  updateStatusToDelivered(order?.orderId!)
-                // setMessages([...messages, { message: `${order!.driverName} has delivered the order number ${order?.orderNumber}`, timeStamp: new Date() }])
+                if(data.isAccepted){
+                    updateStatusToAccepted(path.pathId!)
+                }else{
+                    updateStatusToRejected(path.pathId!)
+                }
                  setMessages((prevMessages) => [
                      { message: `${path!.driverName} has ${data.isAccepted?"accepted":"Rejected"} the assigned deliveries route`, timeStamp: new Date() },...prevMessages,
                  ]);
