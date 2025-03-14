@@ -25,7 +25,7 @@ export const LiveUpdates = () => {
 // // Even though the LiveUpdates component might re-render and messages might update with new values, the handleDeliveryUpdateMessage function is still holding on to the initial value of messages from the very first render. This is because the function is referencing the old state due to how closures work, and not the latest state that the component has after re-renders.
     const handleDeliveryUpdateMessage = (event:MessageEvent)=>{
         const data = JSON.parse(event.data)
-        if (data.type && data.type == RealTimeUpdates.PATH_ACCEPTED) {
+        if (data.type && data.type == RealTimeUpdates.ORDER_DELIVERED) {
             const order = orders.find((o)=>o.orderId==data.id)
             if(order){
                 updateStatusToDelivered(order?.orderId!)
