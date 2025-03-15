@@ -116,7 +116,8 @@ export const updateStatusOfOrder = z.object({
 
 export const updateNextOrderOfPath_Zod = z.object({
     orderId: z.string(),
-    pathId:z.string()
+    pathId:z.string(),
+    companyId:z.string().optional()
 })
 
 export const updatePathAcceptance = z.object({

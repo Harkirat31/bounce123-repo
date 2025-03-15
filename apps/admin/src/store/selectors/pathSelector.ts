@@ -3,7 +3,7 @@
 // import { getOrder } from "./orderSelector";
 // import { OrderType } from "types";
 
-import { selector } from "recoil"
+import { DefaultValue, selector } from "recoil"
 import { getSavedPathById } from "../atoms/pathAtom"
 import { PathOrderType } from "types"
 
@@ -74,7 +74,7 @@ export const updatePathtoAccepted = selector<string|null>({
 })
 
 export const updatePathtoRejected = selector<string|null>({
-    key:"updatePathAcceptanceStatus",
+    key:"updatePathtoRejected",
     get:({})=>{return null},
     set:({ set, get }, newValue)=>{
         if(typeof newValue =="string"){
@@ -82,6 +82,27 @@ export const updatePathtoRejected = selector<string|null>({
             path.isAcceptedByDriver=false
             if(path){
                     set(getSavedPathById(newValue), { ...path as PathOrderType })
+            }
+           
+        }
+    }
+})
+
+interface  nextOrderUpdateType{
+orderId:string,
+pathId:string
+}
+
+export const updateNextOrderofPath = selector<nextOrderUpdateType|null>({
+    key:"updatePathtoRejected",
+    get:({})=>{return null},
+    set:({ set, get }, newValue)=>{
+        
+        if(newValue && !(newValue instanceof DefaultValue)){
+            let path = { ...get(getSavedPathById(newValue.pathId)) }
+            path.nextOrderToBeDelivered = newValue.orderId
+            if(path){
+                    set(getSavedPathById(newValue.pathId), { ...path as PathOrderType })
             }
            
         }

@@ -87,6 +87,6 @@ router.post("/updateOrderStatus", authenticateJwtDriver, updateOrderStatusContro
 router.post("/updateNextOrderOfPath",authenticateJwtDriver,updateNextOrderOfPathController)
 
 
-router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver, updatePathAcceptanceByDriverController)
+router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver,updatePathAcceptanceByDriverController)
 
 export default router

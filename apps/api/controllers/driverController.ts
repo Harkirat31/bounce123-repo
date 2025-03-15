@@ -2,7 +2,7 @@ import { getAllCompaniesOfDriver, getUser } from "db"
 import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus, updatePathAcceptanceByDriver} from "mongoose-db"
 import { Request, Response } from "express"
 import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
-import { delivered, pathAcceptedOrRejected } from "../sockets/handlers/orderHandler"
+import { deliveredSocketHandler, pathAcceptedOrRejectedSocketHandler, updateNextOrderOfPathSocketHandler } from "../sockets/handlers/orderHandler"
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {
@@ -45,7 +45,7 @@ export const updateOrderStatusController = async (req: Request, res: Response) =
 
              // send real time upodate to client via Web Socket
              if(parsedData.data.currentStatus=="Delivered" && parsedData.data.companyId ){
-                delivered(parsedData.data.companyId,parsedData.data.orderId)
+                deliveredSocketHandler(parsedData.data.companyId,parsedData.data.orderId)
             }
             res.json({
                 isUpdated: true
@@ -69,6 +69,11 @@ export const updateNextOrderOfPathController = async (req: Request, res: Respons
     }
     try{
         await updateNextOrderOfPath(parsedData.data.pathId,parsedData.data.orderId)
+
+        if(parsedData.data.companyId){
+            updateNextOrderOfPathSocketHandler(parsedData.data.companyId,parsedData.data.pathId,parsedData.data.orderId)
+        } 
+
         res.json({
             isUpdated: true
         })
@@ -92,7 +97,7 @@ export const updatePathAcceptanceByDriverController  =async(req:Request,res:Resp
     updatePathAcceptanceByDriver(parsedData.data.pathId, parsedData.data.isAcceptedByDriver).then((result) => {  
         //send email,socketUpdate or whatever in future to admin
         if(parsedData.data.companyId){
-            pathAcceptedOrRejected(parsedData.data.companyId,parsedData.data.pathId,parsedData.data.isAcceptedByDriver)
+            pathAcceptedOrRejectedSocketHandler(parsedData.data.companyId,parsedData.data.pathId,parsedData.data.isAcceptedByDriver)
         } 
        
 

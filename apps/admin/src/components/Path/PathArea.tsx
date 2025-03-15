@@ -250,7 +250,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                 <td>
                     <div className="grid grid-cols-3 w-28">
                         {pathData!.path.map((node) => {
-                            return <DisplayOrderNumber orderId={node.id}></DisplayOrderNumber>
+                            return <DisplayOrderNumber orderId={node.id} nextOrderId={pathData.nextOrderToBeDelivered}></DisplayOrderNumber>
                         })}  
                     </div>
                 </td>
@@ -312,7 +312,13 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                         </div>
                         :
                         <div className="flex flex-row">
-                            <p className="ml-2 mr-2">Sent to {pathData.driverName}</p>
+                            {pathData.isAcceptedByDriver && 
+                            <p className="ml-2 mr-2 text-green-600 italic">Accepted by {pathData.driverName}</p>
+                            }
+                            {pathData.isAcceptedByDriver!=undefined && !pathData.isAcceptedByDriver && 
+                            <p className="ml-2 mr-2 text-red-500 italic">Rejected by {pathData.driverName}</p>
+                            }
+                            {pathData.isAcceptedByDriver==undefined && <p className="ml-2 mr-2">Sent to {pathData.driverName}</p>}
                             <button onClick={() => setUndo(true)} className=" border-gray-300 text-red-500 underline font-bold"> Undo</button>
                         </div>
 
@@ -331,9 +337,11 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 }
 
 
-const DisplayOrderNumber = ({ orderId }: { orderId: string }) => {
+const DisplayOrderNumber = ({ orderId,nextOrderId }: { orderId: string,nextOrderId:string|undefined }) => {
     const order = useRecoilValue(getOrder(orderId))
-
+    if(nextOrderId && nextOrderId==order?.orderId){
+        return <p className={`text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black bg-orange-200 animate-pulse border-gray-300 rounded-xl`}>{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
+    }
     return <p className={`text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black ${order?.currentStatus=="Delivered"?"bg-green-700 text-white ":"bg-red-400"} border-gray-300 rounded-xl`}>{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
 }
 

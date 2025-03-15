@@ -8,13 +8,14 @@ import { webSocket } from "../../store/atoms/webSocket";
 import { ordersAtom } from "../../store/atoms/orderAtom";
 import { RealTimeUpdates } from "types";
 import { savedPathsAtom } from "../../store/atoms/pathAtom";
-import { updatePathtoAccepted, updatePathtoRejected } from "../../store/selectors/pathSelector";
+import { updateNextOrderofPath, updatePathtoAccepted, updatePathtoRejected } from "../../store/selectors/pathSelector";
 
 export const LiveUpdates = () => {
     const [isOpen,setIsOpen] = useState<boolean>(false)
     const updateStatusToDelivered = useSetRecoilState(updateOrderStatusToDelivered)
     const updateStatusToAccepted = useSetRecoilState(updatePathtoAccepted)
     const updateStatusToRejected = useSetRecoilState(updatePathtoRejected)
+    const updateNextOrder = useSetRecoilState(updateNextOrderofPath)
     const socket = useRecoilValue(webSocket)
     const orders = useRecoilValue(ordersAtom)
     const paths = useRecoilValue(savedPathsAtom)
@@ -38,7 +39,7 @@ export const LiveUpdates = () => {
                  ]);
             }else{
                 setMessages((prevMessages) => [
-                    { message: `Order has been Delivered`, timeStamp: new Date() },...prevMessages,
+                    { message: `Order has been delivered`, timeStamp: new Date() },...prevMessages,
                 ]);
             }    
         }
@@ -51,12 +52,26 @@ export const LiveUpdates = () => {
                     updateStatusToRejected(path.pathId!)
                 }
                  setMessages((prevMessages) => [
-                     { message: `${path!.driverName} has ${data.isAccepted?"accepted":"Rejected"} the assigned deliveries route`, timeStamp: new Date() },...prevMessages,
+                     { message: `${path!.driverName} has ${data.isAccepted?"accepted":"rejected"} the assigned deliveries route`, timeStamp: new Date() },...prevMessages,
                  ]);
             }else{
                 setMessages((prevMessages) => [
                     { message: `One Driver has ${data.isAccepted?"accepted":"rejected"} the path`, timeStamp: new Date() },...prevMessages,
                 ]);
+            }    
+        }
+        if (data.type && data.type == RealTimeUpdates.NEXT_ORDER) {
+            const path = paths.find((p)=>p.pathId==data.pathId)
+            if(path){
+                updateNextOrder({orderId:data.orderId,pathId:data.pathId})
+                const order = orders.find((o)=>o.orderId==data.orderId)
+                 setMessages((prevMessages) => [
+                     { message: `${path!.driverName} is now moving to order ${order?.orderNumber}`, timeStamp: new Date() },...prevMessages,
+                 ]);
+            }else{
+                // setMessages((prevMessages) => [
+                //     { message: `One Driver has ${data.isAccepted?"accepted":"rejected"} the path`, timeStamp: new Date() },...prevMessages,
+                // ]);
             }    
         }
 
