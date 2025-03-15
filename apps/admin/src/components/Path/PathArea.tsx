@@ -339,7 +339,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
 
 const DisplayOrderNumber = ({ orderId,nextOrderId }: { orderId: string,nextOrderId:string|undefined }) => {
     const order = useRecoilValue(getOrder(orderId))
-    if(nextOrderId && nextOrderId==order?.orderId){
+    if(nextOrderId && nextOrderId==order?.orderId && order.currentStatus=="SentToDriver"){
         return <p className={`text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black bg-orange-200 animate-pulse border-gray-300 rounded-xl`}>{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
     }
     return <p className={`text-center w-fit  px-1.5 mx-0.5 my-0.5 text-black ${order?.currentStatus=="Delivered"?"bg-green-700 text-white ":"bg-red-400"} border-gray-300 rounded-xl`}>{order ? (order.orderNumber!.length > 3 ? `..${order.orderNumber!.slice(-3)}` : order.orderNumber) : "NA"}</p>
