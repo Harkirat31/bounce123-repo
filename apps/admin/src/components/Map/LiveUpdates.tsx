@@ -5,9 +5,8 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { updateOrderStatusToDelivered } from "../../store/selectors/orderSelector";
 import { realTimeUpdates } from "../../store/atoms/updatesAtom";
 import { webSocket } from "../../store/atoms/webSocket";
-import { ordersAtom } from "../../store/atoms/orderAtom";
 import { RealTimeUpdates } from "types";
-import { savedPathsAtom } from "../../store/atoms/pathAtom";
+
 import { updateNextOrderofPath, updatePathtoAccepted, updatePathtoRejected } from "../../store/selectors/pathSelector";
 
 export const LiveUpdates = () => {
@@ -17,10 +16,8 @@ export const LiveUpdates = () => {
     const updateStatusToRejected = useSetRecoilState(updatePathtoRejected)
     const updateNextOrder = useSetRecoilState(updateNextOrderofPath)
     const socket = useRecoilValue(webSocket)
-    const orders = useRecoilValue(ordersAtom)
-    const paths = useRecoilValue(savedPathsAtom)
 
-    const [messages,setMessages] = useRecoilState(realTimeUpdates)
+    const [messages,_] = useRecoilState(realTimeUpdates)
     
     
 // THIS BIG Problem should be understood

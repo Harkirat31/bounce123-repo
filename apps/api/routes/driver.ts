@@ -1,7 +1,7 @@
-import express, { Request, Response, NextFunction } from "express"
+import express, { Request, Response } from "express"
 
 import { authenticateJwt, authenticateJwtDriver } from "../middleware"
-import { userId, updateLocation, updateStatusOfOrder, ErrorCode } from "types";
+import { userId, updateLocation, ErrorCode } from "types";
 import {  getOrders, saveFCMToken, updateCurrentLocation } from "db"
 import { getDriverWithPaths, updateNextOrderOfPathController, updateOrderStatusController, updatePathAcceptanceByDriverController } from "../controllers/driverController";
 import { getFuturePathDates } from "mongoose-db";
