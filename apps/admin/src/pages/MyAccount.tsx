@@ -9,7 +9,7 @@ import { getUserAPI, updateUserAPI } from "../services/ApiService"
 const API_KEY = import.meta.env.VITE_API_KEY
 const MyAccount = () => {
     return <>
-        <Wrapper apiKey={API_KEY} version="beta" libraries={["marker", "places"]}>
+        <Wrapper apiKey={API_KEY} version="beta" libraries={["marker", "places","geometry"]}>
             <Account ></Account>
         </Wrapper>
     </>
