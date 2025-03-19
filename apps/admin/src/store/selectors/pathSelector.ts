@@ -6,6 +6,8 @@
 import { DefaultValue, selector } from "recoil"
 import { getSavedPathById } from "../atoms/pathAtom"
 import { PathOrderType } from "types"
+import { realTimeUpdates } from "../atoms/updatesAtom"
+import { getOrder } from "./orderSelector"
 
 
 
@@ -58,53 +60,67 @@ import { PathOrderType } from "types"
 // });
 
 
-export const updatePathtoAccepted = selector<string|null>({
-    key:"updatePathAcceptanceStatus",
-    get:({})=>{return null},
-    set:({ set, get }, newValue)=>{
-        if(typeof newValue =="string"){
-            let path = { ...get(getSavedPathById(newValue)) }
-            path.isAcceptedByDriver=true
-            if(path){
-                    set(getSavedPathById(newValue), { ...path as PathOrderType })
+export const updatePathtoAccepted = selector<string | null>({
+    key: "updatePathtoAccepted",
+    get: ({ }) => { return null },
+    set: ({ set, get }, newValue) => {
+        if (typeof newValue == "string") {
+            let path = get(getSavedPathById(newValue))
+            if (path) {
+                set(getSavedPathById(newValue), { ...path as PathOrderType,isAcceptedByDriver:true })
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `${path!.driverName} has accepted the assigned deliveries route`, timeStamp: new Date() },...messages])
             }
-           
+            else{
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `One Driver has accepted the assigned deliveries route`, timeStamp: new Date() },...messages])
+            }
         }
     }
 })
 
-export const updatePathtoRejected = selector<string|null>({
-    key:"updatePathtoRejected",
-    get:({})=>{return null},
-    set:({ set, get }, newValue)=>{
-        if(typeof newValue =="string"){
-            let path = { ...get(getSavedPathById(newValue)) }
-            path.isAcceptedByDriver=false
-            if(path){
-                    set(getSavedPathById(newValue), { ...path as PathOrderType })
+export const updatePathtoRejected = selector<string | null>({
+    key: "updatePathtoRejected",
+    get: ({ }) => { return null },
+    set: ({ set, get }, newValue) => {
+        if (typeof newValue == "string") {
+            let path = get(getSavedPathById(newValue))
+            if (path) {
+                set(getSavedPathById(newValue), { ...path as PathOrderType,isAcceptedByDriver:false })
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `${path!.driverName} has rejected the assigned deliveries route`, timeStamp: new Date() },...messages])
             }
-           
+            else{
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `One Driver has rejected the assigned deliveries route`, timeStamp: new Date() },...messages])
+            }
         }
     }
 })
 
-interface  nextOrderUpdateType{
-orderId:string,
-pathId:string
+interface nextOrderUpdateType {
+    orderId: string,
+    pathId: string
 }
 
-export const updateNextOrderofPath = selector<nextOrderUpdateType|null>({
-    key:"updatePathtoRejected",
-    get:({})=>{return null},
-    set:({ set, get }, newValue)=>{
-        
-        if(newValue && !(newValue instanceof DefaultValue)){
-            let path = { ...get(getSavedPathById(newValue.pathId)) }
-            path.nextOrderToBeDelivered = newValue.orderId
+export const updateNextOrderofPath = selector<nextOrderUpdateType | null>({
+    key: "updateNextOrderofPath",
+    get: ({ }) => { return null },
+    set: ({ set, get }, newValue) => {
+
+        if (newValue && !(newValue instanceof DefaultValue)) {
+            let path = get(getSavedPathById(newValue.pathId))
             if(path){
-                    set(getSavedPathById(newValue.pathId), { ...path as PathOrderType })
+                set(getSavedPathById(newValue.pathId),{...path,nextOrderToBeDelivered:newValue.orderId})
+                let messages = get(realTimeUpdates)
+                let order = get(getOrder(newValue.orderId))
+                set(realTimeUpdates,[ { message: `${path!.driverName} is now moving to order ${order?.orderNumber}`, timeStamp: new Date() },...messages])
             }
-           
+            else{
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[ { message: `One Driver has changed his/her next order`, timeStamp: new Date() },...messages])
+            }       
+
         }
     }
 })

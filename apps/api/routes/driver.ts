@@ -82,11 +82,11 @@ router.post("/updateCurrentLocation", authenticateJwt, (req: Request, res: Respo
     })
 })
 
-router.post("/updateOrderStatus", authenticateJwtDriver, updateOrderStatusController)
+router.post("/updateOrderStatus", updateOrderStatusController)
 
-router.post("/updateNextOrderOfPath",authenticateJwtDriver,updateNextOrderOfPathController)
+router.post("/updateNextOrderOfPath",updateNextOrderOfPathController)
 
 
-router.post("/updatePathAcceptanceByDriver", authenticateJwtDriver,updatePathAcceptanceByDriverController)
+router.post("/updatePathAcceptanceByDriver",updatePathAcceptanceByDriverController)
 
 export default router

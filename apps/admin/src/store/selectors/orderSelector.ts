@@ -1,6 +1,7 @@
 import {  atomFamily, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
 import { OrderType } from "types";
+import { realTimeUpdates } from "../atoms/updatesAtom";
 
 export const getOrders = selector({
     key: "getOrders",
@@ -95,12 +96,17 @@ export const updateOrderStatusToDelivered = selector<string|null>({
     get:({})=>{return null},
     set:({ set, get }, newValue)=>{
         if(typeof newValue =="string"){
-            let order = { ...get(getOrder(newValue)) }
-            order.currentStatus="Delivered"
+            let order = get(getOrder(newValue))
             if(order){
-                    set(getOrder(newValue), { ...order as OrderType })
-            }
-           
+                if(order){
+                        set(getOrder(newValue), { ...order,currentStatus:"Delivered" } as OrderType)
+                }
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `${order!.driverName} has delivered the order number ${order?.orderNumber}`, timeStamp: new Date() },...messages])
+            }else{
+                let messages = get(realTimeUpdates)
+                set(realTimeUpdates,[{ message: `Driver has delivered the order number`, timeStamp: new Date() },...messages])
+            }        
         }
     }
 })

@@ -3,6 +3,7 @@ import { Aleo } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar/navbar";
 import Footer from "./components/footer_component/footer"
+//import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Aleo({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
         </div>
 
       </body>
+     {/* <GoogleAnalytics gaId="G-XYZ" /> */}
     </html>
   );
 }
