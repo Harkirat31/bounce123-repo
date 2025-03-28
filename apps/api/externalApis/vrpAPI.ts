@@ -1,6 +1,4 @@
 import axios from "axios";
-import { TIMEOUT } from "dns";
-
 const VRP_SERVICE_URL = "http://localhost:8080/api/vrp/optimize"
 
 
