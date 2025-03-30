@@ -6,7 +6,7 @@ import { map_view_list, mobile_app_list, route_drawing_list } from "../constants
 
 const Home = () => {
     return (
-        <div className="px-6 sm:pl-0 flex flex-col justify-start">
+        <div className="px-6 sm:pl-0 flex flex-col justify-start text-black">
             <h1 className="text-2xl font-bold mt-5">Privacy Policy</h1>
             <p>Effective Date: March 30, 2025</p>
 
