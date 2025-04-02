@@ -9,7 +9,7 @@ export default function FeatureBoxDetailed({ image, heading, list, flip = false 
             }
 
             <div className={`h-full w-full flex overflow-scroll flex-col  bg-gray-100 px-10 py-4 ${flip?"lg:mr-10":"lg:ml-10"}`}>
-                <h1 className="text-xl md:text-lg lg:text-2xl xl:text-3xl font-bold ">
+                <h1 className="text-black text-xl md:text-lg lg:text-2xl xl:text-3xl font-bold ">
                     {heading}
                 </h1>
                 <div className="mt-4 w-full lg:hidden">
