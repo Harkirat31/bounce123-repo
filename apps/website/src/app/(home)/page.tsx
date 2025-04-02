@@ -76,10 +76,11 @@ const Home = () => {
 
             <div id="mobile-app" className="mt-20">
                 <FeatureBoxDetailed
-                    heading="Mobile App"
+                    heading="Mobile Application For Drivers"
                     image="/home/mobile_app.png"
                     list={mobile_app_list}
                     flip={true}
+                    isAppBox={true}
                 ></FeatureBoxDetailed>
             </div>
 
