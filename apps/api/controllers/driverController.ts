@@ -1,8 +1,57 @@
-import { getAllCompaniesOfDriver, getUser } from "db"
+import { createDriver, deleteDriver, getAllCompaniesOfDriver, getDrivers, getUser } from "db"
 import {getOrdersOfDriverByDate, getPathsOfDriverByDate, removeNextOrderOfPath, updateNextOrderOfPath, updateOrderStatus, updatePathAcceptanceByDriver} from "mongoose-db"
 import { Request, Response } from "express"
-import { ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
+import { driver, ErrorCode, OrderType, PathOrderType, updateNextOrderOfPath_Zod, updatePathAcceptance, updateStatusOfOrder } from "types"
 import { deliveredSocketHandler, pathAcceptedOrRejectedSocketHandler, updateNextOrderOfPathSocketHandler } from "../sockets/handlers/orderHandler"
+import { generatePassword } from "../utility/password/generate_password";
+import { sendDriverCreationEmail } from "../services/mail/mail_services"
+
+
+
+export const getDriversController = (req: Request, res: Response) => {
+    getDrivers(req.body.companyId).then((result) => res.json(result)).catch(() => res.status(403).json({ msg: "Error" })
+    )
+  }
+
+export const createDriverController = async(req: Request, res: Response)=>{
+     let parsedUserData = driver.safeParse(req.body)
+      if (!parsedUserData.success) {
+        return res.status(403).json({
+          isadded: false,
+          err: ErrorCode.WrongInputs
+        });
+      }
+      let generatedPassword = generatePassword()
+      createDriver(parsedUserData.data,generatedPassword).then(async (driver) => {
+        await sendDriverCreationEmail(parsedUserData.data.email,generatedPassword,parsedUserData.data.companyName??"N/A")
+        res.json({ message: 'Sign Up successfully', isAdded: true });
+      }).catch((error) => {
+        return res.status(403).json({
+          err: error,
+          isAdded: false
+        });
+      })
+    
+}
+
+
+export const deleteDriverController =(req: Request, res: Response) => {
+  if (req.body.driverId) {
+    deleteDriver(req.body.driverId, req.body.companyId).then((_) => {
+      res.json({ isDeleted: true });
+    }).catch((_) => {
+      res.status(403).json({
+        isDeleted: false
+      })
+    })
+  }
+  else {
+    res.status(403).json({
+      isDeleted: false
+    })
+  }
+}
+
 
 export const getDriverWithPaths = async (req: Request, res: Response) => {
     try {

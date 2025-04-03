@@ -36,7 +36,7 @@ describe("/post sign in with email and password",()=>{
         const userEmail = TEST_EMAIL
         const res = await request(app).post("/auth/signin").send({
             email:userEmail,
-            password:"dummy"
+            password:"wrong"
         })
         expect(res.statusCode).toBe(401)
     })
