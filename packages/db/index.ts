@@ -752,7 +752,13 @@ export const getFCMTokens = (uid: string) => {
   return new Promise<string[]>((resolve, reject) => {
     db.collection('fcm_tokens').doc(uid).get().then((result) => {
       let data = result.data() as { fcmTokens: string[] }
-      resolve(data.fcmTokens)
+      if(data && data.fcmTokens){
+        resolve(data.fcmTokens)
+      }
+      else{
+        console.log("eeee")
+        resolve([])
+      }
     }).catch((error) => {
       reject(error)
     })

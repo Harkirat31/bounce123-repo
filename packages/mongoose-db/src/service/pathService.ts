@@ -162,7 +162,7 @@ export const assignOrderAndPath = (newPath: PathOrderType) => {
 
 
 export const cancelPath = (path: PathOrderType) => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<{result:boolean,isPathDeleted:boolean,modifiedPath?:typeof path.path}>(async (resolve, reject) => {
         try {
             const nonDeliveredOrdersDocs = await OrderModel.find({
                 assignedPathId: path.pathId,
