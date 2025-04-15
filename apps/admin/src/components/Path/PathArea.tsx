@@ -9,13 +9,13 @@ import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icon
 
 //import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
-import CreatePath from "./CreatePath"
 import { loadingState } from "../../store/atoms/loadingStateAtom"
 import { TiDelete } from "react-icons/ti"
 //import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import { refreshData } from "../../store/atoms/refreshAtom";
 import AssignDriver from "./AssignDriver"
 import { isRoadView } from "../../store/atoms/commonAtoms"
+import { CreatePathV2 } from "./CreatePath_V2"
 
 
 const PathArea = () => {
@@ -37,7 +37,8 @@ const PathArea = () => {
                 </div>
                 
             </div>
-            {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>}
+            {/* {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>} */}
+            {showCreatePath.flag && <CreatePathV2 showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePathV2>}
             {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
         </div>
     )
