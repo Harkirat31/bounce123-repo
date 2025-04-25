@@ -7,6 +7,8 @@ import { getOrdersForGeneratingOptimizedPaths } from "../../store/atoms/pathAtom
 import { generateOptomizePathsAPI } from "../../services/ApiService"
 import { refreshData } from "../../store/atoms/refreshAtom"
 import { useRef, useState } from "react"
+import { FaExternalLinkAlt } from "react-icons/fa";
+
 
 export const GenerateOptimizedPaths = () => {
     const setLoading = useSetRecoilState(loadingState)
@@ -79,8 +81,8 @@ export const GenerateOptimizedPaths = () => {
 
     }
 
-    return <div className="relative">
-        <button className="p-1 text-white bg-blue-700 hover:bg-blue-800 rounded-md" onClick={clickButton}>Generate Optimized Routes</button>
+    return <div className="relative mt-1 w-full">
+        <button className="w-full p-1 text-white bg-blue-700 hover:bg-blue-800 flex flex-row items-center justify-center" onClick={clickButton}>Generate Optimized Routes <FaExternalLinkAlt className="ml-1"></FaExternalLinkAlt> </button>
         <div className={` fixed flex flex-col w-screen h-screen top-0 left-0 transition-all duration-75 ${isOpen ? "scale-100" : "scale-0"}`}>
             <div className={`relative bg-black  bg-opacity-80 flex flex-row justify-center items-center h-screen`}>
 
