@@ -151,7 +151,7 @@ export const CreatePathV2 = ({ showCreatePath, setShowCreatePath }: {
         
     }
 
-    return <div className="border-2 flex flex-col items-center fixed top-[35%]  xl:top-20 xl:bottom-20  rounded-lg w-[100vw] h-[60vh]  xl:w-[20vw] xl:h-[80vh] bg-white">
+    return <div className="border-2 flex flex-col items-center fixed top-[35%] xl:right-10 xl:top-20 xl:bottom-20 rounded-lg w-[100vw] h-[60vh]  xl:w-[20vw] xl:h-[80vh] bg-white">
         <FaWindowClose size={20} onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} className="absolute right-1 top-1 text-white hover:cursor-pointer"></FaWindowClose>
         <span className="text-center w-full mt py-2 bg-blue-700 text-white flex flex-row items-center justify-center"  >New Route <FaRoute className="ml-2"></FaRoute></span>
         <GenerateOptimizedPaths></GenerateOptimizedPaths>
