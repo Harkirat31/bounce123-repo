@@ -137,6 +137,7 @@ const ColumnDeleteCheckBox = (props: { order: OrderType }) => {
     const [rows, setRows] = useRecoilState(rowsToBeDeleted)
     return <>
         {props.order.currentStatus == "NotAssigned" ? <input
+        checked={rows.has(props.order.orderId)}
             onChange={(event) => {
                 if (event.target.checked) {
                     let setCopy = new Set(rows)
@@ -146,7 +147,7 @@ const ColumnDeleteCheckBox = (props: { order: OrderType }) => {
                 else {
                     let setCopy = new Set(rows)
                     setCopy.delete(props.order.orderId)
-                    setRows
+                    setRows(setCopy)
                 }
             }
             } type="checkbox" className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
@@ -161,8 +162,9 @@ const DeleteRows = () => {
         console.log(rows)
         deleteOrders([...rows]).then(() => {
             setSearchDate(new Date(searchDate))
+            setRows(new Set())
         })
-        setRows(new Set())
+        
     }
     return <>
         <button onClick={onDeleteHandle} type="button" className="text-xs text-blue-700 underline" >Delete Selected </button>
