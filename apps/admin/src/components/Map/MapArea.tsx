@@ -193,13 +193,19 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: google.maps
         });
 
 
-        marker.addListener("click", () => {
+        const clickListener = marker.addListener("click", () => {
             setIsOpenOnMap(true)
             InfoWindow.open({
                 anchor: marker,
                 map
             })
         })
+
+        const closeClickListener = InfoWindow.addListener("closeclick", () => {
+            setIsOpenOnMap(false);  
+        });
+
+
         if (isOpenOnMap) {
             InfoWindow.open({
                 anchor: marker,
@@ -209,6 +215,8 @@ const OrderMarker = ({ orderId, map, srNo }: { orderId: string, map: google.maps
         return () => {
             marker.map = null
             InfoWindow.close()
+            window.google.maps.event.removeListener(clickListener);
+            window.google.maps.event.removeListener(closeClickListener);
         }
 
     }, [orderData])

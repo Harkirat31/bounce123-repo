@@ -19,6 +19,7 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
         const token = extractTokenFromRequest(request);
         if (!token) {
             socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+            socket.removeAllListeners()
             socket.destroy();
             return;
         }
@@ -27,9 +28,11 @@ function initWebSocketServer(server: HttpServer | HttpsServer) {
                 //console.log(err)
                 // Reject connection if token is invalid
                 socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+                socket.removeAllListeners()
                 socket.destroy();
                 return;
             }
+           
             // If authentication is successful, upgrade to WebSocket
             try {
                 wss.handleUpgrade(request, socket, head, (ws) => {

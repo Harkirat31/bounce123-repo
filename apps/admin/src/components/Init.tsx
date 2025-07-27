@@ -20,7 +20,7 @@ const Init = () => {
     const orderSearchDate = useRecoilValue(ordersSearchDate)
     const [loading,setLoading] = useRecoilState(loadingState)
     const [tokenValue, setTokenValue] = useRecoilState(token)
-    const setRefresh = useSetRecoilState(refresh("d"))
+    const setRefresh = useSetRecoilState(refresh("d")) //name change in future
     const refreshAllData = useRecoilValue(refreshData)
     const setSocket = useSetRecoilState(webSocket)
 
@@ -44,6 +44,7 @@ const Init = () => {
                             isLoading: false,
                             value: drivers
                         })
+                        //setRefresh change name in future
                         setRefresh()
                         setLoading({isLoading:false,value:null})
                     }).catch((err) => {
