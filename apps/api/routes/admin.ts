@@ -7,7 +7,7 @@ import axios from "axios";
 import { assignOrderAndPathController, assignPathController, cancelPathController, createPathController, deletePathController, generateOptimizeRoutes, getPathsController } from "../controllers/pathController";
 
 import { createDriverController, deleteDriverController, getDriversController } from "../controllers/driverController";
-import { changePriorityController, createOrderController, deleteOrdersController, getFutureOrdersDateController, getOrdersController } from "../controllers/orderController";
+import { changePriorityController, createOrderController, deleteOrdersController, getDistinctOrdersDatesController, getOrdersController } from "../controllers/orderController";
 import { getUserController, updateUserController } from "../controllers/userController";
 
 const router = express.Router();
@@ -82,7 +82,7 @@ router.post('/deletePath', authenticateJwt, deletePathController)
 
 router.post("/updateUser", authenticateJwt, updateUserController)
 
-router.get("/getFutureOrdersDates",authenticateJwt,getFutureOrdersDateController)
+router.get("/getDistinctDatesOfOrders",authenticateJwt,getDistinctOrdersDatesController)
 
 router.post("/generateOptimizePaths",authenticateJwt, generateOptimizeRoutes)
 

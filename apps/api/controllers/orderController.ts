@@ -1,11 +1,11 @@
 import { getUser, updateUser } from "db";
 import { Request, Response } from "express"
-import { changeOrderPriority, createOrder, deleteOrders, getFutureOrdersDates, getOrderswithDate } from "mongoose-db";
+import { changeOrderPriority, createOrder, deleteOrders, getDistinctOrdersDates, getOrderswithDate } from "mongoose-db";
 import { changePriority, ErrorCode, order } from "types";
 
 
-export const getFutureOrdersDateController = (req: Request, res: Response) => {
-    getFutureOrdersDates(req.body.companyId,new Date(req.body.date)).then((data) => {
+export const getDistinctOrdersDatesController = (req: Request, res: Response) => {
+    getDistinctOrdersDates(req.body.companyId).then((data) => {
           res.status(200).json(data)
       }).catch((error) => {
           console.log(error)
