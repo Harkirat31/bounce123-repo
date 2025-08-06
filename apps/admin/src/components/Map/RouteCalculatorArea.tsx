@@ -7,14 +7,16 @@ import DriverDropDownForOrder from "../Order/DriverDropDownForOrder"
 import { changePriority, } from "../../services/ApiService"
 import { getOrder, getOrderIds, sortOrders } from "../../store/selectors/orderSelector"
 import { OrderType } from "types"
-import { useState } from "react"
+import {  useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { BiSortAlt2 } from "react-icons/bi";
 import { refreshData } from "../../store/atoms/refreshAtom"
+import { distinctOrdersDateAtom } from "../../store/atoms/distinctOrdersDateAtom"
 
 
 const RouteCalculatorArea = () => {
     const [date, setDate] = useRecoilState(ordersSearchDate)
+    const dates = useRecoilValue(distinctOrdersDateAtom)
     const ordersIds = useRecoilValue(getOrderIds)
     const navigate = useNavigate()
     const setSortOrders = useSetRecoilState(sortOrders(""))
@@ -23,12 +25,14 @@ const RouteCalculatorArea = () => {
     }
     const refreshAllData = useSetRecoilState(refreshData)
 
-    const refresh =()=>{
+    const refresh = () => {
         refreshAllData(Date.now().toString())
     }
     const sortHandle = () => {
         setSortOrders("")
     }
+
+
     return (
 
         <div className="grid grid-rows-2 h-full">
@@ -36,8 +40,8 @@ const RouteCalculatorArea = () => {
             <div className="overflow-y-scroll flex flex-col justify-start items-center">
                 <div className="flex text-center justify-center items-center m-2">
                     <p className="text-center text-blue-900 mr-2">Date</p>
-                    <DatePicker className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1: Date) => OnDateChangeHandler(date1)} />
-                    <button onClick={refresh} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 text-center ml-2">Refresh All</button>    
+                    <DatePicker highlightDates={[...dates]} className="block text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1: Date) => OnDateChangeHandler(date1)} />
+                    <button onClick={refresh} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 text-center ml-2">Refresh All</button>
                 </div>
                 {ordersIds.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
                     <p>No order is created for this day!!</p>
@@ -111,7 +115,7 @@ const OrderRow = (props: { orderId: string, index: number }) => {
                 </td> :
                 <td className="px-1 py-4">
                     {order!.driverName}
-                </td> 
+                </td>
             }
         </tr>
     )

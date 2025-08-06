@@ -17,6 +17,8 @@ import AssignDriver from "./AssignDriver"
 import { isRoadView } from "../../store/atoms/commonAtoms"
 import { CreatePathV2 } from "./CreatePath_V2"
 
+import { PathExpand } from "./PathExpand"
+
 
 const PathArea = () => {
     const [showCreatePath, setShowCreatePath] = useState<{ flag: boolean, toBeEditedPath: [PathOrderType,SetterOrUpdater<PathOrderType|undefined>]|null }>({ flag: false, toBeEditedPath: null }) //Pass id of editable path
@@ -74,6 +76,7 @@ const Paths = ({ showCreatePath, setShowCreatePath }: {
             <table className="text-sm w-full text-center text-gray-500 ">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
+                        
                         <th scope="col" className="px-1 py-1 ">
                             Show
                         </th>
@@ -242,10 +245,14 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                         <button onClick={() => handleUndo()} className="bg-blue-700 text my-10 text-white p-2">Cancel Assignment</button>
                     </div>
                 </div>}
-            <tr className="border-b-2 border-gray-100 items-center">
-                <td>
+                
+            <tr className="border-b-2 border-gray-100 items-center ">
+
+
+                <td className="flex flex-col justify-end px-1 py-4">
                     <input onChange={(event) => handleShowToggle()} type="checkbox" checked={pathData!.show} className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
                     </input>
+                  
                    
                 </td>
                 <td>
@@ -254,6 +261,8 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                             return <DisplayOrderNumber orderId={node.id} nextOrderId={pathData.nextOrderToBeDelivered}></DisplayOrderNumber>
                         })}  
                     </div>
+                    
+            
                 </td>
                 <td>
                     <div className="flex flex-col text-xs text-nowrap ml-2 items-start justify-start">
@@ -262,36 +271,11 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                        
                     </div>
                 </td>
-                {/* <td>
-                    {
-                        <>
-                            {(pathData!.driverId == null || pathData!.driverId == undefined)
-                                ?
-                                <>
-                                    {drivers.length == 0 ?
-                                        <>
-                                            <p>No Driver Created</p>
-                                            <a className="underline text-blue-900" onClick={() => navigate('/drivers')} >Create New</a>
-                                        </>
-                                        :
-                                        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
-                                            <option value={"Select"}>Select</option>
-                                            {drivers.map((driver: DriverType) => {
-                                                return <>
-                                                    <option value={driver.uid}>{driver.name}</option>
-                                                </>
-                                            })}
-                                        </select>}
-                                </>
-                                :
-                                <p>{pathData!.driverName}</p>
-                            }
-                        </>
-                    }
-
-                </td> */}
-                <td>
-
+                <td className="relative">    
+                    {/* absolute div for expanding path with more details */}
+                    <div className="absolute right-2 -top-2">
+                        <PathExpand />
+                    </div>    
                     {(pathData!.driverId == null || pathData!.driverId == undefined) ?
                         <div  className="px-1 py-2 flex flex-row ">
                             

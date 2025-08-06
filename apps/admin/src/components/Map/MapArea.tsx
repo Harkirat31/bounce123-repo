@@ -32,7 +32,6 @@ const MapComponent = ({ user }: { user: UserType }) => {
     const [map, setMap] = useState<google.maps.Map|null>()
 
 
-
     useEffect(() => { 
         const mapOptions = {
             center: user?.location,

@@ -413,7 +413,6 @@ export const changePriority = (orderId: string, priority: string) => {
             },
             body: JSON.stringify(params)
         }).then((response) => response.json().then((jsonData) => {
-            console.log(jsonData)
             if (jsonData.isAdded == true) {
                 resolve({ isAdded: true })
             }
@@ -557,4 +556,25 @@ export const generateOptomizePathsAPI = (data:TypesForGeneratingOptimizePaths)=>
                 reject(error)
             })
         })
+}
+
+
+export const getDistinctDatesOfOrdersAPI = ():Promise<string[]> => {
+    return new Promise((resolve, reject) => {
+        const urlGetPaths = `${BASE_URL}/admin/getDistinctDatesOfOrders`
+        fetch(urlGetPaths, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    resolve(jsonData)
+                }
+            ).catch((error) => {
+                reject(error)
+            })
+        }).catch((error) => reject(error))
+    })
 }

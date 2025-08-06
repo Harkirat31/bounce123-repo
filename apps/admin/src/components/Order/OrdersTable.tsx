@@ -11,11 +11,11 @@ const OrdersTable = () => {
 
     if (orders != null && orders.length > 0) {
         return <>
-            <div className="mt-4 w-full shadow-md sm:rounded-lg overflow-scroll">
-                <table className="text-sm text-left w-full text-gray-500 ">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <div className="mt-4 w-full shadow-md sm:rounded-lg h-[calc(100vh-200px)] ">
+                <table className="text-sm text-left w-full text-gray-500  ">
+                    <thead className="  text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-3 py-3 w-10">
+                            <th scope="col" className=" px-3 py-3 w-10">
                                 Ord. Id
                             </th>
                             <th scope="col" className="px-3 py-3 w-10">
@@ -61,6 +61,7 @@ const OrdersTable = () => {
                             </th>
                         </tr>
                     </thead>
+                    
                     <tbody>
                         {orders.map((orderId: any) => {
                             return <OrderRow orderId={orderId}></OrderRow>

@@ -69,13 +69,10 @@ export const updateOrderStatus = (orderId: string, currentStatus: string) => {
   }) 
 }
 
-export const getFutureOrdersDates = (uid: string, date: Date) => {
+export const getDistinctOrdersDates = (uid: string) => {
   return new Promise((resolve, reject) => {
     OrderModel.distinct('deliveryDate', {
       companyId: uid,
-      deliveryDate: {
-        $gte: date
-      }
     }).then((futureDates => {
       resolve(futureDates)
     })).catch((error) => {
