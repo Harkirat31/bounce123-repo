@@ -5,12 +5,11 @@ import { createPathAtom, getSavedPathById, savedPathsAtom, updateOrders } from "
 import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
+import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp, MdRoute, MdAdd } from "react-icons/md";
 
 //import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
 import { loadingState } from "../../store/atoms/loadingStateAtom"
-import { TiDelete } from "react-icons/ti"
 //import { ordersSearchDate } from "../../store/atoms/orderAtom"
 import { refreshData } from "../../store/atoms/refreshAtom";
 import AssignDriver from "./AssignDriver"
@@ -29,19 +28,58 @@ const PathArea = () => {
         setShowCreatePath({ flag: false, toBeEditedPath: null })
     }, [paths])
     return (
-        <div className="border-t-2 border-grey-600">
-            <div className="flex justify-center">
-                <button onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Show All Paths</button>
-                <button onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} type="button" className={`m-2 text-sm ${!showCreatePath.flag ? "text-black bg-gray-300" : "text-white bg-blue-700"}  px-2 py-1 rounded-lg`}>Create Path</button>
-                <div className="flex flex-row items-center">
-                    <label className="text-sm ">Road View</label>
-                    <input checked={isRoad} onChange={()=>setIsRoad(!isRoad)} className="m-2" type="checkbox"></input>
+        <div className="bg-white border-b border-gray-200">
+            {/* Compact Header */}
+            <div className="px-4 py-2">
+                <div className="flex items-center justify-between">
+                    {/* Tabs */}
+                    <div className="flex items-center space-x-1 bg-gray-100 rounded-md p-1">
+                        <button 
+                            onClick={() => setShowCreatePath({ flag: false, toBeEditedPath: null })} 
+                            type="button" 
+                            className={`flex items-center space-x-1 px-3 py-1.5 text-sm font-medium rounded transition-all duration-150 ${
+                                !showCreatePath.flag 
+                                    ? "text-white bg-blue-600 shadow-sm" 
+                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                            }`}
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span>All Paths</span>
+                        </button>
+                        <button 
+                            onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} 
+                            type="button" 
+                            className={`flex items-center space-x-1 px-3 py-1.5 text-sm font-medium rounded transition-all duration-150 ${
+                                showCreatePath.flag 
+                                    ? "text-white bg-blue-600 shadow-sm" 
+                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                            }`}
+                        >
+                            <MdAdd className="w-3.5 h-3.5" />
+                            <span>Create Path</span>
+                        </button>
+                    </div>
+
+                    {/* Road View Toggle */}
+                    <div className="flex items-center space-x-2">
+                        <label className="text-sm text-gray-700 cursor-pointer">Road View</label>
+                        <input 
+                            checked={isRoad} 
+                            onChange={() => setIsRoad(!isRoad)} 
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" 
+                            type="checkbox"
+                        />
+                    </div>
                 </div>
-                
             </div>
-            {/* {showCreatePath.flag && <CreatePath showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePath>} */}
-            {showCreatePath.flag && <CreatePathV2 showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePathV2>}
-            {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
+
+            {/* Content */}
+            <div className="px-4 pb-4">
+                {showCreatePath.flag && <CreatePathV2 showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></CreatePathV2>}
+                {!showCreatePath.flag && <Paths showCreatePath={showCreatePath} setShowCreatePath={setShowCreatePath}></Paths>}
+            </div>
         </div>
     )
 }

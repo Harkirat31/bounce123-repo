@@ -7,7 +7,8 @@ import { getOrdersForGeneratingOptimizedPaths } from "../../store/atoms/pathAtom
 import { generateOptomizePathsAPI } from "../../services/ApiService"
 import { refreshData } from "../../store/atoms/refreshAtom"
 import { useRef, useState } from "react"
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaRoute, FaTimes } from "react-icons/fa";
+import { MdAutoMode, MdNumbers } from "react-icons/md";
 
 
 export const GenerateOptimizedPaths = () => {
@@ -33,6 +34,11 @@ export const GenerateOptimizedPaths = () => {
         setErrorMessage("")
         if (!numberOfPaths) {
             setErrorMessage("Number of Paths should be greater than 0")
+            return
+        }
+        if (numberOfPaths > orders.length) {
+            setErrorMessage(`Number of paths cannot exceed the number of available deliveries (${orders.length})`)
+            return
         }
         const divElement = divRef.current;
         let totalPendingDeliveries = 0
@@ -81,47 +87,151 @@ export const GenerateOptimizedPaths = () => {
 
     }
 
-    return <div className="relative mt-1 w-full">
-        <button className="w-full p-1 text-white bg-blue-700 hover:bg-blue-800 flex flex-row items-center justify-center" onClick={clickButton}>Generate Optimized Routes <FaExternalLinkAlt className="ml-1"></FaExternalLinkAlt> </button>
-        <div className={` fixed flex flex-col w-screen h-screen top-0 left-0 transition-all duration-75 ${isOpen ? "scale-100" : "scale-0"}`}>
-            <div className={`relative bg-black  bg-opacity-80 flex flex-row justify-center items-center h-screen`}>
+    return (
+        <div className="relative mt-1 w-full">
+            {/* Trigger Button */}
+            <button 
+                className="w-full p-2 text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 flex items-center justify-center space-x-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium" 
+                onClick={clickButton}
+            >
+                <MdAutoMode className="w-4 h-4" />
+                <span>Generate Optimized Routes</span>
+                <FaExternalLinkAlt className="w-3 h-3" />
+            </button>
 
-                <div className="relative w-[90%] md:w-2/3 min-h-[200px]  bg-white rounded-lg px-1">
-                    <form onSubmit={submitForm} className="flex flex-col justify-between">
-                        <div className="text-xs sm:text-base">
-                            <div className="absolute right-0 top-0">
-                                <p onClick={() => setIsOpen(false)} className="text-red-600 text-lg font-bold pr-2 hover:cursor-pointer">X</p>
+            {/* Modal Overlay */}
+            <div className={`fixed inset-0 transition-all duration-300 z-[60] ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+                <div className="absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
+                
+                {/* Modal Content */}
+                <div className="flex items-center justify-center min-h-screen p-4">
+                    <div className={`relative w-full max-w-md bg-white rounded-xl shadow-2xl transition-all duration-300 ${isOpen ? "scale-100" : "scale-95"}`}>
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-xl flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <FaRoute className="w-5 h-5" />
+                                <h2 className="text-lg font-semibold">Auto Route Generation</h2>
                             </div>
-                            <div className="w-full p-2 border-b-2">
-                                <h2 className="text-center text-lg md:text-2xl"> Generate Optimized Path Automatically</h2>
-                            </div>
-                            <div className="mt-5">
-                                <label className="text-xs sm:text-base">Number of Paths to be created : </label>
-                                <input required value={numberOfPaths} onChange={(e) => setNumberOfPaths(Number.parseInt(e.target.value))} className="border p-1 ml-2 rounded" type="number"></input>
-                            </div>
-                            {numberOfPaths != undefined && numberOfPaths > 0 && <div ref={divRef} className="mt-2">
-                                <p>Pending Deliveries to be assigned to any path : {orders.length} </p>
-                                <label>Enter no. of deliveries for each path</label>
-                                {Array.from({ length: numberOfPaths }).map(() => {
-                                    return <>
-                                        <input required className="border m-1 rounded p-1" type="number"></input>
-                                    </>
-                                })}
-                            </div>}
-                        </div>
-                        <div className="mb-2">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center mr-3 md:mr-0 h-min px-2 py-1 md:px-4 md:py-2 mt-10">Generate</button>
-                            <button type="button" onClick={() => setIsOpen(false)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center mr-3 md:mr-0 h-min px-2 py-1 md:px-4 md:py-2 mt-10 ml-2">Cancel</button>
-                            {errorMessage.length > 0 &&
-                                <p className="text-red-500 mt-5 font-bold">{"ERROR : " + errorMessage}</p>
-                            }
+                            <button 
+                                onClick={() => setIsOpen(false)}
+                                className="p-1 hover:bg-blue-800 rounded-lg transition-colors"
+                            >
+                                <FaTimes className="w-4 h-4" />
+                            </button>
                         </div>
 
+                        {/* Form Content */}
+                        <form onSubmit={submitForm} className="p-6">
+                            <div className="space-y-4">
+                                {/* Number of Paths Input */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                        <MdNumbers className="w-4 h-4 mr-2 text-blue-600" />
+                                        Number of Paths to Create
+                                    </label>
+                                    <input 
+                                        required 
+                                        value={numberOfPaths} 
+                                        onChange={(e) => {
+                                            const value = Number.parseInt(e.target.value);
+                                            setNumberOfPaths(value);
+                                            // Clear error if input is valid
+                                            if (value && value <= orders.length) {
+                                                setErrorMessage("");
+                                            }
+                                        }} 
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                                        type="number"
+                                        min="1"
+                                        max={orders.length}
+                                        placeholder={`Enter number of paths (max: ${orders.length})`}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Maximum {orders.length} paths allowed (one per delivery)
+                                    </p>
+                                </div>
 
-                    </form>
+                                {/* Capacity Inputs */}
+                                {numberOfPaths != undefined && numberOfPaths > 0 && numberOfPaths <= orders.length && (
+                                    <div ref={divRef} className="space-y-3">
+                                        <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                            <p className="text-sm text-blue-800 font-medium mb-2">
+                                                📦 Pending Deliveries: {orders.length}
+                                            </p>
+                                            <p className="text-xs text-blue-700">
+                                                Assign deliveries to each path below
+                                            </p>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Deliveries per Path
+                                            </label>
+                                            <div className="max-h-48 overflow-y-auto pr-2">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {Array.from({ length: numberOfPaths }).map((_, index) => (
+                                                        <div key={index} className="relative">
+                                                            <input 
+                                                                required 
+                                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-center" 
+                                                                type="number"
+                                                                min="1"
+                                                                placeholder={`Path ${index + 1}`}
+                                                            />
+                                                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+                                                                {index + 1}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Warning for invalid path count */}
+                                {numberOfPaths != undefined && numberOfPaths > orders.length && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                        <p className="text-yellow-700 text-sm font-medium">
+                                            ⚠️ Number of paths ({numberOfPaths}) exceeds available deliveries ({orders.length})
+                                        </p>
+                                        <p className="text-yellow-600 text-xs mt-1">
+                                            Please reduce the number of paths to continue
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Error Message */}
+                                {errorMessage.length > 0 && (
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                                        <p className="text-red-700 text-sm font-medium">
+                                            ⚠️ Error: {errorMessage}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex space-x-3 mt-6">
+                                <button 
+                                    type="submit" 
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                                >
+                                    <MdAutoMode className="w-4 h-4" />
+                                    <span>Generate Routes</span>
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onClick={() => setIsOpen(false)} 
+                                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
             </div>
         </div>
-    </div>
+    )
 }
