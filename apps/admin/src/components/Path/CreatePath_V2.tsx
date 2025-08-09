@@ -11,7 +11,7 @@ import { convertToUTC } from "../../utils/UTCdate";
 import { PathOrderType } from "types";
 import { refreshData } from "../../store/atoms/refreshAtom";
 import { GenerateOptimizedPaths } from "./GenerateOptimizedPaths";
-import { MdDoneOutline, MdClose, MdSave, MdRefresh, MdLocationOn, MdPhone, MdEmail } from "react-icons/md";
+import { MdDoneOutline, MdClose, MdSave, MdRefresh, MdLocationOn } from "react-icons/md";
 import { GiClick } from "react-icons/gi";
 import { FaRoute } from "react-icons/fa";
 
@@ -222,7 +222,7 @@ export const CreatePathV2 = ({ showCreatePath, setShowCreatePath }: {
     }
 
     return (
-        <div className="fixed top-[35%] xl:right-10 xl:top-20 xl:bottom-20 w-[100vw] h-[60vh] xl:w-[20vw] xl:h-[80vh] bg-white shadow-lg z-50 flex flex-col overflow-hidden rounded-lg border">
+        <div className="fixed top-[35%] left-2 right-2 h-[60vh] xl:right-10 xl:top-20 xl:bottom-20 xl:left-auto xl:w-[24vw] 2xl:w-[26vw] xl:h-[80vh] bg-white shadow-lg z-50 flex flex-col overflow-hidden rounded-lg border max-w-full">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-2 flex items-center justify-between">
                 <div className="flex items-center space-x-1">

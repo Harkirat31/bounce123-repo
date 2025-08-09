@@ -5,7 +5,7 @@ import { createPathAtom, getSavedPathById, savedPathsAtom, updateOrders } from "
 import { assignPathAPI, cancelPathAPI, deletePath } from "../../services/ApiService"
 import { getOrder, getOrderIds } from "../../store/selectors/orderSelector"
 import { AiFillDelete } from 'react-icons/ai';
-import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp, MdRoute, MdAdd } from "react-icons/md";
+import { MdEdit, MdOutlineArrowDropDown, MdOutlineArrowDropUp, MdRoute, MdAdd, MdOutlineInventory } from "react-icons/md";
 
 //import { getPathById } from "../../store/selectors/pathSelector"
 import { useNavigate } from "react-router-dom";
@@ -102,14 +102,38 @@ const Paths = ({ showCreatePath, setShowCreatePath }: {
     }
 
     return <div className="flex flex-col items-center">
-        {orderIds.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
-            <p>No order is created for this day!!</p>
-            <a className="underline text-blue-900" onClick={() => navigate('/orders')} >Create new orders</a>
-        </div>}
-        {orderIds.length !== 0 && paths.length === 0 && <div className="flex flex-col justify-center h-full text-center items-center">
-            <p>No Path is created!!</p>
-            <a className="underline text-blue-900" onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })} >Create a Path</a>
-        </div>}
+        {orderIds.length === 0 && (
+            <div className="flex flex-col justify-center items-center py-8 px-6 max-w-sm mx-auto">
+                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                    <MdOutlineInventory className="w-8 h-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">No Orders Found</h3>
+                <p className="text-gray-600 text-center mb-4 text-sm">There are no orders created for this day. Create some orders to get started with path planning.</p>
+                <button 
+                    onClick={() => navigate('/orders')}
+                    className="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                    <MdAdd className="w-4 h-4 mr-2" />
+                    Create New Orders
+                </button>
+            </div>
+        )}
+        {orderIds.length !== 0 && paths.length === 0 && (
+            <div className="flex flex-col justify-center items-center py-8 px-6 max-w-sm mx-auto">
+                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+                    <MdRoute className="w-8 h-8 text-green-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">No Paths Created</h3>
+                <p className="text-gray-600 text-center mb-4 text-sm">You have {orderIds.length} order{orderIds.length > 1 ? 's' : ''} ready. Create optimized delivery paths to organize your deliveries efficiently.</p>
+                <button 
+                    onClick={() => setShowCreatePath({ flag: true, toBeEditedPath: null })}
+                    className="inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                    <MdAdd className="w-4 h-4 mr-2" />
+                    Create Path
+                </button>
+            </div>
+        )}
         {orderIds.length > 0 && paths.length > 0 &&
             <div className="w-full space-y-4">
                 {paths.length > 0 &&
@@ -301,7 +325,7 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                     </div>
                 </div>}
                 
-            <div className={`mb-4 mx-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-sm overflow-hidden ${
+            <div className={`mb-4 mx-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-sm overflow-visible ${
                 pathData!.show 
                     ? 'border-blue-500 bg-blue-50' 
                     : 'border-gray-200 bg-white hover:border-gray-300'

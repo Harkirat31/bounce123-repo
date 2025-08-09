@@ -12,7 +12,7 @@ import { userAtom } from "../../store/atoms/userAtom";
 
 const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
     const selectRef = useRef<HTMLSelectElement | null>(null);
-    const drivers: any = useRecoilValue(getDrivers)
+    const drivers: DriverType[] = useRecoilValue(getDrivers)
     const [dropDownItem, setDropDownItem] = useState<{ driverId: string, driverName: string } | "Select">("Select")
     const order = props.order
     const setSavedPathsAtom = useSetRecoilState(savedPathsAtom)
@@ -26,20 +26,7 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
 
     const handleDropdownChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
         event.preventDefault();
-
         setDropDownItem({ driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text })
-
-        //let params = { orderId: order!.orderId, driverId: event.target.value, driverName: selectRef.current!.options[selectRef.current!.selectedIndex].text }
-
-        // assignDriver(params.orderId!, params.driverId, params.driverName).then((response: any) => {
-        //     if (response.isAdded == true) {
-        //         props.setOrder(({ ...order, ...params, currentStatus: "Assigned" }) as OrderType)
-        //     }
-        //     else {
-        //         console.log("Not updated Order")
-        //     }
-        // })
-
     }
 
     const hanldeSendSMS = () => {
@@ -79,29 +66,51 @@ const DriverDropDownForOrder = (props: { order: OrderType, setOrder: any }) => {
             setLoading({isLoading:false,value:null})
         })
     }
+
     if (props.order.driverId) {
-        return <div>
-            <p>{props.order.driverName}</p>
-        </div>
+        return (
+            <div className="max-w-[220px] truncate text-gray-900">
+                {props.order.driverName}
+            </div>
+        )
     }
+
     if (drivers.length == 0) {
-        return <>
-            <p>No Driver Created</p>
-            <a className="underline text-blue-900" onClick={() => navigate('/drivers')} >Create New</a>
-        </>
+        return (
+            <div className="max-w-[220px] text-sm">
+                <p className="text-gray-700">No Driver Created</p>
+                <button className="underline text-blue-700 hover:text-blue-900" onClick={() => navigate('/drivers')}>Create New</button>
+            </div>
+        )
     }
-    return <>
-        <select ref={selectRef} value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} onChange={(event) => handleDropdownChanged(event)} className="ml-2  border-2 border-blue-900" >
-            <option value={"Select"}>Select</option>
-            {drivers.map((driver: DriverType) => {
-                return <>
-                    <option value={driver.uid}>{driver.name}</option>
-                </>
-            })}
-        </select>
-        <button onClick={hanldeSendSMS} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-1  text-center ml-1">
-            Send
-        </button>
-    </>
+
+    return (
+        <div className="flex flex-col gap-1 max-w-[90px] w-full">
+            <div className="relative w-full">
+                <select 
+                    ref={selectRef} 
+                    value={dropDownItem == "Select" ? "Select" : dropDownItem.driverId} 
+                    onChange={(event) => handleDropdownChanged(event)} 
+                    className="w-full appearance-none bg-white border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    title={dropDownItem == "Select" ? "Select" : dropDownItem.driverName}
+                >
+                    <option value={"Select"}>Select</option>
+                    {drivers.map((driver: DriverType) => (
+                        <option key={driver.uid} value={driver.uid} title={driver.name}>{driver.name}</option>
+                    ))}
+                </select>
+                {/* simple chevron */}
+                <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.173l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
+            </div>
+            <button 
+                onClick={hanldeSendSMS} 
+                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:outline-none focus:ring-blue-500 font-medium rounded-md text-[11px] px-2 py-1"
+            >
+                Send
+            </button>
+        </div>
+    )
 }
 export default DriverDropDownForOrder
