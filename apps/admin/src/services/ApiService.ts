@@ -487,6 +487,26 @@ export const deleteOrders = (orders: any[]) => {
     })
 }
 
+export const updateOrderAPI = (order: Partial<OrderType>) => {
+    return new Promise((resolve, reject) => {
+        fetch(BASE_URL + '/admin/updateOrder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify(order),
+        })
+            .then((response) =>
+                response
+                    .json()
+                    .then((jsonData) => resolve(jsonData))
+                    .catch((error) => reject(error))
+            )
+            .catch((error) => reject(error))
+    })
+}
+
 export const deletePath = (path: any) => {
     return new Promise((resolve, reject) => {
         fetch(BASE_URL + '/admin/deletePath', {

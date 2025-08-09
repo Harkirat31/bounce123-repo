@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react"
-import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi"
+import { FiEye, FiEdit2, FiTrash2, FiInbox } from "react-icons/fi"
+import UploadOrdersCSV from "./UploadOrdersCSV"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { getOrder, getOrders } from "../../store/selectors/orderSelector"
 import { ordersSearchDate, rowsToBeDeleted } from "../../store/atoms/orderAtom"
 import { OrderType } from "types"
-import { deleteOrders } from "../../services/ApiService"
+import { deleteOrders, updateOrderAPI } from "../../services/ApiService"
 
 const STATUS_OPTIONS = [
     "All",
@@ -19,7 +20,6 @@ const STATUS_OPTIONS = [
 ]
 
 // Only status filter is enabled per requirement
-const BASE_URL = import.meta.env.VITE_BASE_URL as string
 
 type SortKey =
     | "orderNumber"
@@ -108,8 +108,17 @@ const OrdersTable = () => {
 
     if (!allOrders || allOrders.length === 0) {
         return (
-            <div className="mt-10 w-full max-w-2xl bg-white shadow-sm rounded border border-gray-200">
-                <p className="p-10 text-gray-500">No orders</p>
+            <div className="mt-8 w-full">
+                <div className="mx-auto max-w-3xl rounded-lg border border-dashed border-gray-300 bg-white py-12 px-6 text-center shadow-sm">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                        <FiInbox className="h-6 w-6 text-gray-400" />
+                    </div>
+                    <h3 className="mt-4 text-base font-semibold text-gray-900">No orders for the selected date</h3>
+                    <p className="mt-1 text-sm text-gray-500">Try another date or add new orders below.</p>
+                    <div className="mt-6 flex items-center justify-center">
+                        <UploadOrdersCSV />
+                    </div>
+                </div>
             </div>
         )
     }
@@ -311,15 +320,10 @@ const OrdersTable = () => {
                     onClose={() => setEditOrder(null)}
                     onSubmit={async (payload) => {
                         try {
-                            await fetch(`${BASE_URL}/admin/updateOrder`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                                },
-                                body: JSON.stringify(payload),
-                            })
-                            alert("Update request sent. Backend pending.")
+                            await updateOrderAPI(payload)
+                            // refresh orders
+                            setSearchDate(new Date(searchDate))
+                            alert("Order updated")
                         } catch (e) {
                             alert("Failed to send update request")
                         }
@@ -569,22 +573,78 @@ const OrderViewModal = ({ order, onClose }: { order: OrderType | null, onClose: 
     )
 }
 
-// Simple edit modal shell (sends request only)
+// Simple edit modal: allows editing specified fields and sends request
 const OrderEditModal = ({ order, onClose, onSubmit }: { order: OrderType, onClose: () => void, onSubmit: (payload: Partial<OrderType>) => Promise<void> }) => {
     if (!order) return null
+    const [form, setForm] = useState<Partial<OrderType>>({
+        orderId: order.orderId,
+        cname: order.cname,
+        cphone: order.cphone,
+        cemail: order.cemail,
+        paymentStatus: order.paymentStatus,
+        priority: order.priority,
+        itemsDetail: order.itemsDetail,
+        specialInstructions: order.specialInstructions,
+    })
+
+    const handleChange = (key: keyof OrderType) => (e: any) => {
+        setForm((prev) => ({ ...prev, [key]: e.target.value }))
+    }
+
     const handleSubmit = async () => {
-        await onSubmit({ orderId: order.orderId })
+        await onSubmit(form)
         onClose()
     }
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-[90vw] max-w-md rounded bg-white p-4 shadow">
+            <div className="w-[90vw] max-w-lg rounded bg-white p-4 shadow">
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-gray-800">Edit Order #{order.orderNumber}</h3>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">This will only send an update request. Backend implementation is pending.</p>
-                <div className="flex justify-end gap-2">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="col-span-2">
+                        <label className="block text-[12px] text-gray-600 mb-1">Address</label>
+                        <div className="rounded border border-gray-200 px-2 py-1 bg-gray-50 text-gray-700">
+                            {order.address}
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-[12px] text-gray-600 mb-1">Name</label>
+                        <input value={form.cname ?? ''} onChange={handleChange('cname')} className="w-full rounded border border-gray-300 px-2 py-1" />
+                    </div>
+                    <div>
+                        <label className="block text-[12px] text-gray-600 mb-1">Phone</label>
+                        <input value={form.cphone ?? ''} onChange={handleChange('cphone')} className="w-full rounded border border-gray-300 px-2 py-1" />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="block text-[12px] text-gray-600 mb-1">Email</label>
+                        <input value={form.cemail ?? ''} onChange={handleChange('cemail')} className="w-full rounded border border-gray-300 px-2 py-1" />
+                    </div>
+                    <div>
+                        <label className="block text-[12px] text-gray-600 mb-1">Payment Status</label>
+                        <input value={form.paymentStatus ?? ''} onChange={handleChange('paymentStatus')} className="w-full rounded border border-gray-300 px-2 py-1" placeholder="e.g., Paid / Pending / ..." />
+                    </div>
+                    <div>
+                        <label className="block text-[12px] text-gray-600 mb-1">Priority</label>
+                        <select value={form.priority ?? 'Medium'} onChange={handleChange('priority')} className="w-full rounded border border-gray-300 px-2 py-1">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                            <option value="Special">Special</option>
+                        </select>
+                    </div>
+                    <div className="col-span-2">
+                        <label className="block text-[12px] text-gray-600 mb-1">Items Detail</label>
+                        <textarea value={form.itemsDetail ?? ''} onChange={handleChange('itemsDetail')} className="w-full rounded border border-gray-300 px-2 py-1" rows={2} />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="block text-[12px] text-gray-600 mb-1">Instructions</label>
+                        <textarea value={form.specialInstructions ?? ''} onChange={handleChange('specialInstructions')} className="w-full rounded border border-gray-300 px-2 py-1" rows={2} />
+                    </div>
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
                     <button onClick={onClose} className="rounded border border-gray-300 px-3 py-1 text-sm">Cancel</button>
                     <button onClick={handleSubmit} className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">Send Request</button>
                 </div>

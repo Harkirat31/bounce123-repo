@@ -69,6 +69,28 @@ export const updateOrderStatus = (orderId: string, currentStatus: string) => {
   }) 
 }
 
+export const updateOrder = (orderId: string, update: Partial<OrderType>) => {
+  return new Promise((resolve, reject) => {
+    OrderModel.findByIdAndUpdate(orderId, update, { new: true })
+      .then((result) => resolve(result))
+      .catch(() => reject(new Error("Error updating order")))
+  })
+}
+
+export const getOrderById = (orderId: string): Promise<OrderType | null> => {
+  return new Promise((resolve, reject) => {
+    OrderModel.findById(orderId)
+      .then((doc: any) => {
+        if (!doc) return resolve(null)
+        const order = doc as OrderType
+        order.orderId = doc.id
+        order.deliveryDate = doc.deliveryDate
+        resolve(order)
+      })
+      .catch(() => reject(new Error("Error fetching order")))
+  })
+}
+
 export const getDistinctOrdersDates = (uid: string) => {
   return new Promise((resolve, reject) => {
     OrderModel.distinct('deliveryDate', {

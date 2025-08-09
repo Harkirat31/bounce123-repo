@@ -1,7 +1,8 @@
 import { getUser, updateUser } from "db";
 import { Request, Response } from "express"
-import { changeOrderPriority, createOrder, deleteOrders, getDistinctOrdersDates, getOrderswithDate } from "mongoose-db";
-import { changePriority, ErrorCode, order } from "types";
+import { changeOrderPriority, createOrder, deleteOrders, getDistinctOrdersDates, getOrderswithDate, updateOrder, getOrderById } from "mongoose-db";
+import { z } from "zod";
+import { order as OrderZod, ErrorCode, changePriority, order } from "types";
 
 
 export const getDistinctOrdersDatesController = (req: Request, res: Response) => {
@@ -117,4 +118,31 @@ export const changePriorityController = (req: Request, res: Response) => {
   changeOrderPriority(changePriorityParams.data.priority, changePriorityParams.data.orderId).then((result) => {
     res.json({ isAdded: true })
   }).catch((errr) => res.json({ isAdded: false }))
+}
+
+export const updateOrderController = async (req: Request, res: Response) => {
+  try {
+    const body = req.body || {}
+    // Build a partial schema from Order zod for only allowed fields
+    const partialOrder = OrderZod.pick({
+      cname: true,
+      cphone: true,
+      cemail: true,
+      paymentStatus: true,
+      priority: true,
+      itemsDetail: true,
+      specialInstructions: true,
+    }).partial()
+    const schema = z.object({ orderId: z.string(), update: partialOrder })
+    const parsed = schema.safeParse({ orderId: body.orderId, update: body })
+    if (!parsed.success) {
+      return res.status(400).json({ isUpdated: false, msg: "Invalid payload" })
+    }
+    const { orderId, update } = parsed.data
+
+    const result = await updateOrder(orderId, update)
+    return res.status(200).json({ isUpdated: true, order: result })
+  } catch (e) {
+    return res.status(500).json({ isUpdated: false })
+  }
 }
