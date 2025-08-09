@@ -24,50 +24,51 @@ const CreateOrder = () => {
     const [specialInstructions, setSpecialInstructions] = useState("")
     const [itemsDetail, setItemsDetail] = useState("")
     const [priority, setPriority] = useState("Medium")
-    const [errorMessage, setErrorMessage] = useState<any[]>([])
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const [generalErrors, setGeneralErrors] = useState<string[]>([])
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const setLoading = useSetRecoilState(loadingState)
 
 
     function saveOrder() {
-
-        setErrorMessage([])
+        setFieldErrors({})
+        setGeneralErrors([])
         let parsedOrder: any = {}
         if (date == null) {
+            setFieldErrors((prev) => ({ ...prev, deliveryDate: "Delivery date is required" }))
             return
         }
         let newDate = convertToUTC(date)
 
-        if (cemail == "") {
-            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, address, deliveryDate: newDate, priority, specialInstructions, itemsDetail })
-        }
-        else {
-            parsedOrder = validateInput({ cname: cName, orderNumber: orderNumber, cphone, cemail, address, deliveryDate: newDate, priority, specialInstructions, itemsDetail })
-        }
-
+        const payloadBase = { cname: cName, orderNumber: orderNumber, cphone, address, deliveryDate: newDate, priority, specialInstructions, itemsDetail }
+        parsedOrder = cemail === "" ? validateInput(payloadBase) : validateInput({ ...payloadBase, cemail })
 
         if (parsedOrder == null) {
             return
         }
-        setLoading({isLoading:true,value:"Creating order. Please Wait..."})
+        setIsSubmitting(true)
+        setLoading({ isLoading: true, value: "Creating order. Please Wait..." })
         createOrder(parsedOrder).then((result: any) => {
             if (date) {
                 resetInputs()
-                setSearchDate(new Date(date)) // setting date will triger useEffect in Init component
+                setSearchDate(new Date(date)) // setting date will trigger useEffect in Init component
             }
             if (result.err != null || result.err != undefined) {
                 if (result.err == ErrorCode.WrongInputs) {
-                    setErrorMessage(["Wrong Inputs"])
+                    setGeneralErrors(["Wrong Inputs"])
                 }
                 if (result.err == ErrorCode.AddressError) {
-                    setErrorMessage(["Address is not valid, Not Recognised by Google Maps"])
+                    setGeneralErrors(["Address is not valid, Not Recognised by Google Maps"])
                 }
                 if (result.err == ErrorCode.OrderLimitIncrease) {
-                    setErrorMessage(["Order Maximum Limit reached, Please contact info@easeyourtasks.com"])
+                    setGeneralErrors(["Order Maximum Limit reached, Please contact info@easeyourtasks.com"])
                 }
             }
-            setLoading({isLoading:false,value:null})
-        }).catch((error) => {
-            setLoading({isLoading:false,value:null})
+        }).catch(() => {
+            setGeneralErrors(["Something went wrong. Please try again."])
+        }).finally(() => {
+            setLoading({ isLoading: false, value: null })
+            setIsSubmitting(false)
         })
     }
 
@@ -82,85 +83,126 @@ const CreateOrder = () => {
     }
 
     const validateInput = (input: {}) => {
-        let parsedInput = order.safeParse(input)
+        const parsedInput = order.safeParse(input)
         if (parsedInput.success) {
-            try {
-                let phone = parseInt(parsedInput.data.cphone)
-                if (!phone) {
-                    setErrorMessage(["Phone: Not Valid Phone number"])
-                    return null
-                }
-            }
-            catch {
-                setErrorMessage(["Phone: Not Valid Phone number"])
+            // Extra phone validation (friendly message)
+            const onlyDigits = (parsedInput.data.cphone || '').replace(/\D/g, '')
+            if (onlyDigits.length < 10) {
+                setFieldErrors((prev) => ({ ...prev, cphone: "Please enter a 10-digit phone number" }))
                 return null
             }
             return parsedInput.data
-        }
-        else {
-            let errors: any[] = []
+        } else {
+            const errors: Record<string, string> = {}
             parsedInput.error.issues.forEach((issue) => {
-                if (issue.path[0] == "cname") {
-                    errors.push("Name:  " + issue.message)
-                }
-                if (issue.path[0] == "address") {
-                    errors.push("Address: " + issue.message)
-                }
-                if (issue.path[0] == "cphone") {
-                    errors.push("Phone: " + issue.message)
-                }
-                if (issue.path[0] == "cemail") {
-                    errors.push("Email: " + issue.message)
-                }
-
-                setErrorMessage(errors)
+                const key = String(issue.path[0])
+                errors[key] = mapFriendlyError(key, issue.message)
             })
+            setFieldErrors(errors)
             return null
+        }
+    }
+
+    const mapFriendlyError = (field: string, rawMessage: string): string => {
+        switch (field) {
+            case 'cname':
+                return 'Name is required'
+            case 'address':
+                return 'Address is required'
+            case 'cphone':
+                return 'Phone is required'
+            case 'cemail':
+                return 'Please enter a valid email address'
+            case 'deliveryDate':
+                return 'Delivery date is required'
+            case 'priority':
+                return 'Please select a priority'
+            case 'itemsDetail':
+                return 'Please provide item details'
+            default:
+                // Fallback to a readable version of zod message
+                return rawMessage.charAt(0).toUpperCase() + rawMessage.slice(1)
         }
     }
 
 
     return <>
         <div className="mr-2 justify-center">
-            <UploadOrdersCSV></UploadOrdersCSV>
-            <p className="text-blue-900 mt-5 " >New Order</p>
-            <div className="text-xs mt-4">
-                <input value={orderNumber} onChange={(event) => setOrderNumber(event.target.value)} placeholder="Order Id" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input value={cName} onChange={(event) => setCName(event.target.value)} placeholder="Name" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input value={cphone} onChange={(event) => setCPhone(event.target.value)} placeholder="Phone" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input value={cemail} onChange={(event) => setCEmail(event.target.value)} placeholder="Email" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <input value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Address" type="text" className="block w-full p-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"></input>
-                <div className="flex grid-cols-8 mb-2">
-                    <DatePicker className="col-span-2  text-gray-900 border border-gray-300 rounded-lg bg-gray-50  focus:ring-blue-500 focus:border-blue-500" showIcon selected={date} onChange={(date1) => setDate(date1)} />
-                    <div className="col-span-6 flex flex-row">
-                        <p className="ml-2 flex items-center">Priority :</p>
-                        <select value={priority} onChange={(event) => setPriority(event.target.value)} className="border-2 border-blue-900" >
+            <UploadOrdersCSV />
+            <div className="mt-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900">Create Order</h3>
+                <p className="mt-0.5 text-xs text-gray-500">Enter customer and delivery details.</p>
+
+                {generalErrors.length > 0 && (
+                    <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
+                        {generalErrors.map((e, i) => (
+                            <div key={i}>{e}</div>
+                        ))}
+                    </div>
+                )}
+
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {/* helper for consistent input/textarea styles */}
+                    {/* eslint-disable-next-line */}
+                    {false && <></>}
+                    
+                    
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Order # (optional)</label>
+                        <input value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)} placeholder="e.g., 1024" type="text" className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.orderNumber ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${orderNumber.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} />
+                        {fieldErrors.orderNumber && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.orderNumber}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Name</label>
+                        <input value={cName} onChange={(e) => setCName(e.target.value)} placeholder="Customer name" type="text" className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.cname ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${cName.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} />
+                        {fieldErrors.cname && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.cname}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Phone</label>
+                        <input value={cphone} onChange={(e) => setCPhone(e.target.value)} inputMode="tel" placeholder="10-digit phone" type="text" className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.cphone ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${cphone.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} />
+                        {fieldErrors.cphone && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.cphone}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Email (optional)</label>
+                        <input value={cemail} onChange={(e) => setCEmail(e.target.value)} placeholder="name@example.com" type="email" className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.cemail ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${cemail.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} />
+                        {fieldErrors.cemail && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.cemail}</p>}
+                    </div>
+                    <div className="sm:col-span-2">
+                        <label className="block text-xs text-gray-700 mb-0.5">Address</label>
+                        <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, City" type="text" className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.address ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${address.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} />
+                        {fieldErrors.address && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.address}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Delivery Date</label>
+                        <DatePicker className={`w-full rounded-md px-3 py-2 text-sm border ${fieldErrors.deliveryDate ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${!date ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} showIcon selected={date} onChange={(date1) => setDate(date1)} />
+                        {fieldErrors.deliveryDate && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.deliveryDate}</p>}
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-700 mb-0.5">Priority</label>
+                        <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value={"High"}>High</option>
                             <option value={"Medium"}>Medium</option>
                             <option value={"Low"}>Low</option>
                             <option value={"Special"}>Special</option>
-
                         </select>
                     </div>
-
-
+                    <div className="sm:col-span-2">
+                        <label className="block text-xs text-gray-700 mb-0.5">Items Detail</label>
+                        <textarea value={itemsDetail} onChange={(e) => setItemsDetail(e.target.value)} className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.itemsDetail ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${itemsDetail.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} placeholder="Item Details" rows={2} />
+                        {fieldErrors.itemsDetail && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.itemsDetail}</p>}
+                    </div>
+                    <div className="sm:col-span-2">
+                        <label className="block text-xs text-gray-700 mb-0.5">Special Instructions</label>
+                        <textarea value={specialInstructions} onChange={(e) => setSpecialInstructions(e.target.value)} className={`block w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-400 border ${fieldErrors.specialInstructions ? 'border-red-500 bg-red-50 focus:ring-red-400' : `${specialInstructions.trim()==='' ? 'bg-gray-50' : 'bg-white'} border-gray-300 focus:ring-blue-500`}`} placeholder="Special Instructions" rows={2} />
+                        {fieldErrors.specialInstructions && <p className="mt-0.5 text-xs text-red-600">{fieldErrors.specialInstructions}</p>}
+                    </div>
                 </div>
 
-
-                <textarea value={itemsDetail} onChange={(event) => setItemsDetail(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Item Details" rows={3} />
-
-                <textarea value={specialInstructions} onChange={(event) => setSpecialInstructions(event.target.value)} className="block w-full p-2 mt-2 mb-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Special Instructions" rows={3} />
-
-                {errorMessage.length > 0 &&
-                    errorMessage.map((error) => {
-                        return <p className="text-red-600 text-xs mt-2">{error}</p>
-                    })
-                }
-
-                <button onClick={saveOrder} type="button" className="mt-2 mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Submit</button>
-
+                <button onClick={saveOrder} type="button" disabled={isSubmitting} className="mt-2 w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                </button>
             </div>
-        </div >
+        </div>
     </>
 }
 
