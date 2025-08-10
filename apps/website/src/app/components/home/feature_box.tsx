@@ -1,11 +1,19 @@
-const FeatureBox = ({ heading, summary }: { heading: string, summary: string }) => {
-    return <>
-        <div className="flex flex-col border-t-4 border-primaryColor text-primaryColor w-[95%]">
-            <h1 className="text-base sm:text-lg mt-1 md:mt-2 lg:mt-4 md:text-xl font-bold py-0.5 md:py-1">{heading}</h1>
-            <h2 className="text-xs sm:text-sm md:text-lg mt-2 text-black/65">{summary}</h2>
+const FeatureBox = ({ icon, heading, summary }: { icon?: React.ReactNode, heading: string, summary: string }) => {
+    return (
+        <div className="group bg-white rounded-2xl p-6 shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-105 border border-slate-100">
+            {icon && (
+                <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-2xl flex items-center justify-center text-primary-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                    {icon}
+                </div>
+            )}
+            <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-primary-600 transition-colors duration-300">
+                {heading}
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+                {summary}
+            </p>
         </div>
-
-    </>
+    )
 }
 
 export default FeatureBox

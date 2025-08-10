@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Aleo } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar/navbar";
 import Footer from "./components/footer_component/footer"
 //import { GoogleAnalytics } from '@next/third-parties/google'
 
-const inter = Aleo({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Manage you Deliveries",
-  description: "Deleveries at a glance, take more informed decisions  ",
+  title: "Ease Your Tasks - Smart Delivery Management Platform",
+          description: "Streamline your delivery operations with smart route optimization, real-time tracking, and comprehensive logistics management. Take control of your deliveries with confidence.",
 };
 
 export default function RootLayout({
@@ -18,23 +18,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="">
-      <body className={`${inter.className}`}>
-        <div className=" bg-gray-50  h-full flex flex-col py-1 px-2 sm:py-4 sm:px-8 md:px-14 scroll-smooth max-w-[2000px] mx-auto">
-          <header className="mt-1">
-            <Navbar></Navbar>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.className} antialiased`}>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+          <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <Navbar />
+            </div>
           </header>
-          <div className="h-full overflow-scroll">
-            <div className="">
+          
+          <main className="flex-1">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {children}
             </div>
-            <footer className="" >
-              <Footer></Footer>
-            </footer>
-          </div>
-
+          </main>
+          
+          <footer className="bg-white border-t border-slate-200/60 mt-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <Footer />
+            </div>
+          </footer>
         </div>
-
       </body>
      {/* <GoogleAnalytics gaId="G-XYZ" /> */}
     </html>

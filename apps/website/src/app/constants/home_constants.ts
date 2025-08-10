@@ -2,7 +2,7 @@ const map_view_list = [
     "At-a-Glance Insights for Informed Decision-Making",
     "Interactive Map for Detailed Information",
     "User Friendly Interface, Bulk Order Upload via CSV Files",
-    "Generate Optimized routes for the driver with efficient time and distance to segregate different areas",
+    "Generate efficient routes for drivers with time and distance optimization to segregate different areas",
     "Real Time of updates of deliveries status"
 
 ]

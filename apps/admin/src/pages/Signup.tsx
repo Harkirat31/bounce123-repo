@@ -56,7 +56,6 @@ const Signup2 = () => {
             return parsedInput.data
         }
         else {
-            console.log(parsedInput.error)
             let errors: any[] = []
             parsedInput.error.issues.forEach((issue) => {
                 if (issue.path[0] == "companyName") {
@@ -125,8 +124,6 @@ const Signup2 = () => {
                 <img
                     className="mx-auto h-16 w-auto"
                     src={logo}
-                //     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                //   alt="Your Company"
                 />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                     Create New Account

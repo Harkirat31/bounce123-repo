@@ -2,54 +2,82 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function FeatureBoxDetailed({ image, heading, list, flip = false, isAppBox = false }: { image: string, heading: string, list: string[], flip?: boolean, isAppBox?: boolean }) {
-    return <>
-        <div className="flex flex-col lg:flex-row justify-around items-center lg:h-[375px] xl:h-[450px]">
-            {!flip && <div className="hidden lg:block h-full">
-                <ImageSection image={image}></ImageSection>
-            </div>
-            }
-
-            <div className={`h-full w-full flex overflow-scroll flex-col  bg-gray-100 px-10 py-4 ${flip ? "lg:mr-10" : "lg:ml-10"}`}>
-                <h1 className="text-black text-xl md:text-lg lg:text-2xl xl:text-3xl font-bold ">
-                    {heading}
-                </h1>
-                <div className="mt-4 w-full lg:hidden">
-                    <ImageSection image={image}></ImageSection>
+    return (
+        <div className="bg-white rounded-3xl shadow-soft overflow-hidden">
+            <div className={`flex flex-col lg:flex-row ${flip ? 'lg:flex-row-reverse' : ''} items-center`}>
+                {/* Image Section */}
+                <div className="w-full lg:w-1/2 p-8 lg:p-12">
+                    <div className="relative w-full max-w-md mx-auto">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary-200 to-secondary-200 rounded-3xl blur-2xl opacity-30"></div>
+                        <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden">
+                            <Image 
+                                className="w-full h-auto object-cover" 
+                                width={500} 
+                                height={400} 
+                                src={image} 
+                                alt="Feature demonstration"
+                            />
+                        </div>
+                    </div>
                 </div>
-                <ul className="w-full ml-4 mt-10 space-y-5 xl:space-y-8 text-xs sm:text-sm md:text-base text-black/65 list-disc font-semibold">
-                    {list.map((element, index) => {
-                        return <li key={index}>{element}</li>
-                    })}
-                </ul>
-                {isAppBox && <div className="flex-1 flex flex-row justify-start items-center mt-5 lg:mt-0">
 
-                    <div className="relative h-20 w-44  ">
-                        <Link target="_blank" href={"https://apps.apple.com/us/app/deliveries-for-drivers/id6670413689"}>
-                            <Image className="" fill={true} objectFit="contain" src={"/download_badges/app_store.svg"} alt="mobile_app_ios"></Image>
-                        </Link>
+                {/* Content Section */}
+                <div className="w-full lg:w-1/2 p-8 lg:p-12 bg-gradient-to-br from-slate-50 to-blue-50">
+                    <div className="space-y-6">
+                        <h2 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight">
+                            {heading}
+                        </h2>
+                        
+                        <ul className="space-y-4">
+                            {list.map((element, index) => (
+                                <li key={index} className="flex items-start space-x-3">
+                                    <div className="w-2 h-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mt-3 flex-shrink-0"></div>
+                                    <span className="text-slate-700 leading-relaxed font-medium">
+                                        {element}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
 
+                        {isAppBox && (
+                            <div className="pt-6">
+                                <p className="text-slate-600 mb-4 font-medium">Download the mobile app:</p>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <Link 
+                                        target="_blank" 
+                                        href="https://apps.apple.com/us/app/deliveries-for-drivers/id6670413689"
+                                        className="group"
+                                    >
+                                        <div className="relative h-16 w-44 transition-transform duration-200 group-hover:scale-105">
+                                            <Image 
+                                                className="w-full h-full object-contain" 
+                                                fill={true} 
+                                                src="/download_badges/app_store.svg" 
+                                                alt="Download on App Store"
+                                            />
+                                        </div>
+                                    </Link>
+                                    
+                                    <Link 
+                                        target="_blank" 
+                                        href="https://drive.google.com/drive/folders/1eM2BMhvQkBVBzPxe9uV-GTNooLO0jdP2"
+                                        className="group"
+                                    >
+                                        <div className="relative h-16 w-44 transition-transform duration-200 group-hover:scale-105">
+                                            <Image 
+                                                className="w-full h-full object-contain" 
+                                                fill={true} 
+                                                src="/download_badges/play_store.png" 
+                                                alt="Download on Google Play"
+                                            />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className="relative h-20 w-44 ml-10 lg:ml-20 ">
-                        <Link target="_blank" href={"https://drive.google.com/drive/folders/1eM2BMhvQkBVBzPxe9uV-GTNooLO0jdP2"}>
-                            <Image className="" fill={true} objectFit="contain" src={"/download_badges/play_store.png"} alt="play_store_ios"></Image>
-                        </Link>
-
-                    </div>
-                </div>}
-
+                </div>
             </div>
-            {flip && <div className="hidden lg:block lg:h-full">
-                <ImageSection image={image}></ImageSection>
-            </div>
-            }
         </div>
-    </>
-}
-
-const ImageSection = ({ image }: { image: string }) => {
-    return <>
-        <div className="relative  h-full lg:w-auto aspect-[1.2]">
-            <Image className="" fill={true} objectFit="fill" src={image} alt="1"></Image>
-        </div>
-    </>
+    );
 }
