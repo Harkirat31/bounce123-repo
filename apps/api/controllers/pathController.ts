@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { getDistanceMatrixApi, getGeometryApi } from "../externalApis/osrmAPI"
 import { getOptimizeRoutes } from "../externalApis/vrpAPI"
 import { ErrorCode, generatingOptimizePathsParams, pathOrder } from "types"
-import { assignOrderAndPath, assignPathToDriver, cancelPath, createPath, deletePath, getOrdersWithPathId, getPathswithDate, updatePath, updatePathGemetry } from "mongoose-db"
+import { assignOrderAndPath, assignPathToDriver, cancelPath, createPath, deletePath, getOrdersWithPathId, getPathswithDate, updatePath, updatePathGemetry, getDriverPathsReport, getAssignedPathsWithOrders } from "mongoose-db"
 import { getDriver, getUser, sendNotification } from "db"
 import { sendTextMessage } from "../services/text_message/text_message_service"
 
@@ -295,4 +295,38 @@ export const generateOptimizeRoutes = async (req: Request, res: Response) => {
             })
         }
     }
+}
+
+// Reports
+export const getDriverPathsReportController = async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.body || {}
+    if (!startDate || !endDate) {
+      return res.status(400).json({ err: ErrorCode.WrongInputs })
+    }
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    // normalize to cover the whole end day
+    end.setHours(23, 59, 59, 999)
+    const data = await getDriverPathsReport(req.body.companyId, start, end)
+    return res.status(200).json(data)
+  } catch (e) {
+    return res.status(500).json({ err: ErrorCode.DbError })
+  }
+}
+
+export const getAssignedPathsWithOrdersController = async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.body || {}
+    if (!startDate || !endDate) {
+      return res.status(400).json({ err: ErrorCode.WrongInputs })
+    }
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    end.setHours(23,59,59,999)
+    const data = await getAssignedPathsWithOrders(req.body.companyId, start, end)
+    return res.status(200).json(data)
+  } catch (e) {
+    return res.status(500).json({ err: ErrorCode.DbError })
+  }
 }

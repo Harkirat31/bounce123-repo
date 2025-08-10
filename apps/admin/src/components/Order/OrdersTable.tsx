@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react"
 import { FiEye, FiEdit2, FiTrash2, FiInbox } from "react-icons/fi"
 import UploadOrdersCSV from "./UploadOrdersCSV"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { getOrder, getOrders } from "../../store/selectors/orderSelector"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { getOrder, getOrders, editOrder as editOrderSelector } from "../../store/selectors/orderSelector"
 import { ordersSearchDate, rowsToBeDeleted } from "../../store/atoms/orderAtom"
 import { OrderType } from "types"
 import { deleteOrders, updateOrderAPI } from "../../services/ApiService"
@@ -36,6 +36,7 @@ const OrdersTable = () => {
     const allOrders = useRecoilValue(getOrders) as OrderType[]
     const [rows, setRows] = useRecoilState(rowsToBeDeleted)
     const [searchDate, setSearchDate] = useRecoilState(ordersSearchDate)
+    const setEditOrderSelector = useSetRecoilState(editOrderSelector)
 
     const [search, setSearch] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("All")
@@ -47,6 +48,11 @@ const OrdersTable = () => {
     const [viewOrderId, setViewOrderId] = useState<string | null>(null)
     const [editOrder, setEditOrder] = useState<OrderType | null>(null)
     const [deletingId, setDeletingId] = useState<string | null>(null)
+    
+    // Delete confirmation states
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [orderToDelete, setOrderToDelete] = useState<OrderType | null>(null)
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
 
     const filteredSortedOrders = useMemo(() => {
         const normalizedSearch = search.trim().toLowerCase()
@@ -163,6 +169,53 @@ const OrdersTable = () => {
         setPage(1)
     }
 
+    // Delete confirmation handlers
+    const onDeleteClick = (order: OrderType) => {
+        setOrderToDelete(order)
+        setShowDeleteConfirm(true)
+    }
+
+    const onDeleteConfirm = async () => {
+        if (!orderToDelete || !orderToDelete.orderId) return
+        
+        try {
+            setDeletingId(orderToDelete.orderId)
+            await deleteOrders([orderToDelete.orderId])
+            // trigger refresh
+            setSearchDate(new Date(searchDate))
+            const next = new Set(rows)
+            next.delete(orderToDelete.orderId)
+            setRows(next)
+        } finally {
+            setDeletingId(null)
+            setShowDeleteConfirm(false)
+            setOrderToDelete(null)
+        }
+    }
+
+    const onDeleteCancel = () => {
+        setShowDeleteConfirm(false)
+        setOrderToDelete(null)
+    }
+
+    const onBulkDeleteClick = () => {
+        setShowBulkDeleteConfirm(true)
+    }
+
+    const onBulkDeleteConfirm = async () => {
+        try {
+            await deleteOrders([...rows])
+            setSearchDate(new Date(searchDate))
+            setRows(new Set())
+        } finally {
+            setShowBulkDeleteConfirm(false)
+        }
+    }
+
+    const onBulkDeleteCancel = () => {
+        setShowBulkDeleteConfirm(false)
+    }
+
     return (
         <>
             <div className="mt-4 w-full">
@@ -211,7 +264,7 @@ const OrdersTable = () => {
                             />
                             <span>Select page</span>
                         </label>
-                        <DeleteRows />
+                        <DeleteRows onDeleteClick={onBulkDeleteClick} />
                     </div>
                 </div>
 
@@ -241,20 +294,7 @@ const OrdersTable = () => {
                                         orderId={orderId}
                                         onView={(id: string) => setViewOrderId(id)}
                                         onEdit={(o: OrderType) => setEditOrder(o)}
-                                        onDelete={async (id: string) => {
-                                            if (!confirm("Delete this order?")) return
-                                            try {
-                                                setDeletingId(id)
-                                                await deleteOrders([id])
-                                                // trigger refresh
-                                                setSearchDate(new Date(searchDate))
-                                                const next = new Set(rows)
-                                                next.delete(id)
-                                                setRows(next)
-                                            } finally {
-                                                setDeletingId(null)
-                                            }
-                                        }}
+                                        onDelete={(order: OrderType) => onDeleteClick(order)}
                                         deletingId={deletingId}
                                     />
                                 ))}
@@ -321,8 +361,10 @@ const OrdersTable = () => {
                     onSubmit={async (payload) => {
                         try {
                             await updateOrderAPI(payload)
-                            // refresh orders
-                            setSearchDate(new Date(searchDate))
+                            // Update local state using selector instead of refreshing all data
+                            // Merge existing order data with the payload
+                            const updatedOrder = { ...editOrder, ...payload }
+                            setEditOrderSelector(updatedOrder)
                             alert("Order updated")
                         } catch (e) {
                             alert("Failed to send update request")
@@ -330,12 +372,88 @@ const OrdersTable = () => {
                     }}
                 />
             )}
+
+            {/* Individual Delete Confirmation Modal */}
+            {showDeleteConfirm && orderToDelete && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div className="mt-3 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mt-4">Delete Order</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <p className="text-sm text-gray-500">
+                                    Are you sure you want to delete order <span className="font-semibold">#{orderToDelete.orderNumber}</span>? This action cannot be undone.
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-3 mt-4">
+                                <button
+                                    onClick={onDeleteCancel}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={onDeleteConfirm}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Delete Confirmation Modal */}
+            {showBulkDeleteConfirm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div className="mt-3 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mt-4">Delete Selected Orders</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <p className="text-sm text-gray-500">
+                                    Are you sure you want to delete <span className="font-semibold">{rows.size}</span> selected order{rows.size !== 1 ? 's' : ''}? This action cannot be undone.
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-3 mt-4">
+                                <button
+                                    onClick={onBulkDeleteCancel}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={onBulkDeleteConfirm}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }
 
 
-const OrderRow = ({ orderId, onView, onEdit, onDelete, deletingId }: any) => {
+const OrderRow = ({ orderId, onView, onEdit, onDelete, deletingId }: { 
+    orderId: string; 
+    onView: (id: string) => void; 
+    onEdit: (order: OrderType) => void; 
+    onDelete: (order: OrderType) => void; 
+    deletingId: string | null; 
+}) => {
     const order = useRecoilValue(getOrder(orderId))
     let date = new Date()
     if (order) {
@@ -383,7 +501,7 @@ const OrderRow = ({ orderId, onView, onEdit, onDelete, deletingId }: any) => {
                     <div className="flex items-center justify-end gap-3 flex-wrap md:flex-nowrap">
                         <div className="inline-flex items-center overflow-hidden rounded-md border border-gray-300 divide-x divide-gray-300 whitespace-nowrap">
                             <button
-                                onClick={() => onView(order.orderId)}
+                                onClick={() => order.orderId && onView(order.orderId)}
                                 aria-label="View"
                                 title="View"
                                 className="px-2 py-1 text-base md:text-lg leading-none text-blue-600 hover:bg-gray-50"
@@ -400,7 +518,7 @@ const OrderRow = ({ orderId, onView, onEdit, onDelete, deletingId }: any) => {
                             </button>
                             {(() => { const canDelete = order.currentStatus === "NotAssigned"; return (
                             <button
-                                onClick={() => { if (canDelete) onDelete(order.orderId) }}
+                                onClick={() => { if (canDelete) onDelete(order) }}
                                 disabled={!canDelete || deletingId===order.orderId}
                                 aria-label="Delete"
                                 title={canDelete ? "Delete" : "Only NotAssigned orders can be deleted"}
@@ -446,18 +564,16 @@ const ColumnDeleteCheckBox = (props: { order: OrderType }) => {
 }
 
 
-const DeleteRows = () => {
-    const [rows, setRows] = useRecoilState(rowsToBeDeleted)
-    const [searchDate, setSearchDate] = useRecoilState(ordersSearchDate)
-    const onDeleteHandle = () => {
-        deleteOrders([...rows]).then(() => {
-            setSearchDate(new Date(searchDate))
-            setRows(new Set())
-        })
-        
-    }
+const DeleteRows = ({ onDeleteClick }: { onDeleteClick: () => void }) => {
+    const [rows] = useRecoilState(rowsToBeDeleted)
+    
     return (
-        <button onClick={onDeleteHandle} type="button" className="text-sm text-blue-700 underline disabled:text-gray-400 disabled:no-underline" disabled={rows.size===0}>
+        <button 
+            onClick={onDeleteClick} 
+            type="button" 
+            className="text-sm text-blue-700 underline disabled:text-gray-400 disabled:no-underline" 
+            disabled={rows.size === 0}
+        >
             Delete Selected
         </button>
     )

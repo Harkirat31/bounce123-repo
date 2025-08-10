@@ -268,7 +268,126 @@ export const removeNextOrderOfPath = (pathId: string, orderId: string) => {
 }
 
 
+// Driver reports types
+export type DriverPathReport = {
+    driverId: string;
+    driverName?: string;
+    totalPaths: number;
+    acceptedPaths: number;
+}
 
+// Get driver report for paths assigned within a date range (inclusive)
+export const getDriverPathsReport = (
+    companyId: string,
+    startDate: Date,
+    endDate: Date
+): Promise<DriverPathReport[]> => {
+    return new Promise((resolve, reject) => {
+        PathModel.aggregate([
+            {
+                $match: {
+                    companyId: companyId,
+                    dateOfPath: { $gte: startDate, $lte: endDate },
+                    driverId: { $exists: true, $ne: "" }
+                }
+            },
+            {
+                $group: {
+                    _id: { driverId: "$driverId", driverName: "$driverName" },
+                    totalPaths: { $sum: 1 },
+                    acceptedPaths: {
+                        $sum: {
+                            $cond: [{ $eq: ["$isAcceptedByDriver", true] }, 1, 0]
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    driverId: "$_id.driverId",
+                    driverName: "$_id.driverName",
+                    totalPaths: 1,
+                    acceptedPaths: 1
+                }
+            },
+            { $sort: { driverName: 1 } }
+        ]).then((docs) => {
+            resolve(docs as DriverPathReport[])
+        }).catch((error) => reject(error))
+    })
+}
 
+export type OrderSummaryForReport = {
+    orderId: string;
+    orderNumber?: string;
+    cname: string;
+    cphone: string;
+    address: string;
+    itemsDetail?: string;
+    currentStatus: string;
+    specialInstructions?: string;
+    deliveryDate: Date;
+}
 
+export type PathWithOrdersReport = {
+    pathId: string;
+    dateOfPath: Date;
+    driverName?: string;
+    orders: OrderSummaryForReport[];
+}
 
+export const getAssignedPathsWithOrders = (
+    companyId: string,
+    startDate: Date,
+    endDate: Date
+): Promise<PathWithOrdersReport[]> => {
+    return new Promise((resolve, reject) => {
+        PathModel.aggregate([
+            {
+                $match: {
+                    companyId: companyId,
+                    dateOfPath: { $gte: startDate, $lte: endDate },
+                    driverId: { $exists: true, $ne: "" }
+                }
+            },
+            { $addFields: { pathIdStr: { $toString: "$_id" } } },
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "pathIdStr",
+                    foreignField: "assignedPathId",
+                    as: "orders"
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    pathId: "$pathIdStr",
+                    dateOfPath: 1,
+                    driverName: 1,
+                    orders: {
+                        $map: {
+                            input: "$orders",
+                            as: "o",
+                            in: {
+                                orderId: { $toString: "$$o._id" },
+                                orderNumber: "$$o.orderNumber",
+                                cname: "$$o.cname",
+                                cphone: "$$o.cphone",
+                                address: "$$o.address",
+                                itemsDetail: "$$o.itemsDetail",
+                                currentStatus: "$$o.currentStatus",
+                                specialInstructions: "$$o.specialInstructions",
+                                deliveryDate: "$$o.deliveryDate",
+                            }
+                        }
+                    }
+                }
+            },
+            { $sort: { dateOfPath: 1, driverName: 1 } }
+        ])
+            .then((docs) => resolve(docs as PathWithOrdersReport[]))
+            .catch((error) => reject(error))
+    })
+}

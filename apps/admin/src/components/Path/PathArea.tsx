@@ -188,7 +188,6 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
     // }
 
     const hanldeSendSMS = () => {
-
         if (dropDownItem == "Select") {
             alert("Please Select Driver from dropdown")
             return
@@ -198,11 +197,15 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
             return
         }
 
-        const confirm = window.confirm("Are you Sure?")
-        if (!confirm) {
+        setShowSendToDriverConfirm(true)
+    }
+
+    const handleSendToDriverConfirm = () => {
+        if (dropDownItem === "Select" || dropDownItem.driverId === "Select") {
+            alert("Please Select Driver from dropdown")
             return
         }
-
+        
         let pathArgs = { ...pathData, driverId: dropDownItem.driverId, driverName: dropDownItem.driverName }
         setLoading({isLoading:true,value:"Sending to Driver. Please Wait..."})
         assignPathAPI(pathArgs as PathOrderType).then((result) => {
@@ -210,13 +213,23 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
             setLoading({isLoading:false,value:null})
             refreshAllData(Date.now().toString())
             alert("Assigned and Sent to driver")
+            setShowSendToDriverConfirm(false)
         }).catch((_error) => {
             setLoading({isLoading:false,value:null})
             alert("Error")
+            setShowSendToDriverConfirm(false)
         })
     }
 
+    const handleSendToDriverCancel = () => {
+        setShowSendToDriverConfirm(false)
+    }
+
     const handleDelete = () => {
+        setShowDeleteConfirm(true)
+    }
+
+    const handleDeleteConfirm = () => {
         setLoading({isLoading:true,value:"Deleting Path. Please Wait..."})
         deletePath(pathData).then((result: any) => {
             if (result.isDeleted) {
@@ -231,24 +244,37 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                 })
                 setAllPaths(allPathsCopy)
                 updateOrder(pathData!.path.map((p)=>p.id))
-
             }
             if (result.err != null || result.err != undefined) {
                 alert("Error Deleting Path")
             }
             setLoading({isLoading:false,value:null})
+            setShowDeleteConfirm(false)
         }
         ).catch((error) => {
             alert("Error Deleting Path")
             setLoading({isLoading:false,value:null})
+            setShowDeleteConfirm(false)
         })
     }
+
+    const handleDeleteCancel = () => {
+        setShowDeleteConfirm(false)
+    }
     const [undo, setUndo] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [showSendToDriverConfirm, setShowSendToDriverConfirm] = useState(false)
+    const [showUndoConfirm, setShowUndoConfirm] = useState(false)
 
     const handleUndo = () => {
+        setShowUndoConfirm(true)
+    }
+
+    const handleUndoConfirm = () => {
         setLoading({isLoading:true,value:"Please Wait..."})
         cancelPathAPI({ ...pathData! }).then((result: any) => {
             setUndo(false)
+            setShowUndoConfirm(false)
             refreshAllData(Date.now().toString())
         
         }).catch((error) => {
@@ -256,6 +282,10 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
         }).finally(() => {
             setLoading({isLoading:false,value:null})
         })
+    }
+
+    const handleUndoCancel = () => {
+        setShowUndoConfirm(false)
     }
 
     const handleEdit = () => {
@@ -289,10 +319,10 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                                     <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                     </svg>
-                                    <h3 className="text-lg font-semibold text-red-800">Cancel Path Assignment</h3>
+                                    <h3 className="text-lg font-semibold text-red-800">Review Path Assignment</h3>
                                 </div>
                                 <p className="text-sm text-red-700 mt-2">
-                                    This will cancel the assignment of this path to {pathData.driverName}.
+                                    Review the path details below before proceeding to cancel the assignment to {pathData.driverName}.
                                 </p>
                             </div>
 
@@ -318,12 +348,117 @@ const PathRow = ({ path, callbackToCalculateSrNo, edit }: {
                                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                    Cancel Assignment
+                                    Continue to Cancel
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>}
+
+            {/* Undo Assignment Confirmation Modal */}
+            {showUndoConfirm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div className="mt-3 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100">
+                                <svg className="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mt-4">Confirm Cancel Assignment</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <p className="text-sm text-gray-500">
+                                    Are you sure you want to cancel the assignment of this path to <span className="font-semibold">{pathData!.driverName}</span>? This will unassign all orders in the path.
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-3 mt-4">
+                                <button
+                                    onClick={handleUndoCancel}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUndoConfirm}
+                                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                >
+                                    Confirm Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Path Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div className="mt-3 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mt-4">Delete Path</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <p className="text-sm text-gray-500">
+                                    Are you sure you want to delete this path with <span className="font-semibold">{pathData!.path.length}</span> order{pathData!.path.length !== 1 ? 's' : ''}? This action cannot be undone.
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-3 mt-4">
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Send to Driver Confirmation Modal */}
+            {showSendToDriverConfirm && dropDownItem !== "Select" && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div className="mt-3 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
+                                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 mt-4">Send Path to Driver</h3>
+                            <div className="mt-2 px-7 py-3">
+                                <p className="text-sm text-gray-500">
+                                    Are you sure you want to send this path with <span className="font-semibold">{pathData!.path.length}</span> order{pathData!.path.length !== 1 ? 's' : ''} to <span className="font-semibold">{typeof dropDownItem === 'object' ? dropDownItem.driverName : ''}</span>? This will assign the path to the driver.
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-3 mt-4">
+                                <button
+                                    onClick={handleSendToDriverCancel}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSendToDriverConfirm}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    Send to Driver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
                 
             <div className={`mb-4 mx-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-sm overflow-visible ${
                 pathData!.show 

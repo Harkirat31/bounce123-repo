@@ -4,7 +4,7 @@ import { authenticateJwt } from "../middleware"
 import {  assignOrder, } from "types";
 import {  assignOrderToDriver } from "db"
 import axios from "axios";
-import { assignOrderAndPathController, assignPathController, cancelPathController, createPathController, deletePathController, generateOptimizeRoutes, getPathsController } from "../controllers/pathController";
+import { assignOrderAndPathController, assignPathController, cancelPathController, createPathController, deletePathController, generateOptimizeRoutes, getPathsController, getDriverPathsReportController, getAssignedPathsWithOrdersController } from "../controllers/pathController";
 
 import { createDriverController, deleteDriverController, getDriversController } from "../controllers/driverController";
 import { changePriorityController, createOrderController, deleteOrdersController, getDistinctOrdersDatesController, getOrdersController, updateOrderController } from "../controllers/orderController";
@@ -87,5 +87,8 @@ router.get("/getDistinctDatesOfOrders",authenticateJwt,getDistinctOrdersDatesCon
 
 router.post("/generateOptimizePaths",authenticateJwt, generateOptimizeRoutes)
 
+// reports
+router.post("/reports/driver-paths", authenticateJwt, getDriverPathsReportController)
+router.post("/reports/paths-with-orders", authenticateJwt, getAssignedPathsWithOrdersController)
 
 export default router

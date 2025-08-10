@@ -239,6 +239,74 @@ export const getPathsAPI = (date: Date) => {
     })
 }
 
+export type DriverPathReport = {
+    driverId: string;
+    driverName?: string;
+    totalPaths: number;
+    acceptedPaths: number;
+}
+
+export const getDriverPathsReportAPI = (startDate: Date, endDate: Date) => {
+    return new Promise((resolve, reject) => {
+        const url = `${BASE_URL}/admin/reports/driver-paths`
+        fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ startDate, endDate })
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    resolve(jsonData)
+                }
+            ).catch((error) => {
+                reject(error)
+            })
+        }).catch((error) => reject(error))
+    })
+}
+
+export type PathWithOrdersReport = {
+    pathId: string;
+    dateOfPath: string | Date;
+    driverName?: string;
+    orders: Array<{
+        orderId: string;
+        orderNumber?: string;
+        cname: string;
+        cphone: string;
+        address: string;
+        itemsDetail?: string;
+        currentStatus: string;
+        specialInstructions?: string;
+        deliveryDate: Date;
+    }>;
+}
+
+export const getPathsWithOrdersReportAPI = (startDate: Date, endDate: Date) => {
+    return new Promise((resolve, reject) => {
+        const url = `${BASE_URL}/admin/reports/paths-with-orders`
+        fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ startDate, endDate })
+        }).then(result => {
+            result.json().then(
+                (jsonData) => {
+                    resolve(jsonData)
+                }
+            ).catch((error) => {
+                reject(error)
+            })
+        }).catch((error) => reject(error))
+    })
+}
+
 // this method handle situation when order directly assign to driver , thus it create path and then assign to driver
 export const assignOrderAndPath = (path: PathOrderType) => {
     return new Promise((resolve, reject) => {

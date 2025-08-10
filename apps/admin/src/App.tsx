@@ -14,6 +14,7 @@ import Signup from './pages/Signup'
 import MyAccount from './pages/MyAccount'
 import Reset from './pages/Reset'
 import VerifyEmail from './pages/VerifyEmail'
+import Reports from './pages/Reports'
 
 
 
@@ -32,6 +33,7 @@ function App() {
           <Route path='/orders' element={tokenKey == null ? <Login></Login> : <Order></Order>} />
           <Route path='/delerables' element={tokenKey == null ? <Login></Login> : <Deliverable></Deliverable>} />
           <Route path='/drivers' element={tokenKey == null ? <Login></Login> : <Driver></Driver>} />
+          <Route path='/reports' element={tokenKey == null ? <Login></Login> : <Reports></Reports>} />
           <Route path='/login' element={<Login></Login>} />
           <Route path='/reset' element={<Reset></Reset>} />
           <Route path='/verify' element={<VerifyEmail></VerifyEmail>} />

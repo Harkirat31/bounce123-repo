@@ -104,6 +104,12 @@ const NavMenu = (props: any) => {
       }>
         Manage Drivers</NavLink>
     </li>
+    <li>
+      <NavLink to={"/reports"} onClick={() => { props.setVisibility(false) }} className={({ isActive, isPending }) =>
+        isPending ? getStyle(false) : isActive ? getStyle(true) : getStyle(false)
+      }>
+        Reports</NavLink>
+    </li>
   </ul>
 }
 

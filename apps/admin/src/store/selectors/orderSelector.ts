@@ -1,4 +1,4 @@
-import {  atomFamily, selector, selectorFamily } from "recoil";
+import {  atomFamily, DefaultValue, selector, selectorFamily } from "recoil";
 import { ordersAtom, } from "../atoms/orderAtom"
 import { OrderType } from "types";
 import { realTimeUpdates } from "../atoms/updatesAtom";
@@ -98,9 +98,9 @@ export const updateOrderStatusToDelivered = selector<string|null>({
         if(typeof newValue =="string"){
             let order = get(getOrder(newValue))
             if(order){
-                if(order){
-                        set(getOrder(newValue), { ...order,currentStatus:"Delivered" } as OrderType)
-                }
+                set(getOrder(newValue), { ...order, currentStatus:"Delivered" } as OrderType)
+                // Update orders array atom
+                set(ordersAtom, get(ordersAtom).map((o) => o.orderId === newValue ? { ...o, currentStatus:"Delivered" } as OrderType : o))
                 let messages = get(realTimeUpdates)
                 set(realTimeUpdates,[{ message: `${order!.driverName} has delivered the order number ${order?.orderNumber}`, timeStamp: new Date() },...messages])
             }else{
@@ -111,3 +111,17 @@ export const updateOrderStatusToDelivered = selector<string|null>({
     }
 })
 
+export const editOrder = selector<OrderType|null>({
+    key:"editOrder",
+    get:({})=>{return null},
+    set:({ set, get }, newValue)=>{
+        if(!(newValue instanceof DefaultValue) && newValue !== null && newValue.orderId){
+            let order = get(getOrder(newValue.orderId))
+            if(order){
+                set(getOrder(newValue.orderId), { ...order, ...newValue } as OrderType)
+                //update orders atom
+                set(ordersAtom, get(ordersAtom).map((order)=>order.orderId === newValue.orderId ? { ...order, ...newValue } as OrderType : order))
+            }
+        }
+    }
+})
