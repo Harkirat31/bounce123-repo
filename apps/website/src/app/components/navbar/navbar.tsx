@@ -35,11 +35,11 @@ const Navbar = () => {
                             alt="Ease Your Tasks Logo"
                         />
                     </div>
-                    <div className="hidden sm:block">
-                        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                    <div className="block sm:block">
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
                             Ease Your Tasks
                         </h1>
-                        <p className="text-sm text-slate-600 font-medium">Easing Logistics</p>
+                        <p className="text-xs sm:text-sm text-slate-600 font-medium">Easing Logistics</p>
                     </div>
                 </div>
 
