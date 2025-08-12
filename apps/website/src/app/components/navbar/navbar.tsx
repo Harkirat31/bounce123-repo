@@ -16,14 +16,19 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
+    const toggleMenu = () => {
+        console.log('Mobile menu toggled:', !isMenuOpen)
+        setIsMenuOpen(!isMenuOpen)
+    }
+
     return (
-        <nav className={`py-4 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : ''}`}>
+        <nav className={`py-3 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-section border-b border-slate-100' : ''}`}>
             <div className="flex items-center justify-between">
                 {/* Logo and Brand */}
                 <div className="flex items-center space-x-3">
                     <div className="relative w-12 h-12 sm:w-14 sm:h-14 group">
                         <Image 
-                            className="rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-110" 
+                            className="rounded-xl shadow-card transition-transform duration-300 group-hover:scale-110" 
                             fill={true} 
                             objectFit="cover" 
                             src="/logo.png" 
@@ -72,65 +77,75 @@ const Navbar = () => {
                     <a 
                         target="_blank" 
                         href="https://delivery.easeyourtasks.com" 
-                        className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-glow"
+                        className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-button-hover hover:scale-105 transition-all duration-200 shadow-button"
                     >
                         Launch App
                     </a>
                 </div>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    aria-label="Toggle mobile menu"
-                >
-                    {isMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
-                </button>
-            </div>
-
-            {/* Mobile Menu */}
-            <div className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-                isMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
-            }`}>
-                <div className="pb-4 border-t border-slate-200 pt-4 space-y-4">
-                    <a 
-                        href="/" 
-                        className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-2 hover:bg-slate-50 rounded-lg px-3"
-                        onClick={() => setIsMenuOpen(false)}
+                {/* Mobile Menu Button - Always visible on mobile */}
+                <div className="block md:hidden">
+                    <button
+                        className="p-3 rounded-lg hover:bg-slate-100 transition-colors bg-white shadow-lg border-2 border-slate-300 hover:border-primary-400 min-w-[48px] min-h-[48px] flex items-center justify-center"
+                        onClick={toggleMenu}
+                        aria-label="Toggle mobile menu"
+                        aria-expanded={isMenuOpen}
+                        type="button"
                     >
-                        Home
-                    </a>
-                    <a 
-                        href="#usage" 
-                        className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-2 hover:bg-slate-50 rounded-lg px-3"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Features
-                    </a>
-                    <a 
-                        href="#mobile-app" 
-                        className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-2 hover:bg-slate-50 rounded-lg px-3"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Mobile App
-                    </a>
-                    <a 
-                        href="#contact" 
-                        className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-2 hover:bg-slate-50 rounded-lg px-3"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Contact Us
-                    </a>
-                    <a 
-                        target="_blank" 
-                        href="https://delivery.easeyourtasks.com" 
-                        className="block bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-4 py-3 rounded-lg font-semibold text-center hover:shadow-lg transition-all duration-200"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Launch App
-                    </a>
+                        {isMenuOpen ? (
+                            <FaTimes className="w-6 h-6 text-slate-700" />
+                        ) : (
+                            <FaBars className="w-6 h-6 text-slate-700" />
+                        )}
+                    </button>
                 </div>
             </div>
+
+            {/* Mobile Menu - Improved visibility and animation */}
+            {isMenuOpen && (
+                <div className="block md:hidden mt-4 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                    <div className="py-4 space-y-2">
+                        <a 
+                            href="/" 
+                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            Home
+                        </a>
+                        <a 
+                            href="#usage" 
+                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            Features
+                        </a>
+                        <a 
+                            href="#mobile-app" 
+                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            Mobile App
+                        </a>
+                        <a 
+                            href="#contact" 
+                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            Contact Us
+                        </a>
+                        <div className="px-4 py-3">
+                            <a 
+                                target="_blank" 
+                                href="https://delivery.easeyourtasks.com" 
+                                className="block w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-4 py-3 rounded-lg font-semibold text-center hover:shadow-button-hover transition-all duration-200 shadow-button"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Launch App
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
         </nav>
     )
 }

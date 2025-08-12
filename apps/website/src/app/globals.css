@@ -70,6 +70,44 @@ body {
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
   }
   
+  /* Enhanced shadow utilities for professional look */
+  .shadow-elegant {
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08), 0 8px 16px -4px rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .shadow-image {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .shadow-button {
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+  }
+  
+  .shadow-button-hover {
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+  }
+  
+  .shadow-section {
+    box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Mobile menu animations */
+  .animate-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  .slide-in-from-top-2 {
+    animation: slideInFromTop 0.2s ease-out;
+  }
+  
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -82,6 +120,26 @@ body {
   .animate-float-more-delayed {
     animation: float 6s ease-in-out infinite;
     animation-delay: 4s;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
