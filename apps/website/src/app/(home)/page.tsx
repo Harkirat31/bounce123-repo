@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FaArrowRight, FaMapMarkedAlt, FaRoute, FaRocket, FaMobileAlt, FaCheckCircle } from "react-icons/fa"
+import { FaArrowRight, FaMapMarkedAlt, FaRoute, FaRocket, FaMobileAlt } from "react-icons/fa"
 import FeatureBox from "../components/home/feature_box"
 import FeatureBoxDetailed from "../components/home/feature_box_detailed"
 import { map_view_list, mobile_app_list, route_drawing_list } from "../constants/home_constants"
@@ -50,21 +50,6 @@ const Home = () => {
                             </a>
                         </div>
 
-                        {/* Trust Indicators */}
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-3 sm:pt-4">
-                            <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-lg shadow-card">
-                                <FaCheckCircle className="text-green-500 w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="text-xs sm:text-sm text-slate-600 font-medium">Smart Routing</span>
-                            </div>
-                            <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-lg shadow-card">
-                                <FaCheckCircle className="text-green-500 w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="text-xs sm:text-sm text-slate-600 font-medium">Real-time</span>
-                            </div>
-                            <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-lg shadow-card">
-                                <FaCheckCircle className="text-green-500 w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="text-xs sm:text-sm text-slate-600 font-medium">Secure</span>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Hero Video */}
