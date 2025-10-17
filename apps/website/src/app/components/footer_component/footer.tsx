@@ -1,11 +1,11 @@
 const Footer = () => {
     return (
-        <div className="py-8 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="py-8 bg-slate-50">
             <div className="max-w-6xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                     {/* Brand Section */}
                     <div className="text-center md:text-left">
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-3">
+                        <h1 className="text-2xl font-bold text-primary-600 mb-3">
                             Ease Your Tasks
                         </h1>
                         <p className="text-slate-600 font-medium">Easing Logistics</p>
@@ -33,7 +33,7 @@ const Footer = () => {
                                 href="https://delivery.easeyourtasks.com" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-slate-600 hover:text-primary-600 transition-colors p-3 bg-white rounded-xl shadow-card hover:shadow-card-hover hover:scale-105 transition-all duration-300 border border-slate-100"
+                                className="text-slate-600 hover:text-primary-600 p-3 bg-white rounded-xl shadow-card hover:shadow-card-hover hover:scale-105 transition-all duration-300 border border-slate-100"
                             >
                                 <span className="sr-only">Web App</span>
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

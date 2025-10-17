@@ -1,10 +1,10 @@
 import axios from "axios";
-import { LocationType, PathGeometryType, PathOrderType } from "types";
+import { LocationType, PathGeometryType } from "types";
 
 const url = 'http://router.project-osrm.org/route/v1/driving/';
 const hosting_url ='http://66.70.190.180:5000/route/v1/driving/'
 
-const urlDistanceMatrix = 'http://router.project-osrm.org/table/v1/driving/';
+const urlDistanceMatrix = 'http://route.project-osrm.org/table/v1/driving/';
 const hosting_urlDistanceMatrix ='http://66.70.190.180:5000/table/v1/driving/'
 
 

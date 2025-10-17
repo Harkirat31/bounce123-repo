@@ -275,14 +275,13 @@ export const generateOptimizeRoutes = async (req: Request, res: Response) => {
         })
     }
     catch (error: any) {
+     
         if (error.response && error.response.data && error.response.data.code) {
             if (error.response.data.code == "TooBig") {
                 return res.status(400).json({
                     isCreated: false,
                     msg: "Delivery locations can not be more than 100"
-                })
-            }else{
-                return res.status(400).json({
+                }) .json({
                     isCreated: false,
                     msg: error.response.data.code 
                 })

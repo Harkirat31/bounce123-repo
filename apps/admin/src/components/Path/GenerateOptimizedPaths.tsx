@@ -75,13 +75,14 @@ export const GenerateOptimizedPaths = () => {
                     if (result.msg) {
                         setErrorMessage(result.msg)
                     }
-                    // setIsOpen(false)
+                    alert("Please try again later")
+                    setIsOpen(false)
                 }
                 setLoading({ isLoading: false, value: null })
             }).catch((error) => {
                 alert(error)
-                setLoading({ isLoading: false, value: null })
-                setIsOpen(false)
+           //     setLoading({ isLoading: false, value: null })
+           //     setIsOpen(false)
             })
         }
 

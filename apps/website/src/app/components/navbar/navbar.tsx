@@ -36,7 +36,7 @@ const Navbar = () => {
                         />
                     </div>
                     <div className="block sm:block">
-                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-primary-600">
                             Ease Your Tasks
                         </h1>
                         <p className="text-xs sm:text-sm text-slate-600 font-medium">Easing Logistics</p>
@@ -47,28 +47,28 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center space-x-8">
                     <a 
                         href="/" 
-                        className="text-slate-700 hover:text-primary-600 font-medium transition-all duration-200 hover:scale-105 relative group"
+                        className="text-slate-700 hover:text-primary-600 font-bold transition-all duration-200 hover:scale-105 relative group"
                     >
                         Home
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 group-hover:w-full"></span>
                     </a>
                     <a 
                         href="#usage" 
-                        className="text-slate-700 hover:text-primary-600 font-medium transition-all duration-200 hover:scale-105 relative group"
+                        className="text-slate-700 hover:text-primary-600 font-bold transition-all duration-200 hover:scale-105 relative group"
                     >
                         Features
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 group-hover:w-full"></span>
                     </a>
                     <a 
                         href="#mobile-app" 
-                        className="text-slate-700 hover:text-primary-600 font-medium transition-all duration-200 hover:scale-105 relative group"
+                        className="text-slate-700 hover:text-primary-600 font-bold transition-all duration-200 hover:scale-105 relative group"
                     >
                         Mobile App
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 group-hover:w-full"></span>
                     </a>
                     <a 
                         href="#contact" 
-                        className="text-slate-700 hover:text-primary-600 font-medium transition-all duration-200 hover:scale-105 relative group"
+                        className="text-slate-700 hover:text-primary-600 font-bold transition-all duration-200 hover:scale-105 relative group"
                     >
                         Contact Us
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 group-hover:w-full"></span>
@@ -77,7 +77,7 @@ const Navbar = () => {
                     <a 
                         target="_blank" 
                         href="https://delivery.easeyourtasks.com" 
-                        className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-button-hover hover:scale-105 transition-all duration-200 shadow-button"
+                        className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-button-hover hover:scale-105 transition-all duration-200 shadow-button"
                     >
                         Launch App
                     </a>
@@ -107,28 +107,28 @@ const Navbar = () => {
                     <div className="py-4 space-y-2">
                         <a 
                             href="/" 
-                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            className="block text-slate-700 hover:text-primary-600 font-bold transition-colors py-3 px-4 hover:bg-slate-50"
                             onClick={() => setIsMenuOpen(false)}
                         >
                             Home
                         </a>
                         <a 
                             href="#usage" 
-                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            className="block text-slate-700 hover:text-primary-600 font-bold transition-colors py-3 px-4 hover:bg-slate-50"
                             onClick={() => setIsMenuOpen(false)}
                         >
                             Features
                         </a>
                         <a 
                             href="#mobile-app" 
-                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            className="block text-slate-700 hover:text-primary-600 font-bold transition-colors py-3 px-4 hover:bg-slate-50"
                             onClick={() => setIsMenuOpen(false)}
                         >
                             Mobile App
                         </a>
                         <a 
                             href="#contact" 
-                            className="block text-slate-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 hover:bg-slate-50"
+                            className="block text-slate-700 hover:text-primary-600 font-bold transition-colors py-3 px-4 hover:bg-slate-50"
                             onClick={() => setIsMenuOpen(false)}
                         >
                             Contact Us
@@ -137,7 +137,7 @@ const Navbar = () => {
                             <a 
                                 target="_blank" 
                                 href="https://delivery.easeyourtasks.com" 
-                                className="block w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-4 py-3 rounded-lg font-semibold text-center hover:shadow-button-hover transition-all duration-200 shadow-button"
+                                className="block w-full bg-primary-600 text-white px-4 py-3 rounded-lg font-semibold text-center hover:shadow-button-hover transition-all duration-200 shadow-button"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Launch App
